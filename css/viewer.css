@@ -1,0 +1,217 @@
+/*
+  viewer.css — model-viewer, cubo de câmera, progresso e painel da obra.
+*/
+
+model-viewer {
+  width: 100%;
+  height: 100%;
+  --poster-color: transparent;
+  background: var(--cor-estudio);
+}
+
+.barra-progresso {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 0;
+  background: var(--cor-destaque);
+  z-index: 12;
+  pointer-events: none;
+}
+
+.aviso-viewer {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+  color: var(--cor-texto-suave);
+  background: var(--cor-estudio);
+  z-index: 8;
+}
+
+.aviso-viewer.visivel {
+  display: flex;
+}
+
+.botao-reset {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 12;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--cor-borda);
+  background: var(--cor-fundo);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cor-texto);
+}
+
+.botao-reset:hover {
+  border-color: var(--cor-destaque);
+}
+
+.cubo-caixa {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 120px;
+  height: 120px;
+  perspective: 600px;
+  z-index: 12;
+  pointer-events: none;
+}
+
+.cubo {
+  width: 56px;
+  height: 56px;
+  margin: 32px auto;
+  position: relative;
+  transform-style: preserve-3d;
+  transform: rotateX(-30deg) rotateY(-45deg);
+  pointer-events: auto;
+}
+
+.cubo-face {
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  border: 1px solid var(--cor-borda);
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--cor-texto-suave);
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.cubo-face:hover {
+  background: var(--cor-destaque);
+  color: #fff;
+  border-color: var(--cor-destaque);
+}
+
+.cubo-face.frente { transform: translateZ(28px); }
+.cubo-face.tras { transform: rotateY(180deg) translateZ(28px); }
+.cubo-face.direita { transform: rotateY(90deg) translateZ(28px); }
+.cubo-face.esquerda { transform: rotateY(-90deg) translateZ(28px); }
+.cubo-face.cima { transform: rotateX(90deg) translateZ(28px); }
+.cubo-face.baixo { transform: rotateX(-90deg) translateZ(28px); }
+
+.overlay-info {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  z-index: 12;
+  display: none;
+  align-items: center;
+  gap: 12px;
+  background: var(--cor-fundo);
+  border: 1px solid var(--cor-borda);
+  padding: 12px 14px;
+}
+
+.overlay-info.visivel {
+  display: flex;
+}
+
+.overlay-info h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.botao-ficha {
+  border: 1px solid var(--cor-destaque);
+  background: var(--cor-fundo);
+  color: var(--cor-destaque-escuro);
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.botao-ficha:hover {
+  background: var(--cor-destaque);
+  color: #fff;
+}
+
+.gaveta {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(380px, 100%);
+  background: var(--cor-fundo);
+  border-left: 1px solid var(--cor-borda);
+  z-index: 18;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.35s ease;
+}
+
+.gaveta.aberta {
+  transform: translateX(0);
+}
+
+.gaveta-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.gaveta-topo h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.gaveta-fechar {
+  border: 0;
+  background: transparent;
+  font-size: 20px;
+  cursor: pointer;
+  line-height: 1;
+  color: var(--cor-texto-suave);
+}
+
+.gaveta-corpo {
+  padding: 24px 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.gaveta-corpo dt {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--cor-destaque);
+  margin: 0 0 4px;
+}
+
+.gaveta-corpo dd {
+  margin: 0 0 20px;
+  font-size: 14px;
+}
+
+.gaveta-corpo .titulo-obra {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 20px;
+}
