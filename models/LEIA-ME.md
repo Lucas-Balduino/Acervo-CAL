@@ -15,3 +15,9 @@ models/
 - Não use espaços no nome da pasta.
 - Arquivos acima de ~50 MB disparam aviso no GitHub; acima de 100 MB o GitHub recusa. Nesse caso, fale com a equipe sobre Git LFS.
 
+<<<<<<< HEAD
+=======
+## Pasta `exemplo/`
+
+Contém um cubo mínimo só para testar o carregamento. Pode apagar quando a primeira obra real estiver no repositório.
+>>>>>>> 71365669c200f2f4b4c6572e41f4811b1e97c240

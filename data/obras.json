@@ -1,5 +1,35 @@
 [
   {
+<<<<<<< HEAD
+=======
+    "id": "Mercedes",
+    "titulo": "Mercedes (modelo de teste)",
+    "autoria": "Arquivo baixado para verificação do visualizador",
+    "resumo": "Peça de teste, não pertence ao acervo da CAL. Serve para conferir carregamento, câmera e a lista lateral. Substitua quando houver o primeiro gêmeo digital escaneado.",
+    "modelo": "models/Mercedes/modelo.glb",
+    "poster": "",
+    "urlAcervo": ""
+  },
+  {
+    "id": "Tanque",
+    "titulo": "Tanque (modelo de teste)",
+    "autoria": "Arquivo baixado para verificação do visualizador",
+    "resumo": "Peça de teste, não pertence ao acervo da CAL. Arquivo mais pesado que o cubo de exemplo; use para sentir o tempo de carregamento típico de um .glb.",
+    "modelo": "models/Tanque/modelo.glb",
+    "poster": "",
+    "urlAcervo": ""
+  },
+  {
+    "id": "exemplo",
+    "titulo": "Cubo (carga rápida)",
+    "autoria": "Modelo mínimo de verificação",
+    "resumo": "Cubo leve (~2 KB) para confirmar que o visualizador responde mesmo se os outros .glb ainda estiverem carregando.",
+    "modelo": "models/exemplo/modelo.glb",
+    "poster": "",
+    "urlAcervo": ""
+  },
+  {
+>>>>>>> 71365669c200f2f4b4c6572e41f4811b1e97c240
     "id": "cal-0803",
     "titulo": "Escultura de casal",
     "autoria": "Sem autoria no Acervo",
@@ -16,6 +46,7 @@
     "modelo": "models/cal-0631/modelo.glb",
     "poster": "",
     "urlAcervo": "https://www.acervocal.unb.br/acervo/escultura-de-maos-unidas/?perpage=12&view_mode=grid&order=ASC&orderby=title&fetch_only=thumbnail%2Ccreation_date%2Ctitle%2Cdescription%2Cstatus&fetch_only_meta&search=CAL.0631&pos=0&source_list=repository"
+<<<<<<< HEAD
   },
   {
     "id": "cal-0607",
@@ -25,5 +56,7 @@
     "modelo": "models/cal-0607/modelo.glb",
     "poster": "",
     "urlAcervo": "https://www.acervocal.unb.br/acervo/moringa-com-dois-bicos/"
+=======
+>>>>>>> 71365669c200f2f4b4c6572e41f4811b1e97c240
   }
 ]
