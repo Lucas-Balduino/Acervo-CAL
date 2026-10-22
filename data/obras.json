@@ -1,0 +1,29 @@
+[
+  {
+    "id": "cal-0803",
+    "titulo": "Escultura de casal",
+    "autoria": "Sem autoria no Acervo",
+    "resumo": "Escultura doada pela Embaixada do Uruguai em 1993, pertence à coleção original da CAL",
+    "modelo": "models/cal-0803/modelo.glb",
+    "poster": "",
+    "urlAcervo": "https://www.acervocal.unb.br/acervo/escultura-de-casal/?perpage=12&view_mode=grid&order=ASC&orderby=title&fetch_only=thumbnail%2Ccreation_date%2Ctitle%2Cdescription%2Cstatus&fetch_only_meta&metaquery%5B0%5D%5Bkey%5D=1570&metaquery%5B0%5D%5Bvalue%5D=CAL.0803&pos=0&source_list=repository"
+  },
+  {
+    "id": "cal-0631",
+    "titulo": "Escultura de mãos unidas",
+    "autoria": "Sem autoria no Acervo",
+    "resumo": "Escultura doada pela PNDA(Programa Nacional de Desenvolvimento do Artesanato) em 1993, pertence à coleção original da CAL",
+    "modelo": "models/cal-0631/modelo.glb",
+    "poster": "",
+    "urlAcervo": "https://www.acervocal.unb.br/acervo/escultura-de-maos-unidas/?perpage=12&view_mode=grid&order=ASC&orderby=title&fetch_only=thumbnail%2Ccreation_date%2Ctitle%2Cdescription%2Cstatus&fetch_only_meta&search=CAL.0631&pos=0&source_list=repository"
+  },
+  {
+    "id": "cal-0607",
+    "titulo": "Moringa com 2 Bicos",
+    "autoria": "Sem autoria no Acervo",
+    "resumo": "Escultura doada pelo Governo de Santa Catarina em 1993, pertence à coleção original da CAL",
+    "modelo": "models/cal-0607/modelo.glb",
+    "poster": "",
+    "urlAcervo": "https://www.acervocal.unb.br/acervo/moringa-com-dois-bicos/"
+  }
+]

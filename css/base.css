@@ -1,0 +1,41 @@
+/*
+  base.css — reset leve, tipografia e elementos comuns.
+  Não posiciona o visualizador (isso está em layout.css e viewer.css).
+*/
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  font-family: var(--fonte);
+  color: var(--cor-texto);
+  background: var(--cor-fundo);
+  line-height: 1.5;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button,
+input {
+  font-family: inherit;
+}
+
+a {
+  color: var(--cor-destaque);
+}
+
+a:hover {
+  color: var(--cor-destaque-escuro);
+}

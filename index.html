@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gêmeos Digitais CAL</title>
+  <meta name="description" content="Visita em 3D a obras do acervo da Casa da Cultura da América Latina (UnB).">
+
+  <!-- Tipografia igual à do acervo 2D (acervocal.unb.br) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+  <!-- Folhas de estilo locais (ver comentário no topo de cada arquivo) -->
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/viewer.css">
+
+  <!-- Visualizador 3D: https://modelviewer.dev — só este script vem de CDN -->
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+</head>
+<body>
+  <!--
+    index.html guarda só a marcação.
+    Comportamento: js/main.js (que importa data, gallery, viewer e ui).
+  -->
+
+  <div id="entrada" class="entrada">
+    <div class="entrada-faixa" aria-hidden="true"></div>
+    <div class="entrada-corpo">
+      <p class="marca-instituicao">Universidade de Brasília · Casa da Cultura da América Latina</p>
+      <h1>Gêmeos Digitais CAL</h1>
+      <p>
+        Modelos tridimensionais de obras do acervo da CAL, para visita e
+        preservação. As fichas técnicas permanecem no
+        <a href="https://www.acervocal.unb.br/" target="_blank" rel="noopener noreferrer">Acervo CAL</a>.
+      </p>
+      <button type="button" id="botao-entrar" class="botao-entrar">Abrir visualizador</button>
+    </div>
+  </div>
+
+  <div class="pagina">
+    <header class="cabecalho">
+      <a class="marca" href="./">
+        <span class="marca-instituicao">UnB · Casa da Cultura da América Latina</span>
+        <span class="marca-titulo">Gêmeos Digitais CAL</span>
+      </a>
+      <a class="cabecalho-link" href="https://www.acervocal.unb.br/" target="_blank" rel="noopener noreferrer">Acervo 2D</a>
+    </header>
+
+    <main class="principal">
+      <aside id="sidebar" class="sidebar">
+        <button type="button" id="botao-sidebar" class="botao-sidebar" aria-expanded="true" aria-controls="sidebar" title="Recolher lista">‹</button>
+        <div class="sidebar-busca">
+          <label class="visually-hidden" for="busca" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);">Buscar obra</label>
+          <input id="busca" type="search" placeholder="Buscar obra ou autoria" autocomplete="off">
+        </div>
+        <div id="lista-obras" class="lista-obras"></div>
+      </aside>
+
+      <section class="estagio" aria-label="Visualizador 3D">
+        <button type="button" id="botao-reset" class="botao-reset" title="Resetar câmera" aria-label="Resetar câmera">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M3 12a9 9 0 1 0 3-6.7"/>
+            <polyline points="3 4 3 9 8 9"/>
+          </svg>
+        </button>
+
+        <div class="cubo-caixa" aria-hidden="true">
+          <div class="cubo" id="cubo">
+            <button type="button" class="cubo-face frente" data-orbit="0deg 90deg 105%">Frente</button>
+            <button type="button" class="cubo-face tras" data-orbit="180deg 90deg 105%">Trás</button>
+            <button type="button" class="cubo-face direita" data-orbit="-90deg 90deg 105%">Dir.</button>
+            <button type="button" class="cubo-face esquerda" data-orbit="90deg 90deg 105%">Esq.</button>
+            <button type="button" class="cubo-face cima" data-orbit="0deg 0deg 105%">Cima</button>
+            <button type="button" class="cubo-face baixo" data-orbit="0deg 180deg 105%">Baixo</button>
+          </div>
+        </div>
+
+        <div id="overlay-info" class="overlay-info">
+          <h2 id="titulo-ativo">Obra</h2>
+          <button type="button" id="botao-ficha" class="botao-ficha" title="Texto da obra" aria-controls="gaveta">i</button>
+        </div>
+
+        <aside id="gaveta" class="gaveta" aria-hidden="true">
+          <div class="gaveta-topo">
+            <h3>A obra</h3>
+            <button type="button" id="botao-fechar-gaveta" class="gaveta-fechar" aria-label="Fechar">×</button>
+          </div>
+          <dl id="conteudo-gaveta" class="gaveta-corpo"></dl>
+        </aside>
+
+        <div id="aviso-viewer" class="aviso-viewer" role="status"></div>
+        <div id="barra-progresso" class="barra-progresso"></div>
+
+        <model-viewer
+          id="viewer"
+          src=""
+          shadow-intensity="0.6"
+          exposure="1"
+          environment-image="neutral"
+          camera-controls
+          interaction-prompt="none"
+          interpolation-decay="200"
+        ></model-viewer>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
