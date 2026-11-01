@@ -39,18 +39,16 @@ Scanner Creality CR-Scan Raptor (antes EinScan H1) → malha de 200.000 faces no
 `.obj` + `.mtl` → Blender (centralizar, orientar, material) → export `.glb` →
 `node ferramentas/otimizar-glb.mjs models/<id>/modelo.glb` → item em `data/obras.json`.
 
-O script corrige três problemas que o caminho .obj → Blender sempre traz: escala em mm (o glTF usa
-metros), material com Transmission 1 e Metallic 1, e malha sem vértices compartilhados. Resultado:
-~22 MB → ~1,5 MB por obra. O decodificador Draco é carregado pelo próprio model-viewer.
+O script corrige a escala (o scanner exporta em mm e o glTF usa metros) e comprime a malha, que vem
+sem vértices compartilhados: ~22 MB → ~1,5 MB por obra. O decodificador Draco é carregado pelo próprio
+model-viewer.
 
-A textura do scanner sai desbotada e rosada. A cor é corrigida por obra com `--brilho`, `--saturacao`
-e `--matiz`, tendo uma foto da obra como referência (tabela de valores em `models/LEIA-ME.md`). Para
-calibrar: renderizar a obra no site com a mesma vista da foto e comparar a cor média de uma área lisa
-(`viewer.toDataURL()` + canvas) com a mesma área na foto. O visualizador mostra praticamente a cor da
-textura (iluminação `neutral`, exposição 1), então o ajuste vai na textura, não no visualizador.
-
-`sharp` precisa ficar na mesma versão que o `@gltf-transform/functions` usa (hoje 0.35.5): duas versões
-no mesmo processo quebram com "colourspace: parameter space not set".
+**A aparência é decidida no Blender, não no script.** Os materiais exportados são 100% metálicos (com
+Transmission 1, que nesse caso não aparece). Em 01/11/2026 testamos trocar para material não metálico e
+corrigir a cor da textura por foto: o Lucas achou que a aparência original representa melhor as obras.
+O script só remove transmission/IOR/specular de material 100% metálico (sem efeito visível, mas a
+transparência custa uma segunda renderização). Verificado pixel a pixel contra os originais.
+Não alterar material ou textura sem pedir.
 
 - `id` e pasta: `cal-` + número de registro com 4 dígitos (CAL.0607 → `cal-0607`).
 - Título e link devem bater com a ficha no acervo. URL limpa: `https://www.acervocal.unb.br/acervo/<slug>/`.
