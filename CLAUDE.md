@@ -70,7 +70,7 @@ three.js direto (não usa model-viewer). `js/museu-sala.js` monta a sala a parti
   em pé), sala de 5,2 m × pé-direito 3 m, pedestais de 1,05 m, laterais a 1,25 m da parede. Ao mexer em `SALA`,
   conferir que as três primeiras obras continuam visíveis da entrada.
 - **Sensação dos controles** (pedido do Lucas, no estilo do Magical Reflections): pouca sensibilidade
-  (arrastar 300 px gira ~30° andando, ~77° examinando), vista amortecida com inércia ao soltar, leve balanço
+  (arrastar 300 px gira ~15° andando, ~77° examinando; o Lucas pediu duas vezes para reduzir o olhar), vista amortecida com inércia ao soltar, leve balanço
   da vista seguindo o cursor, e transições com duração fixa e curva suave na entrada e na saída
   (`DURACAO`: examinar 2,2 s, entre obras 2,6 s com leve arco, voltar 1,8 s). A ficha entra com atraso
   para acompanhar a câmera. Constantes no topo de `js/museu-navegacao.js`.

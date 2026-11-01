@@ -24,10 +24,10 @@ import * as THREE from "three";
 const ALTURA_OLHOS = 1.6;
 const VELOCIDADE = 1.6; // m/s nas teclas
 const GIRO = 1.1; // rad/s nas setas ← →
-const SENSIBILIDADE_OLHAR = 0.0018; // rad por pixel arrastado (andar): 300 px ≈ 30°
+const SENSIBILIDADE_OLHAR = 0.0009; // rad por pixel arrastado (andar): 300 px ≈ 15°
 const SENSIBILIDADE_ORBITA = 0.0045; // rad por pixel arrastado (examinar): 300 px ≈ 77°
 const SUAVIDADE_OLHAR = 5; // quanto maior, mais rápido a vista alcança o arraste
-const ATRITO_INERCIA = 4; // quanto maior, mais rápido a inércia para
+const ATRITO_INERCIA = 6; // quanto maior, mais rápido a inércia para
 const LIMITE_OLHAR = 0.7; // rad para cima/baixo
 const BALANCO_CURSOR = { yaw: 0.035, pitch: 0.02 }; // rad: quanto a vista segue o cursor
 const FOLGA_PAREDE = 0.45; // m
