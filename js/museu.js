@@ -2,7 +2,7 @@
   museu.js — página Museu virtual: cria o renderizador, monta a sala
   (museu-sala.js), liga a câmera (museu-navegacao.js) e cuida da interface
   por cima do 3D: tela de entrada, ajuda, nome da obra sob o mouse,
-  painel da obra em foco e o percurso anterior/próxima.
+  ficha da obra examinada e o percurso anterior/próxima.
 */
 
 import * as THREE from "three";
@@ -16,13 +16,14 @@ const botaoEntrar = document.getElementById("botao-entrar");
 const estadoCarga = document.getElementById("museu-estado");
 const barraCarga = document.getElementById("museu-barra");
 const rotulo = document.getElementById("museu-rotulo");
-const painel = document.getElementById("museu-painel");
+const ficha = document.getElementById("museu-ficha");
 const ajuda = document.getElementById("museu-ajuda");
 const botaoAjuda = document.getElementById("botao-ajuda");
 const contador = document.getElementById("museu-contador");
 
 const toque = window.matchMedia("(pointer: coarse)").matches;
 document.body.classList.toggle("toque", toque);
+const telaEstreita = () => palco.clientWidth < 760;
 
 /* ----- Renderizador ----- */
 
@@ -43,14 +44,14 @@ renderer.domElement.setAttribute("role", "img");
 renderer.domElement.tabIndex = 0; // permite focar o 3D pelo teclado (Tab) e usar as setas
 palco.prepend(renderer.domElement);
 
-const camera = new THREE.PerspectiveCamera(60, 1, 0.05, 60);
+const camera = new THREE.PerspectiveCamera(50, 1, 0.03, 60);
 
 function redimensionar() {
   const { clientWidth: w, clientHeight: h } = palco;
   renderer.setSize(w, h, false);
   camera.aspect = w / h;
-  // Em tela em pé, abre o campo de visão para não parecer um corredor estreito.
-  camera.fov = w < h ? 75 : 60;
+  // Campo de visão próximo ao do olho; em tela em pé, um pouco mais aberto.
+  camera.fov = w < h ? 66 : 50;
   camera.updateProjectionMatrix();
 }
 new ResizeObserver(redimensionar).observe(palco);
@@ -68,20 +69,20 @@ if (obras.length === 0) {
 }
 
 const sala = await montarSala(renderer, obras, {
-  sombras: !toque,
+  leve: toque,
   aoProgresso(carregadas, total) {
     estadoCarga.textContent = carregadas < total ? `Carregando obras: ${carregadas} de ${total}` : "Sala pronta";
     barraCarga.style.width = `${(carregadas / total) * 100}%`;
   },
 });
 
-// Percurso do tour: a ordem em que as peças estão na sala.
+// Percurso: a ordem em que as peças estão na sala.
 const percurso = sala.pecas;
-let emFoco = -1;
+let examinando = -1;
 
 const navegacao = criarNavegacao(camera, renderer.domElement, sala, {
-  aoClicarObra: (indice) => focar(indice),
-  aoMover: () => sairDoFoco(false),
+  aoClicarObra: (indice) => examinar(indice),
+  aoAndar: () => {},
   aoPassar: mostrarRotulo,
 });
 
@@ -103,7 +104,7 @@ botaoEntrar.addEventListener("click", () => {
   setTimeout(() => (entrada.hidden = true), 400);
   renderer.domElement.focus();
   mostrarAjuda(true);
-  setTimeout(() => mostrarAjuda(false), 6000);
+  setTimeout(() => mostrarAjuda(false), 7000);
 });
 
 botaoAjuda.addEventListener("click", () => mostrarAjuda(ajuda.hidden));
@@ -114,46 +115,56 @@ function mostrarAjuda(visivel) {
 }
 
 document.getElementById("botao-anterior").addEventListener("click", () =>
-  focar(emFoco < 0 ? percurso.length - 1 : (emFoco - 1 + percurso.length) % percurso.length)
+  examinar(examinando < 0 ? percurso.length - 1 : (examinando - 1 + percurso.length) % percurso.length)
 );
 document.getElementById("botao-proxima").addEventListener("click", () =>
-  focar(emFoco < 0 ? 0 : (emFoco + 1) % percurso.length)
+  examinar(examinando < 0 ? 0 : (examinando + 1) % percurso.length)
 );
-document.getElementById("botao-voltar-sala").addEventListener("click", () => sairDoFoco(true));
+document.getElementById("botao-voltar-museu").addEventListener("click", voltarAoMuseu);
 
 window.addEventListener("keydown", (evento) => {
-  if (evento.key === "Escape" && emFoco >= 0) sairDoFoco(true);
+  if (evento.key === "Escape" && examinando >= 0) voltarAoMuseu();
 });
 
-function focar(indice) {
+function examinar(indice) {
   const peca = percurso[indice];
   if (!peca) return;
-  emFoco = indice;
-  navegacao.focar(peca);
+  examinando = indice;
   mostrarRotulo(-1);
+  mostrarAjuda(false);
 
   const { obra } = peca;
-  painel.querySelector(".museu-painel-registro").textContent = obra.registro || "";
-  painel.querySelector("h2").textContent = obra.titulo;
-  painel.querySelector(".museu-painel-meta").textContent = [textoProcedencia(obra), textoDimensoes(obra)]
-    .filter(Boolean)
-    .join(" · ");
-  painel.querySelector(".museu-painel-resumo").textContent = obra.resumo || "";
-  painel.querySelector("a").href = linkDaObra(obra);
-  painel.hidden = false;
-  contador.textContent = `Obra ${indice + 1} de ${percurso.length}`;
+  ficha.querySelector(".museu-ficha-registro").textContent = obra.registro || "";
+  ficha.querySelector("h2").textContent = obra.titulo;
+  ficha.querySelector(".museu-ficha-procedencia").textContent = textoProcedencia(obra);
+  ficha.querySelector(".museu-ficha-medidas").textContent = textoDimensoes(obra);
+  ficha.querySelector(".museu-ficha-resumo").textContent = obra.resumo || "";
+  ficha.querySelector(".museu-ficha-link").href = linkDaObra(obra);
+  ficha.hidden = false;
+  document.body.classList.add("examinando");
+  contador.textContent = `${indice + 1} de ${percurso.length}`;
+
+  // Abre espaço para a ficha: à esquerda no computador, embaixo no celular.
+  const caixa = ficha.getBoundingClientRect();
+  const estreita = telaEstreita();
+  navegacao.examinar(peca, {
+    ocupacao: estreita ? 0.5 : 0.66,
+    deslocamento: estreita ? { x: 0, y: -caixa.height / 2 } : { x: caixa.width / 2, y: 0 },
+  });
 }
 
-function sairDoFoco(recuar) {
-  if (emFoco < 0) return;
-  if (recuar) navegacao.recuar(percurso[emFoco]);
-  emFoco = -1;
-  painel.hidden = true;
-  contador.textContent = `${percurso.length} ${percurso.length === 1 ? "obra" : "obras"} na sala`;
+function voltarAoMuseu() {
+  if (examinando < 0) return;
+  examinando = -1;
+  navegacao.voltarAAndar();
+  ficha.hidden = true;
+  document.body.classList.remove("examinando");
+  contador.textContent = textoDaSala();
+  renderer.domElement.focus();
 }
 
 function mostrarRotulo(indice, x, y) {
-  if (indice < 0 || indice === emFoco) {
+  if (indice < 0) {
     rotulo.hidden = true;
     return;
   }
@@ -163,7 +174,8 @@ function mostrarRotulo(indice, x, y) {
   rotulo.hidden = false;
 }
 
-contador.textContent = `${percurso.length} ${percurso.length === 1 ? "obra" : "obras"} na sala`;
+const textoDaSala = () => `${percurso.length} ${percurso.length === 1 ? "obra" : "obras"} na sala`;
+contador.textContent = textoDaSala();
 
 function semWebGL() {
   estadoCarga.textContent = "Seu navegador não conseguiu abrir o 3D (WebGL).";
@@ -171,4 +183,4 @@ function semWebGL() {
 }
 
 // Para testes e depuração no console.
-window.museu = { focar, sairDoFoco, percurso, camera };
+window.museu = { examinar, voltarAoMuseu, percurso, camera, navegacao };

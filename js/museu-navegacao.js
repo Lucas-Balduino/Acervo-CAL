@@ -1,43 +1,67 @@
 /*
-  museu-navegacao.js — câmera em primeira pessoa do museu virtual.
+  museu-navegacao.js — câmera do museu virtual, com dois modos:
 
-  Computador: arrastar olha em volta; clicar no chão anda até lá; clicar numa
-  obra se aproxima dela; W A S D ou setas caminham; roda do mouse anda para
-  frente e para trás. Celular: arrastar olha; tocar no chão anda; tocar numa
-  obra se aproxima.
+  ANDAR (primeira pessoa)
+    Computador: arrastar olha em volta; clicar no chão anda até lá; clicar numa
+    obra a examina; W A S D ou setas caminham; roda do mouse anda.
+    Celular: arrastar olha; tocar no chão anda; tocar numa obra a examina.
 
-  Não monta a sala nem mostra textos: avisa museu.js pelos callbacks.
+  EXAMINAR (como no visualizador da obra)
+    A câmera orbita a obra: arrastar gira, roda do mouse ou pinça aproxima,
+    duplo clique volta à vista inicial, setas giram. A obra gira devagar
+    sozinha até a primeira interação.
+
+  As transições entre posições são suaves (posição interpolada e rotação por
+  quaternion). Não monta a sala nem mostra textos: avisa museu.js pelos callbacks.
 */
 
 import * as THREE from "three";
 
 const ALTURA_OLHOS = 1.6;
-const VELOCIDADE = 2.2; // m/s
+const VELOCIDADE = 2.0; // m/s
 const GIRO = 1.8; // rad/s nas setas ← →
-const SENSIBILIDADE = 0.0045; // rad por pixel arrastado
-const LIMITE_OLHAR = 1.25; // rad para cima/baixo
+const SENSIBILIDADE_OLHAR = 0.0042; // rad por pixel arrastado (andar)
+const SENSIBILIDADE_ORBITA = 0.008; // rad por pixel arrastado (examinar)
+const LIMITE_OLHAR = 1.2; // rad para cima/baixo
 const FOLGA_PAREDE = 0.45; // m
 const FOLGA_PEDESTAL = 0.35; // m
+const GIRO_AUTOMATICO = 0.22; // rad/s ao examinar, até a primeira interação
 
 const reduzirMovimento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /**
  * @param {THREE.PerspectiveCamera} camera
  * @param {HTMLElement} elemento  onde ouvir mouse e toque (o canvas)
- * @param {object} sala
- * @param {{xMin:number,xMax:number,zMin:number,zMax:number}} sala.limites
- * @param {Array} sala.pecas  pedestais com posicao, direcao, raio, centro, altura
- * @param {THREE.Scene} sala.cena
+ * @param {object} sala  resultado de montarSala (cena, pecas, limites)
  * @param {object} eventos
  * @param {(indice: number) => void} eventos.aoClicarObra
- * @param {() => void} eventos.aoMover   usuário saiu andando por conta própria
+ * @param {() => void} eventos.aoAndar  o visitante saiu andando por conta própria
  * @param {(indice: number, x: number, y: number) => void} eventos.aoPassar  -1 quando não está sobre obra
  */
 export function criarNavegacao(camera, elemento, sala, eventos) {
-  const posicao = new THREE.Vector3(0, ALTURA_OLHOS, -0.7);
-  const alvo = { posicao: posicao.clone(), yaw: 0, pitch: -0.05 };
-  let yaw = alvo.yaw;
-  let pitch = alvo.pitch;
+  let modo = "andar";
+
+  // Modo andar
+  const andar = { posicao: new THREE.Vector3(0, ALTURA_OLHOS, -0.6), yaw: 0, pitch: -0.08 };
+  let yaw = andar.yaw;
+  let pitch = andar.pitch;
+
+  // Modo examinar
+  const exame = {
+    peca: null,
+    theta: 0, phi: 1.3, raio: 1,
+    thetaAlvo: 0, phiAlvo: 1.3, raioAlvo: 1,
+    raioMin: 0.3, raioMax: 3,
+    thetaInicial: 0, raioInicial: 1,
+    girando: true,
+  };
+
+  // Deslocamento da imagem (px) para abrir espaço ao painel da obra.
+  const deslocamento = { atual: new THREE.Vector2(), alvo: new THREE.Vector2() };
+  let transicao = 0; // segundos restantes de transição suave entre poses
+
+  camera.position.copy(andar.posicao);
+  camera.rotation.set(pitch, yaw, 0, "YXZ");
 
   const teclas = new Set();
   const raio = new THREE.Raycaster();
@@ -56,9 +80,13 @@ export function criarNavegacao(camera, elemento, sala, eventos) {
       const minimo = peca.raio + FOLGA_PEDESTAL;
       const d = Math.hypot(dx, dz);
       if (d < minimo) {
-        const fator = d > 1e-4 ? minimo / d : 1;
-        p.x = peca.posicao.x + (d > 1e-4 ? dx * fator : peca.direcao.x * minimo);
-        p.z = peca.posicao.z + (d > 1e-4 ? dz * fator : peca.direcao.z * minimo);
+        if (d > 1e-4) {
+          p.x = peca.posicao.x + (dx / d) * minimo;
+          p.z = peca.posicao.z + (dz / d) * minimo;
+        } else {
+          p.x = peca.posicao.x + peca.direcao.x * minimo;
+          p.z = peca.posicao.z + peca.direcao.z * minimo;
+        }
       }
     }
     return p;
@@ -66,9 +94,11 @@ export function criarNavegacao(camera, elemento, sala, eventos) {
 
   /* ----- Mouse e toque ----- */
 
-  let arraste = null;
+  const ponteiros = new Map(); // pointerId → {x, y}
+  let arraste = null; // { moveu, x, y }
+  let pinca = null; // { distancia, raio }
 
-  function paraNDC(evento) {
+  function paraRaio(evento) {
     const r = elemento.getBoundingClientRect();
     ponteiro.set(((evento.clientX - r.left) / r.width) * 2 - 1, -((evento.clientY - r.top) / r.height) * 2 + 1);
     raio.setFromCamera(ponteiro, camera);
@@ -84,70 +114,122 @@ export function criarNavegacao(camera, elemento, sala, eventos) {
     return objeto ? objeto.userData.indice : -1;
   }
 
+  const distanciaDaPinca = () => {
+    const [a, b] = [...ponteiros.values()];
+    return Math.hypot(a.x - b.x, a.y - b.y);
+  };
+
   elemento.addEventListener("pointerdown", (evento) => {
-    if (evento.button !== 0) return;
-    arraste = { x: evento.clientX, y: evento.clientY, moveu: false, id: evento.pointerId };
+    if (evento.pointerType === "mouse" && evento.button !== 0) return;
+    ponteiros.set(evento.pointerId, { x: evento.clientX, y: evento.clientY });
     elemento.setPointerCapture(evento.pointerId);
+    if (ponteiros.size === 1) {
+      arraste = { moveu: false, x: evento.clientX, y: evento.clientY };
+    } else if (ponteiros.size === 2) {
+      arraste = null;
+      pinca = { distancia: distanciaDaPinca(), raio: exame.raioAlvo };
+    }
   });
 
   elemento.addEventListener("pointermove", (evento) => {
-    if (arraste && evento.pointerId === arraste.id) {
-      const dx = evento.clientX - arraste.x;
-      const dy = evento.clientY - arraste.y;
-      if (!arraste.moveu && Math.hypot(dx, dy) < 6) return;
-      arraste.moveu = true;
-      arraste.x = evento.clientX;
-      arraste.y = evento.clientY;
-      alvo.yaw += dx * SENSIBILIDADE;
-      alvo.pitch = THREE.MathUtils.clamp(alvo.pitch + dy * SENSIBILIDADE, -LIMITE_OLHAR, LIMITE_OLHAR);
-      yaw = alvo.yaw;
-      pitch = alvo.pitch;
-      elemento.classList.add("arrastando");
+    if (ponteiros.has(evento.pointerId)) {
+      ponteiros.set(evento.pointerId, { x: evento.clientX, y: evento.clientY });
+
+      if (pinca && ponteiros.size === 2) {
+        if (modo === "obra") {
+          exame.raioAlvo = THREE.MathUtils.clamp(
+            pinca.raio * (pinca.distancia / Math.max(distanciaDaPinca(), 1)),
+            exame.raioMin,
+            exame.raioMax
+          );
+          exame.girando = false;
+        }
+        return;
+      }
+
+      if (arraste) {
+        const dx = evento.clientX - arraste.x;
+        const dy = evento.clientY - arraste.y;
+        if (!arraste.moveu && Math.hypot(dx, dy) < 6) return;
+        arraste.moveu = true;
+        arraste.x = evento.clientX;
+        arraste.y = evento.clientY;
+        elemento.classList.add("arrastando");
+        if (modo === "obra") {
+          exame.thetaAlvo -= dx * SENSIBILIDADE_ORBITA;
+          exame.phiAlvo = THREE.MathUtils.clamp(exame.phiAlvo - dy * SENSIBILIDADE_ORBITA, 0.3, 1.62);
+          exame.girando = false;
+        } else {
+          andar.yaw += dx * SENSIBILIDADE_OLHAR;
+          andar.pitch = THREE.MathUtils.clamp(andar.pitch + dy * SENSIBILIDADE_OLHAR, -LIMITE_OLHAR, LIMITE_OLHAR);
+          yaw = andar.yaw;
+          pitch = andar.pitch;
+        }
+      }
       return;
     }
+
+    // Só passando o mouse por cima
     if (evento.pointerType === "mouse") {
-      paraNDC(evento);
+      paraRaio(evento);
       const indice = obraSobPonteiro();
-      elemento.style.cursor = indice >= 0 ? "pointer" : "";
-      eventos.aoPassar(indice, evento.clientX, evento.clientY);
+      const clicavel = indice >= 0 && !(modo === "obra" && exame.peca?.indice === indice);
+      elemento.style.cursor = clicavel ? "pointer" : "";
+      eventos.aoPassar(clicavel ? indice : -1, evento.clientX, evento.clientY);
     }
   });
 
-  elemento.addEventListener("pointerup", (evento) => {
-    if (!arraste || evento.pointerId !== arraste.id) return;
-    const foiClique = !arraste.moveu;
-    arraste = null;
-    elemento.classList.remove("arrastando");
+  function soltar(evento) {
+    if (!ponteiros.has(evento.pointerId)) return;
+    ponteiros.delete(evento.pointerId);
+    if (ponteiros.size < 2) pinca = null;
+    const foiClique = arraste && !arraste.moveu && evento.type === "pointerup";
+    if (ponteiros.size === 0) {
+      arraste = null;
+      elemento.classList.remove("arrastando");
+    }
     if (!foiClique) return;
 
-    paraNDC(evento);
+    paraRaio(evento);
     const indice = obraSobPonteiro();
     if (indice >= 0) {
-      eventos.aoClicarObra(indice);
+      if (!(modo === "obra" && exame.peca?.indice === indice)) eventos.aoClicarObra(indice);
       return;
     }
-    const noPiso = piso && raio.intersectObject(piso)[0];
-    if (noPiso) {
-      andarAte(noPiso.point);
-      eventos.aoMover();
+    if (modo === "andar") {
+      const noPiso = piso && raio.intersectObject(piso)[0];
+      if (noPiso) {
+        andar.posicao.set(noPiso.point.x, ALTURA_OLHOS, noPiso.point.z);
+        restringir(andar.posicao);
+        eventos.aoAndar();
+      }
     }
-  });
-
-  elemento.addEventListener("pointercancel", () => {
-    arraste = null;
-    elemento.classList.remove("arrastando");
-  });
-
+  }
+  elemento.addEventListener("pointerup", soltar);
+  elemento.addEventListener("pointercancel", soltar);
   elemento.addEventListener("pointerleave", () => eventos.aoPassar(-1, 0, 0));
+
+  elemento.addEventListener("dblclick", () => {
+    if (modo === "obra") vistaInicialDoExame();
+  });
 
   elemento.addEventListener(
     "wheel",
     (evento) => {
       evento.preventDefault();
+      if (modo === "obra") {
+        exame.raioAlvo = THREE.MathUtils.clamp(
+          exame.raioAlvo * Math.exp(evento.deltaY * 0.0012),
+          exame.raioMin,
+          exame.raioMax
+        );
+        exame.girando = false;
+        return;
+      }
       const passo = THREE.MathUtils.clamp(-evento.deltaY * 0.004, -0.8, 0.8);
-      const frente = new THREE.Vector3(-Math.sin(alvo.yaw), 0, -Math.cos(alvo.yaw));
-      restringir(alvo.posicao.addScaledVector(frente, passo));
-      eventos.aoMover();
+      const frente = new THREE.Vector3(-Math.sin(andar.yaw), 0, -Math.cos(andar.yaw));
+      restringir(andar.posicao.addScaledVector(frente, passo));
+      eventos.aoAndar();
     },
     { passive: false }
   );
@@ -166,76 +248,167 @@ export function criarNavegacao(camera, elemento, sala, eventos) {
     const acao = MAPA[evento.code];
     if (!acao) return;
     evento.preventDefault();
-    if (!teclas.has(acao)) eventos.aoMover();
+    if (modo === "andar" && !teclas.has(acao)) eventos.aoAndar();
     teclas.add(acao);
   });
   window.addEventListener("keyup", (evento) => teclas.delete(MAPA[evento.code]));
   window.addEventListener("blur", () => teclas.clear());
 
-  /* ----- Movimentos programados ----- */
+  /* ----- Examinar uma obra ----- */
 
-  function andarAte(ponto) {
-    alvo.posicao.set(ponto.x, ALTURA_OLHOS, ponto.z);
-    restringir(alvo.posicao);
+  function raioParaCaber(peca, ocupacao) {
+    const esfera = peca.tamanho.length() / 2;
+    const meioFov = THREE.MathUtils.degToRad(camera.fov / 2);
+    return esfera / Math.tan(meioFov) / ocupacao;
   }
 
-  /** Para em frente à obra, olhando para ela. */
-  function focar(peca) {
-    const distancia = THREE.MathUtils.clamp(0.55 + peca.altura * 1.6, 0.8, 2.2);
-    const p = peca.posicao.clone().addScaledVector(peca.direcao, distancia);
-    alvo.posicao.set(p.x, Math.min(ALTURA_OLHOS, peca.centro.y + 0.35), p.z);
-    olharPara(peca.centro);
+  /**
+   * @param {object} peca
+   * @param {object} opcoes
+   * @param {number} opcoes.ocupacao  fração da altura da tela que a obra deve ocupar
+   * @param {{x:number,y:number}} opcoes.deslocamento  px para mover a obra na tela (abre espaço ao painel)
+   */
+  function examinar(peca, { ocupacao = 0.7, deslocamento: d = { x: 0, y: 0 } } = {}) {
+    const vindoDeAndar = modo === "andar";
+    modo = "obra";
+    exame.peca = peca;
+    exame.thetaInicial = Math.atan2(peca.direcao.x, peca.direcao.z);
+    exame.raioInicial = raioParaCaber(peca, ocupacao);
+    exame.raioMin = Math.max(peca.tamanho.length() / 2 + 0.06, 0.18);
+    exame.raioMax = Math.max(exame.raioInicial * 2.5, 1.2);
+    deslocamento.alvo.set(d.x, d.y);
+
+    // Começa a órbita do ângulo em que a câmera está, para a chegada ser contínua.
+    if (vindoDeAndar) {
+      const rel = camera.position.clone().sub(peca.centro);
+      exame.theta = Math.atan2(rel.x, rel.z);
+      exame.phi = THREE.MathUtils.clamp(Math.acos(rel.y / Math.max(rel.length(), 1e-3)), 0.3, 1.62);
+      exame.raio = rel.length();
+    }
+    vistaInicialDoExame();
+    exame.girando = true;
+    transicao = 1.4;
+    teclas.clear();
   }
 
-  function olharPara(ponto) {
-    const dx = ponto.x - alvo.posicao.x;
-    const dy = ponto.y - alvo.posicao.y;
-    const dz = ponto.z - alvo.posicao.z;
-    const yawDestino = Math.atan2(-dx, -dz);
-    // Gira pelo caminho mais curto.
-    alvo.yaw = yaw + Math.atan2(Math.sin(yawDestino - yaw), Math.cos(yawDestino - yaw));
-    alvo.pitch = Math.atan2(dy, Math.hypot(dx, dz));
+  function vistaInicialDoExame() {
+    // Gira pelo caminho mais curto até a frente.
+    exame.thetaAlvo =
+      exame.theta + Math.atan2(Math.sin(exame.thetaInicial - exame.theta), Math.cos(exame.thetaInicial - exame.theta));
+    exame.phiAlvo = 1.32;
+    exame.raioAlvo = exame.raioInicial;
   }
 
-  /** Dá um passo para trás a partir da obra, voltando à altura dos olhos. */
-  function recuar(peca) {
-    const p = peca.posicao.clone().addScaledVector(peca.direcao, 2.6);
-    alvo.posicao.set(p.x, ALTURA_OLHOS, p.z);
-    restringir(alvo.posicao);
-    alvo.pitch = -0.05;
+  /** Volta a andar, em frente à obra que estava sendo examinada. */
+  function voltarAAndar() {
+    if (modo !== "obra") return;
+    const peca = exame.peca;
+    modo = "andar";
+    deslocamento.alvo.set(0, 0);
+
+    const p = peca.posicao.clone().addScaledVector(peca.direcao, 2.0);
+    andar.posicao.set(p.x, ALTURA_OLHOS, p.z);
+    restringir(andar.posicao);
+    const alvo = peca.centro;
+    andar.yaw = Math.atan2(-(alvo.x - andar.posicao.x), -(alvo.z - andar.posicao.z));
+    andar.pitch = Math.atan2(alvo.y - ALTURA_OLHOS, Math.hypot(alvo.x - andar.posicao.x, alvo.z - andar.posicao.z));
+    yaw = andar.yaw;
+    pitch = andar.pitch;
+    transicao = 1.2;
   }
 
   /* ----- Atualização a cada quadro ----- */
 
   const frente = new THREE.Vector3();
   const lado = new THREE.Vector3();
+  const destino = new THREE.Vector3();
+  const quatDestino = new THREE.Quaternion();
+  const matriz = new THREE.Matrix4();
+  const euler = new THREE.Euler(0, 0, 0, "YXZ");
 
-  function atualizar(dt) {
-    if (teclas.size) {
-      if (teclas.has("girarEsq")) alvo.yaw += GIRO * dt;
-      if (teclas.has("girarDir")) alvo.yaw -= GIRO * dt;
-      frente.set(-Math.sin(alvo.yaw), 0, -Math.cos(alvo.yaw));
-      lado.set(-frente.z, 0, frente.x);
-      const passo = VELOCIDADE * dt;
-      if (teclas.has("frente")) alvo.posicao.addScaledVector(frente, passo);
-      if (teclas.has("tras")) alvo.posicao.addScaledVector(frente, -passo);
-      if (teclas.has("esquerda")) alvo.posicao.addScaledVector(lado, -passo);
-      if (teclas.has("direita")) alvo.posicao.addScaledVector(lado, passo);
-      alvo.posicao.y = ALTURA_OLHOS;
-      restringir(alvo.posicao);
-      if (teclas.has("girarEsq") || teclas.has("girarDir")) yaw = alvo.yaw;
-    }
-
-    const k = reduzirMovimento ? 1 : 1 - Math.exp(-dt * 4.5);
-    posicao.lerp(alvo.posicao, k);
-    yaw += (alvo.yaw - yaw) * k;
-    pitch += (alvo.pitch - pitch) * k;
-
-    camera.position.copy(posicao);
-    camera.rotation.set(pitch, yaw, 0, "YXZ");
+  function suavizar(dt, velocidade) {
+    return reduzirMovimento ? 1 : 1 - Math.exp(-dt * velocidade);
   }
 
-  atualizar(1);
+  function atualizarAndar(dt) {
+    if (teclas.size) {
+      if (teclas.has("girarEsq")) andar.yaw += GIRO * dt;
+      if (teclas.has("girarDir")) andar.yaw -= GIRO * dt;
+      frente.set(-Math.sin(andar.yaw), 0, -Math.cos(andar.yaw));
+      lado.set(-frente.z, 0, frente.x);
+      const passo = VELOCIDADE * dt;
+      if (teclas.has("frente")) andar.posicao.addScaledVector(frente, passo);
+      if (teclas.has("tras")) andar.posicao.addScaledVector(frente, -passo);
+      if (teclas.has("esquerda")) andar.posicao.addScaledVector(lado, -passo);
+      if (teclas.has("direita")) andar.posicao.addScaledVector(lado, passo);
+      restringir(andar.posicao);
+      if (teclas.has("girarEsq") || teclas.has("girarDir")) yaw = andar.yaw;
+    }
+    const k = suavizar(dt, 6);
+    yaw += (andar.yaw - yaw) * k;
+    pitch += (andar.pitch - pitch) * k;
+    destino.copy(andar.posicao);
+    quatDestino.setFromEuler(euler.set(pitch, yaw, 0));
+  }
 
-  return { atualizar, focar, recuar, andarAte };
+  function atualizarExame(dt) {
+    if (teclas.has("girarEsq") || teclas.has("esquerda")) exame.thetaAlvo -= GIRO * dt;
+    if (teclas.has("girarDir") || teclas.has("direita")) exame.thetaAlvo += GIRO * dt;
+    if (teclas.has("frente")) exame.raioAlvo = Math.max(exame.raioMin, exame.raioAlvo * (1 - dt));
+    if (teclas.has("tras")) exame.raioAlvo = Math.min(exame.raioMax, exame.raioAlvo * (1 + dt));
+    if (teclas.size) exame.girando = false;
+    if (exame.girando && !reduzirMovimento) exame.thetaAlvo += GIRO_AUTOMATICO * dt;
+
+    const k = suavizar(dt, 6);
+    exame.theta += (exame.thetaAlvo - exame.theta) * k;
+    exame.phi += (exame.phiAlvo - exame.phi) * k;
+    exame.raio += (exame.raioAlvo - exame.raio) * k;
+
+    const c = exame.peca.centro;
+    destino.set(
+      c.x + exame.raio * Math.sin(exame.phi) * Math.sin(exame.theta),
+      c.y + exame.raio * Math.cos(exame.phi),
+      c.z + exame.raio * Math.sin(exame.phi) * Math.cos(exame.theta)
+    );
+    // Não atravessa paredes ao girar em volta de uma obra perto da parede.
+    const { xMin, xMax, zMin, zMax } = sala.limites;
+    destino.x = THREE.MathUtils.clamp(destino.x, xMin + 0.12, xMax - 0.12);
+    destino.z = THREE.MathUtils.clamp(destino.z, zMin + 0.12, zMax - 0.12);
+  }
+
+  function atualizar(dt) {
+    if (modo === "andar") atualizarAndar(dt);
+    else atualizarExame(dt);
+
+    // Durante uma transição, a câmera desliza até a pose desejada; fora dela, segue direto.
+    const emTransicao = transicao > 0;
+    transicao = Math.max(0, transicao - dt);
+    const kPosicao = emTransicao ? suavizar(dt, 3.2) : modo === "andar" ? suavizar(dt, 5) : 1;
+    camera.position.lerp(destino, kPosicao);
+
+    if (modo === "obra") {
+      matriz.lookAt(camera.position, exame.peca.centro, camera.up);
+      quatDestino.setFromRotationMatrix(matriz);
+    }
+    camera.quaternion.slerp(quatDestino, emTransicao ? suavizar(dt, 3.6) : 1);
+
+    // Desloca a imagem para a obra não ficar atrás do painel.
+    deslocamento.atual.lerp(deslocamento.alvo, suavizar(dt, 4));
+    const w = elemento.clientWidth;
+    const h = elemento.clientHeight;
+    if (deslocamento.atual.lengthSq() > 0.25) {
+      camera.setViewOffset(w, h, -deslocamento.atual.x, -deslocamento.atual.y, w, h);
+    } else if (camera.view?.enabled) {
+      camera.clearViewOffset();
+    }
+  }
+
+  return {
+    atualizar,
+    examinar,
+    voltarAAndar,
+    get modo() {
+      return modo;
+    },
+  };
 }

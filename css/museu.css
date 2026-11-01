@@ -40,7 +40,7 @@
   align-items: center;
   justify-content: center;
   padding: var(--margem);
-  background: rgba(239, 232, 220, 0.94);
+  background: rgba(244, 236, 226, 0.95);
   transition: opacity 0.4s ease;
 }
 
@@ -138,8 +138,12 @@
   display: none;
 }
 
-.toque .so-toque {
+.toque li.so-toque {
   display: list-item;
+}
+
+.toque p.so-toque {
+  display: block;
 }
 
 /* --- Nome da obra sob o mouse --- */
@@ -158,50 +162,138 @@
   white-space: nowrap;
 }
 
-/* --- Painel da obra em foco --- */
+/* --- Ficha da obra examinada (inspirada em exposições virtuais editoriais) --- */
 
-.museu-painel {
+.museu-ficha {
+  --largura-ficha-museu: min(440px, 40%);
   position: absolute;
-  right: 16px;
-  bottom: 84px;
+  top: 0;
+  left: 0;
+  bottom: 0;
   z-index: 20;
-  width: min(340px, calc(100% - 32px));
-  padding: 20px;
-  background: var(--cor-fundo);
-  border: 1px solid var(--cor-borda);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+  width: var(--largura-ficha-museu);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px clamp(24px, 4vw, 56px) 96px;
+  background: linear-gradient(90deg, rgba(251, 249, 245, 0.97) 70%, rgba(251, 249, 245, 0.85));
+  box-shadow: 12px 0 40px rgba(60, 20, 0, 0.12);
+  animation: ficha-entra 0.5s ease both;
 }
 
-.museu-painel h2 {
-  margin: 2px 0 6px;
-  font-size: 20px;
+.museu-ficha[hidden] {
+  display: none;
 }
 
-.museu-painel-registro {
+@keyframes ficha-entra {
+  from { opacity: 0; transform: translateX(-24px); }
+  to { opacity: 1; transform: none; }
+}
+
+.museu-ficha h2 {
+  margin: 4px 0 20px;
+  font-size: clamp(30px, 3.4vw, 46px);
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+}
+
+.museu-ficha-procedencia,
+.museu-ficha-medidas {
   margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--cor-texto-suave);
 }
 
-.museu-painel-meta {
-  margin: 0 0 12px;
+.museu-ficha-resumo {
+  margin: 20px 0 0;
+  max-width: 34em;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.museu-ficha-dica {
+  margin: 24px 0 0;
   font-size: 13px;
   color: var(--cor-texto-suave);
 }
 
-.museu-painel-resumo {
-  margin: 0 0 16px;
-  font-size: 14px;
-}
-
-.museu-painel-acoes {
+.museu-ficha-acoes {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
+  margin-top: 28px;
 }
 
-.museu-painel-acoes .botao {
-  min-height: 40px;
-  padding: 8px 16px;
-  font-size: 14px;
+/* Com a ficha aberta, o percurso fica no centro da área livre, à direita. */
+.examinando .museu-percurso {
+  left: calc(min(440px, 40%) + (100% - min(440px, 40%)) / 2);
+}
+
+.examinando .museu-topo {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .museu-ficha {
+    top: auto;
+    right: 0;
+    bottom: 72px;
+    width: auto;
+    max-height: 48%;
+    overflow-y: auto;
+    justify-content: flex-start;
+    padding: 18px 16px 16px;
+    background: rgba(251, 249, 245, 0.97);
+    box-shadow: 0 -12px 32px rgba(60, 20, 0, 0.12);
+    animation-name: ficha-sobe;
+  }
+
+  @keyframes ficha-sobe {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .museu-ficha h2 {
+    margin: 2px 0 8px;
+    font-size: 24px;
+  }
+
+  .museu-ficha-procedencia,
+  .museu-ficha-medidas {
+    display: inline;
+    font-size: 12px;
+  }
+
+  .museu-ficha-medidas::before {
+    content: " · ";
+  }
+
+  .museu-ficha-resumo {
+    display: none;
+  }
+
+  .museu-ficha-dica {
+    margin-top: 10px;
+    font-size: 12px;
+  }
+
+  .museu-ficha-acoes {
+    margin-top: 12px;
+  }
+
+  .museu-ficha-acoes .botao {
+    flex: 1;
+    min-height: 40px;
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  .examinando .museu-percurso {
+    left: 12px;
+  }
 }
 
 /* --- Percurso (anterior / próxima) --- */
@@ -247,19 +339,7 @@
   white-space: nowrap;
 }
 
-@media (max-width: 600px) {
-  .museu-painel {
-    left: 12px;
-    right: 12px;
-    bottom: 76px;
-    width: auto;
-    padding: 16px;
-  }
-
-  .museu-painel-resumo {
-    display: none;
-  }
-
+@media (max-width: 760px) {
   .museu-percurso {
     left: 12px;
     right: 12px;

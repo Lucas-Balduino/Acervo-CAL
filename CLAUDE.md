@@ -52,16 +52,24 @@ módulo JS dela; `js/data.js` e `js/cartoes.js` são compartilhados. Ao mudar o 
 ## Museu virtual
 
 three.js direto (não usa model-viewer). `js/museu-sala.js` monta a sala a partir das obras; `js/museu-navegacao.js`
-é a câmera em primeira pessoa; `js/museu.js` liga tudo e cuida da interface HTML por cima do canvas.
+é a câmera; `js/museu.js` liga tudo e cuida da interface HTML por cima do canvas.
 
-- Medidas em metros e obras em tamanho real (os `.glb` já estão em metros). A sala cresce com o número de
+- **Ambientação inspirada nas salas da CAL** (fotos enviadas pelo Lucas em 01/11/2026): paredes e pedestais
+  terracota, piso de taco em espinha de peixe (textura desenhada em canvas), teto claro com trilhos e spots
+  (um `SpotLight` por obra, só no computador). Cores e medidas nas constantes `SALA` e `CORES`.
+- Obras em tamanho real (os `.glb` já estão em metros), pedestais de 1,10 m. A sala cresce com o número de
   obras: a de `destaque` vai na parede do fundo; as outras se alternam nas laterais, viradas um pouco para a
-  entrada (`SALA.giroLateral`). Ajustes de tamanho e cor da sala ficam nas constantes `SALA` e `CORES`.
-- A rotação de cada obra usa o mesmo `frente` do model-viewer (0° = frente para +Z, 90° = para +X).
-- Luz: `RoomEnvironment` como ambiente (os materiais das obras são metálicos e dependem dele) + sol com sombra.
-  No celular (`pointer: coarse`) as sombras em tempo real ficam desligadas; a sombra sob os pedestais é uma
+  entrada (`SALA.giroLateral`). A rotação de cada obra usa o mesmo `frente` do model-viewer.
+- **Dois modos de câmera:** andar (primeira pessoa) e examinar (órbita em volta da obra, como no visualizador:
+  arrastar gira, roda/pinça aproxima, duplo clique centraliza, giro automático lento até a primeira interação).
+  Referência de interação citada pelo Lucas: https://www.magische-spiegelungen.de/ — ao examinar, a ficha fica
+  à esquerda em tipografia grande e a obra à direita (`camera.setViewOffset` desloca a imagem); no celular a
+  ficha vira uma folha embaixo.
+- O Lucas achou as obras pequenas demais na primeira versão: campo de visão agora é 50° (66° em tela em pé)
+  e a sala é menor (6,4 m de largura, pé-direito 3,2 m).
+- No celular (`pointer: coarse`) não há sombras em tempo real nem spots reais; a sombra sob os pedestais é uma
   textura e aparece sempre.
-- `window.museu` expõe `focar`, `sairDoFoco`, `percurso` e `camera` para testes no console.
+- `window.museu` expõe `examinar`, `voltarAoMuseu`, `percurso`, `camera` e `navegacao` para testes no console.
 - Testado só em Chrome headless (SwiftShader, ~2 quadros/s): o desempenho em placa de vídeo e celular real
   ainda não foi medido.
 

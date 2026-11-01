@@ -51,26 +51,29 @@
         <ul id="museu-ajuda" class="museu-ajuda" hidden>
           <li class="so-mouse"><strong>Arraste</strong> para olhar em volta</li>
           <li class="so-mouse"><strong>Clique no chão</strong> para andar até lá</li>
-          <li class="so-mouse"><strong>Clique numa obra</strong> para se aproximar</li>
+          <li class="so-mouse"><strong>Clique numa obra</strong> para examiná-la de perto</li>
           <li class="so-mouse"><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> ou setas para caminhar</li>
-          <li class="so-mouse"><kbd>Esc</kbd> volta para a sala</li>
+          <li class="so-mouse"><kbd>Esc</kbd> volta ao museu</li>
           <li class="so-toque"><strong>Arraste</strong> para olhar em volta</li>
           <li class="so-toque"><strong>Toque no chão</strong> para andar até lá</li>
-          <li class="so-toque"><strong>Toque numa obra</strong> para se aproximar</li>
+          <li class="so-toque"><strong>Toque numa obra</strong> para examiná-la de perto</li>
           <li>Ou use <strong>Próxima obra</strong> para seguir o percurso</li>
         </ul>
       </div>
 
       <div id="museu-rotulo" class="museu-rotulo" hidden></div>
 
-      <section id="museu-painel" class="museu-painel" aria-live="polite" hidden>
-        <p class="museu-painel-registro sobretitulo"></p>
+      <section id="museu-ficha" class="museu-ficha" aria-live="polite" hidden>
+        <p class="museu-ficha-registro sobretitulo"></p>
         <h2></h2>
-        <p class="museu-painel-meta"></p>
-        <p class="museu-painel-resumo"></p>
-        <div class="museu-painel-acoes">
-          <a class="botao botao-primario" href="obras.html">Ver em detalhe</a>
-          <button type="button" id="botao-voltar-sala" class="botao">Voltar à sala</button>
+        <p class="museu-ficha-procedencia"></p>
+        <p class="museu-ficha-medidas"></p>
+        <p class="museu-ficha-resumo"></p>
+        <p class="museu-ficha-dica so-mouse">Arraste para girar · role para aproximar · duplo clique centraliza</p>
+        <p class="museu-ficha-dica so-toque">Arraste para girar · pince para aproximar</p>
+        <div class="museu-ficha-acoes">
+          <a class="botao botao-primario museu-ficha-link" href="obras.html">Ver ficha completa</a>
+          <button type="button" id="botao-voltar-museu" class="botao">← Voltar ao museu</button>
         </div>
       </section>
 
