@@ -29,7 +29,7 @@ as miniaturas geradas por `ferramentas/posters.html`.
 | `index.html` | Início: obra em destaque girando, progresso da meta de 20 obras, obras recentes e o projeto |
 | `obras.html` | Grade de obras com busca, filtros e ordenação (o estado fica no endereço) |
 | `obra.html?id=cal-0607` | Uma obra: visualizador 3D, cubo de vistas, ficha e obra anterior/próxima |
-| `museu.html` | Museu virtual: sala 3D com as obras em tamanho real, percurso de obra em obra |
+| `museu.html` | Museu virtual: sala 3D inspirada nas salas da CAL, obras para examinar de perto, percurso de obra em obra |
 | `sobre.html` | Sobre o processo — em desenvolvimento |
 
 ## Mapa da pasta

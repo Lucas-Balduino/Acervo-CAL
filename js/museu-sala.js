@@ -2,7 +2,7 @@
   museu-sala.js — constrói a sala do museu virtual com three.js, inspirada nas
   salas de exposição da CAL: paredes terracota, piso de taco em espinha de
   peixe, teto claro com trilhos de spots e pedestais da cor da parede.
-  Cada obra entra num pedestal, em tamanho real, virada pela sua "frente".
+  Cada obra entra num pedestal, ampliada (SALA.escalaDasObras) e virada pela sua "frente".
   Não cuida de câmera nem de cliques (isso está em museu-navegacao.js).
 
   Sistema de coordenadas: metros. A entrada fica em z = 0 e a sala avança
@@ -19,7 +19,8 @@ export const SALA = {
   largura: 5.2,
   peDireito: 3.0,
   espacoEntreFileiras: 2.4,
-  alturaPedestal: 1.22, // obras perto da altura dos olhos
+  alturaPedestal: 1.05, // com a ampliação, deixa as obras perto da altura dos olhos
+  escalaDasObras: 1.5, // obras exibidas maiores que o real, para serem vistas melhor na tela
   afastamentoDaParede: 1.25,
   inicioDasFileiras: 2.6, // distância da entrada até a primeira fileira
   giroLateral: 0.45, // quanto as obras laterais se viram para quem entra (0 = de frente para o corredor)
@@ -406,7 +407,7 @@ function montarTextosDeParede(cena, comprimento, quantidade) {
     ctx.fillStyle = CORES.textoSuave;
     ctx.font = '400 32px "Roboto", sans-serif';
     const texto =
-      "Cada peça desta sala foi escaneada na CAL e aparece no seu tamanho real. " +
+      "Cada peça desta sala foi escaneada na CAL com um scanner 3D. " +
       "Clique numa obra para girá-la, aproximar-se e ver a ficha.";
     quebrarLinhas(ctx, texto, w - 120).forEach((linha, i) => ctx.fillText(linha, 60, 260 + i * 46));
   });
@@ -452,7 +453,9 @@ function materialSombraDeContato() {
 
 function montarPedestal(cena, lugar, indice, sombras) {
   const { obra, posicao, direcao } = lugar;
-  const d = obra.dimensoes || { largura: 30, profundidade: 30, altura: 30 };
+  const e = SALA.escalaDasObras;
+  const real = obra.dimensoes || { largura: 30, profundidade: 30, altura: 30 };
+  const d = { largura: real.largura * e, profundidade: real.profundidade * e, altura: real.altura * e };
   const lado = Math.max(0.5, Math.max(d.largura, d.profundidade) / 100 + 0.24);
   const altura = SALA.alturaPedestal;
   const giro = Math.atan2(direcao.x, direcao.z);
@@ -535,8 +538,10 @@ function colocarObra(cena, peca, modelo, sombras) {
 
   const grupo = new THREE.Group();
   grupo.add(modelo);
+  grupo.scale.setScalar(SALA.escalaDasObras);
   grupo.rotation.y = direcao - frente;
   grupo.position.set(peca.posicao.x, peca.topo, peca.posicao.z);
+  tamanho.multiplyScalar(SALA.escalaDasObras);
   peca.grupo = grupo;
   peca.altura = tamanho.y;
   peca.tamanho.copy(tamanho);

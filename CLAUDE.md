@@ -57,7 +57,7 @@ three.js direto (não usa model-viewer). `js/museu-sala.js` monta a sala a parti
 - **Ambientação inspirada nas salas da CAL** (fotos enviadas pelo Lucas em 01/11/2026): paredes e pedestais
   terracota, piso de taco em espinha de peixe (textura desenhada em canvas), teto claro com trilhos e spots
   (um `SpotLight` por obra, só no computador). Cores e medidas nas constantes `SALA` e `CORES`.
-- Obras em tamanho real (os `.glb` já estão em metros). A sala cresce com o número de
+- Obras ampliadas 1,5× (`SALA.escalaDasObras`; os `.glb` estão em metros reais). A sala cresce com o número de
   obras: a de `destaque` vai na parede do fundo; as outras se alternam nas laterais, viradas um pouco para a
   entrada (`SALA.giroLateral`). A rotação de cada obra usa o mesmo `frente` do model-viewer.
 - **Dois modos de câmera:** andar (primeira pessoa) e examinar (órbita em volta da obra, como no visualizador:
@@ -65,11 +65,10 @@ three.js direto (não usa model-viewer). `js/museu-sala.js` monta a sala a parti
   Referência de interação citada pelo Lucas: https://www.magische-spiegelungen.de/ — ao examinar, a ficha fica
   à esquerda em tipografia grande e a obra à direita (`camera.setViewOffset` desloca a imagem); no celular a
   ficha vira uma folha embaixo.
-- O Lucas pediu duas vezes obras maiores na tela, sem abrir mão do tamanho real: campo de visão 45° (60° em
-  tela em pé), sala de 5,2 m × pé-direito 3 m, pedestais de 1,22 m (obra perto da altura dos olhos) e laterais
-  a 1,25 m da parede. Medido em 1366 × 820: na entrada as obras ocupam 13–21% da altura da tela; ao examinar,
-  ~68% (computador) e ~50% (celular, por causa da ficha embaixo). Ao mexer em `SALA`, conferir que as três
-  primeiras obras continuam visíveis da entrada.
+- O Lucas pediu três vezes obras maiores na tela. Decisão de 01/11/2026: **exibir as peças ampliadas 1,5× e
+  não falar em "tamanho real"** no museu (as medidas reais continuam na ficha). Campo de visão 45° (60° em tela
+  em pé), sala de 5,2 m × pé-direito 3 m, pedestais de 1,05 m, laterais a 1,25 m da parede. Ao mexer em `SALA`,
+  conferir que as três primeiras obras continuam visíveis da entrada.
 - No celular (`pointer: coarse`) não há sombras em tempo real nem spots reais; a sombra sob os pedestais é uma
   textura e aparece sempre.
 - `window.museu` expõe `examinar`, `voltarAoMuseu`, `percurso`, `camera` e `navegacao` para testes no console.

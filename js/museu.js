@@ -148,8 +148,9 @@ function examinar(indice) {
   const caixa = ficha.getBoundingClientRect();
   const estreita = telaEstreita();
   navegacao.examinar(peca, {
-    ocupacao: estreita ? 0.72 : 1.0,
-    deslocamento: estreita ? { x: 0, y: -caixa.height / 2 } : { x: caixa.width / 2, y: 0 },
+    ocupacao: estreita ? 0.62 : 1.0,
+    // No celular, centraliza a obra no espaço livre acima da ficha e da barra do percurso.
+    deslocamento: estreita ? { x: 0, y: -(caixa.height + 72) / 2 } : { x: caixa.width / 2, y: 0 },
   });
 }
 
