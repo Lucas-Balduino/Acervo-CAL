@@ -110,6 +110,32 @@ a:hover {
   border-color: var(--cor-destaque-escuro);
 }
 
+/* Botões pequenos que ficam por cima do 3D (página da obra e museu). */
+.botao-palco {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--cor-borda);
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.botao-palco:hover {
+  border-color: var(--cor-destaque);
+  color: var(--cor-destaque-escuro);
+}
+
+.botao-palco.icone {
+  padding: 0;
+}
+
 .link-seta {
   font-weight: 500;
   text-decoration: none;

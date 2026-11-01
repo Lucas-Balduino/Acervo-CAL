@@ -29,7 +29,7 @@ as miniaturas geradas por `ferramentas/posters.html`.
 | `index.html` | Início: obra em destaque girando, progresso da meta de 20 obras, obras recentes e o projeto |
 | `obras.html` | Grade de obras com busca, filtros e ordenação (o estado fica no endereço) |
 | `obra.html?id=cal-0607` | Uma obra: visualizador 3D, cubo de vistas, ficha e obra anterior/próxima |
-| `museu.html` | Museu virtual — em desenvolvimento |
+| `museu.html` | Museu virtual: sala 3D com as obras em tamanho real, percurso de obra em obra |
 | `sobre.html` | Sobre o processo — em desenvolvimento |
 
 ## Mapa da pasta
@@ -42,6 +42,7 @@ as miniaturas geradas por `ferramentas/posters.html`.
 | `css/galeria.css` | Cartões de obra, busca e filtros |
 | `css/inicio.css` | Página inicial |
 | `css/viewer.css` | Página da obra: palco 3D, cubo e ficha |
+| `css/museu.css` | Museu virtual: interface por cima do 3D |
 | `js/data.js` | Lê `data/obras.json` e formata os dados |
 | `js/navegacao.js` | Menu do celular (todas as páginas) |
 | `js/cartoes.js` | Monta o cartão de uma obra |
@@ -49,6 +50,9 @@ as miniaturas geradas por `ferramentas/posters.html`.
 | `js/galeria.js` | Página Obras: busca, filtros, ordenação |
 | `js/obra.js` | Página da obra: ficha e navegação |
 | `js/viewer.js` | Carrega o `.glb`, câmera e cubo |
+| `js/museu.js` | Museu virtual: renderizador e interface |
+| `js/museu-sala.js` | Museu virtual: sala, pedestais, textos e obras (three.js) |
+| `js/museu-navegacao.js` | Museu virtual: câmera, mouse, toque e teclado |
 | `data/obras.json` | Obras visíveis no site |
 | `data/LEIA-ME.md` | Como cadastrar uma obra |
 | `models/` | Uma pasta por obra: `modelo.glb` e `poster.webp` |

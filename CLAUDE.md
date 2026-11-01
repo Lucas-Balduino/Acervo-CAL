@@ -16,7 +16,8 @@ Vigência: 15/05/2026 a 31/12/2026.
      professor contra a versão antiga, de página única com lista lateral);
   3. página "Sobre o processo": difusão do trabalho de extensão, interativa e visual, que torne o
      processo (escaneamento → tratamento → web) palpável para o público leigo;
-  4. museu virtual navegável — o principal diferencial do produto.
+  4. museu virtual navegável — o principal diferencial do produto (primeira versão na branch
+     `feat/museu-virtual`, criada a partir de `feat/grade-navegacao`).
 - **Direitos:** o aviso "Direitos Reservados" das fichas vale para republicação das obras; publicar os
   modelos 3D neste site está liberado.
 - **Hospedagem:** hoje GitHub Pages (`main` → https://lucas-balduino.github.io/Acervo-CAL/). O objetivo é
@@ -26,7 +27,8 @@ Vigência: 15/05/2026 a 31/12/2026.
 
 ## Regras do repositório
 
-- Site em HTML/CSS/JS puros com ES modules, **sem framework e sem build**. Só o `<model-viewer>` vem de CDN.
+- Site em HTML/CSS/JS puros com ES modules, **sem framework e sem build**. Bibliotecas só por CDN com versão
+  fixa: `<model-viewer>` 3.4.0 (ajax.googleapis.com) e three.js 0.169.0 (jsDelivr, por importmap no `museu.html`).
   Cada arquivo de `css/` e `js/` abre com um comentário dizendo o que faz e o que não faz — manter isso.
 - Código, comentários, nomes e textos em **português**.
 - Commits em português no formato `tipo: descrição` (ex.: `docs: Adicionar obra CAL 0607`, `feat: ...`, `fix: ...`).
@@ -38,7 +40,7 @@ Vigência: 15/05/2026 a 31/12/2026.
 
 Várias páginas estáticas que repetem o mesmo cabeçalho e rodapé (sem build, então sem includes):
 `index.html` (início), `obras.html` (grade com filtros), `obra.html?id=<id>` (visualizador + ficha),
-`museu.html` e `sobre.html` (por enquanto, avisos "em desenvolvimento"). Cada página carrega só o CSS e o
+`museu.html` (sala 3D) e `sobre.html` (por enquanto, aviso "em desenvolvimento"). Cada página carrega só o CSS e o
 módulo JS dela; `js/data.js` e `js/cartoes.js` são compartilhados. Ao mudar o menu, mudar nas 5 páginas.
 
 - Ordem padrão das obras: número de registro (galeria e anterior/próxima da página da obra).
@@ -46,6 +48,22 @@ módulo JS dela; `js/data.js` e `js/cartoes.js` são compartilhados. Ao mudar o 
   relativas a ela.
 - Distância da câmera: 115% no computador e 130% em telas estreitas; precisa de
   `max-camera-orbit="auto auto 250%"`, senão o model-viewer trava o raio no padrão.
+
+## Museu virtual
+
+three.js direto (não usa model-viewer). `js/museu-sala.js` monta a sala a partir das obras; `js/museu-navegacao.js`
+é a câmera em primeira pessoa; `js/museu.js` liga tudo e cuida da interface HTML por cima do canvas.
+
+- Medidas em metros e obras em tamanho real (os `.glb` já estão em metros). A sala cresce com o número de
+  obras: a de `destaque` vai na parede do fundo; as outras se alternam nas laterais, viradas um pouco para a
+  entrada (`SALA.giroLateral`). Ajustes de tamanho e cor da sala ficam nas constantes `SALA` e `CORES`.
+- A rotação de cada obra usa o mesmo `frente` do model-viewer (0° = frente para +Z, 90° = para +X).
+- Luz: `RoomEnvironment` como ambiente (os materiais das obras são metálicos e dependem dele) + sol com sombra.
+  No celular (`pointer: coarse`) as sombras em tempo real ficam desligadas; a sombra sob os pedestais é uma
+  textura e aparece sempre.
+- `window.museu` expõe `focar`, `sairDoFoco`, `percurso` e `camera` para testes no console.
+- Testado só em Chrome headless (SwiftShader, ~2 quadros/s): o desempenho em placa de vídeo e celular real
+  ainda não foi medido.
 
 ## Fluxo de um modelo 3D
 
