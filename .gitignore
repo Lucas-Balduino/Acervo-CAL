@@ -1,2 +1,6 @@
-# GitHub recusa arquivos acima de 100 MB.
-models/Torre/
+# Dependências das ferramentas (instale com: cd ferramentas && npm install)
+node_modules/
+
+# Arquivos locais do Claude Code (launch.json é compartilhado)
+.claude/*
+!.claude/launch.json
