@@ -126,9 +126,13 @@ window.addEventListener("keydown", (evento) => {
   if (evento.key === "Escape" && examinando >= 0) voltarAoMuseu();
 });
 
+let saidaDaFicha = 0;
+
 function examinar(indice) {
   const peca = percurso[indice];
   if (!peca) return;
+  clearTimeout(saidaDaFicha);
+  ficha.classList.remove("saindo");
   examinando = indice;
   mostrarRotulo(-1);
   mostrarAjuda(false);
@@ -158,7 +162,12 @@ function voltarAoMuseu() {
   if (examinando < 0) return;
   examinando = -1;
   navegacao.voltarAAndar();
-  ficha.hidden = true;
+  // A ficha sai devagar, junto com a câmera.
+  ficha.classList.add("saindo");
+  saidaDaFicha = setTimeout(() => {
+    ficha.hidden = true;
+    ficha.classList.remove("saindo");
+  }, 500);
   document.body.classList.remove("examinando");
   contador.textContent = textoDaSala();
   renderer.domElement.focus();

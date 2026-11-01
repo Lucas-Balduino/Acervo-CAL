@@ -178,7 +178,16 @@
   padding: 48px clamp(24px, 4vw, 56px) 96px;
   background: linear-gradient(90deg, rgba(251, 249, 245, 0.97) 70%, rgba(251, 249, 245, 0.85));
   box-shadow: 12px 0 40px rgba(60, 20, 0, 0.12);
-  animation: ficha-entra 0.5s ease both;
+  /* Entra enquanto a câmera chega à obra (a viagem dura ~2 s). */
+  animation: ficha-entra 1s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
+}
+
+.museu-ficha.saindo {
+  animation: ficha-sai 0.5s ease both;
+}
+
+@keyframes ficha-sai {
+  to { opacity: 0; transform: translateX(-24px); }
 }
 
 .museu-ficha[hidden] {
@@ -249,6 +258,14 @@
     background: rgba(251, 249, 245, 0.97);
     box-shadow: 0 -12px 32px rgba(60, 20, 0, 0.12);
     animation-name: ficha-sobe;
+  }
+
+  .museu-ficha.saindo {
+    animation-name: ficha-desce;
+  }
+
+  @keyframes ficha-desce {
+    to { opacity: 0; transform: translateY(24px); }
   }
 
   @keyframes ficha-sobe {
