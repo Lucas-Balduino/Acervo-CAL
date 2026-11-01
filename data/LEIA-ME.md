@@ -1,6 +1,8 @@
 # data/ — lista das obras
 
-`obras.json` é a lista que o visualizador lê. Não há banco de dados nem painel admin: para incluir uma peça, edite este arquivo e coloque o `.glb` em `models/`.
+`obras.json` é a lista que o visualizador lê. Não há banco de dados nem painel admin: para incluir uma peça, edite este arquivo e coloque o `.glb` (já otimizado, ver `models/LEIA-ME.md`) em `models/`.
+
+Use o título e o link exatamente como estão na ficha do [Acervo CAL](https://www.acervocal.unb.br/), sem os parâmetros de busca no fim do link (`/acervo/nome-da-obra/` basta).
 
 ## Campos de cada item
 

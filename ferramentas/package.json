@@ -1,0 +1,12 @@
+{
+  "name": "acervo-cal-ferramentas",
+  "private": true,
+  "description": "Ferramentas de preparo dos modelos 3D. O site em si não usa npm.",
+  "type": "module",
+  "dependencies": {
+    "@gltf-transform/core": "4.5.1",
+    "@gltf-transform/extensions": "4.5.1",
+    "@gltf-transform/functions": "4.5.1",
+    "draco3dgltf": "1.5.9"
+  }
+}
