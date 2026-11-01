@@ -42,7 +42,7 @@ export function criarNavegacao(camera, elemento, sala, eventos) {
   let modo = "andar";
 
   // Modo andar
-  const andar = { posicao: new THREE.Vector3(0, ALTURA_OLHOS, -0.6), yaw: 0, pitch: -0.08 };
+  const andar = { posicao: new THREE.Vector3(0, ALTURA_OLHOS, -0.5), yaw: 0, pitch: -0.1 };
   let yaw = andar.yaw;
   let pitch = andar.pitch;
 
@@ -306,7 +306,7 @@ export function criarNavegacao(camera, elemento, sala, eventos) {
     modo = "andar";
     deslocamento.alvo.set(0, 0);
 
-    const p = peca.posicao.clone().addScaledVector(peca.direcao, 2.0);
+    const p = peca.posicao.clone().addScaledVector(peca.direcao, 1.5);
     andar.posicao.set(p.x, ALTURA_OLHOS, p.z);
     restringir(andar.posicao);
     const alvo = peca.centro;

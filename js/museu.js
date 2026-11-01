@@ -51,7 +51,7 @@ function redimensionar() {
   renderer.setSize(w, h, false);
   camera.aspect = w / h;
   // Campo de visão próximo ao do olho; em tela em pé, um pouco mais aberto.
-  camera.fov = w < h ? 66 : 50;
+  camera.fov = w < h ? 60 : 45;
   camera.updateProjectionMatrix();
 }
 new ResizeObserver(redimensionar).observe(palco);
@@ -148,7 +148,7 @@ function examinar(indice) {
   const caixa = ficha.getBoundingClientRect();
   const estreita = telaEstreita();
   navegacao.examinar(peca, {
-    ocupacao: estreita ? 0.5 : 0.66,
+    ocupacao: estreita ? 0.72 : 1.0,
     deslocamento: estreita ? { x: 0, y: -caixa.height / 2 } : { x: caixa.width / 2, y: 0 },
   });
 }

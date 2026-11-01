@@ -16,12 +16,12 @@ import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 
 export const SALA = {
-  largura: 6.4,
-  peDireito: 3.2,
-  espacoEntreFileiras: 2.8,
-  alturaPedestal: 1.1,
-  afastamentoDaParede: 1.15,
-  inicioDasFileiras: 3.4, // distância da entrada até a primeira fileira
+  largura: 5.2,
+  peDireito: 3.0,
+  espacoEntreFileiras: 2.4,
+  alturaPedestal: 1.22, // obras perto da altura dos olhos
+  afastamentoDaParede: 1.25,
+  inicioDasFileiras: 2.6, // distância da entrada até a primeira fileira
   giroLateral: 0.45, // quanto as obras laterais se viram para quem entra (0 = de frente para o corredor)
   larguraTaco: 0.07, // m
 };
@@ -47,7 +47,7 @@ export function planejarSala(obras) {
   const indiceDestaque = Math.max(0, obras.findIndex((o) => o.destaque));
   const laterais = obras.filter((_, i) => i !== indiceDestaque);
   const fileiras = Math.max(1, Math.ceil(laterais.length / 2));
-  const comprimento = SALA.inicioDasFileiras + (fileiras - 1) * SALA.espacoEntreFileiras + 4.2;
+  const comprimento = SALA.inicioDasFileiras + (fileiras - 1) * SALA.espacoEntreFileiras + 3.1;
   const xLateral = SALA.largura / 2 - SALA.afastamentoDaParede;
 
   const lugares = [];
@@ -68,7 +68,7 @@ export function planejarSala(obras) {
   if (obras.length) {
     lugares.push({
       obra: obras[indiceDestaque],
-      posicao: new THREE.Vector3(0, 0, -comprimento + 1.4),
+      posicao: new THREE.Vector3(0, 0, -comprimento + 1.1),
       direcao: new THREE.Vector3(0, 0, 1),
     });
   }
@@ -313,7 +313,7 @@ function montarArquitetura(cena, comprimento, renderer, sombras) {
 function montarSpots(cena, pecas, comprimento, leve) {
   const { largura, peDireito } = SALA;
   const yTrilho = peDireito - 0.06;
-  const xTrilho = largura / 2 - SALA.afastamentoDaParede - 0.9;
+  const xTrilho = largura / 2 - SALA.afastamentoDaParede - 0.55;
   const materialTrilho = new THREE.MeshStandardMaterial({ color: CORES.trilho, roughness: 0.5, metalness: 0.2 });
   const materialLuminaria = new THREE.MeshStandardMaterial({ color: 0xf7f6f3, roughness: 0.4, metalness: 0.1 });
   const materialLente = new THREE.MeshBasicMaterial({ color: 0xfff7e8 });
@@ -324,7 +324,7 @@ function montarSpots(cena, pecas, comprimento, leve) {
     trilho.position.set(x, yTrilho, -comprimento / 2);
     cena.add(trilho);
   }
-  const zTravessa = -comprimento + 2.6;
+  const zTravessa = -comprimento + 2.2;
   const travessa = new THREE.Mesh(new THREE.BoxGeometry(xTrilho * 2, 0.03, 0.035), materialTrilho);
   travessa.position.set(0, yTrilho, zTravessa);
   cena.add(travessa);
@@ -363,8 +363,8 @@ function montarSpots(cena, pecas, comprimento, leve) {
 function montarTextosDeParede(cena, comprimento, quantidade) {
   // Título em letras claras direto na parede do fundo, acima da obra em destaque.
   const titulo = painelDeTexto(
-    3.6,
-    0.74,
+    3.2,
+    0.66,
     texturaDeCanvas(1800, 370, (ctx, w) => {
       ctx.fillStyle = CORES.textoParede;
       ctx.textAlign = "center";
@@ -374,7 +374,7 @@ function montarTextosDeParede(cena, comprimento, quantidade) {
       ctx.fillText("Acervo da Casa da Cultura da América Latina · UnB", w / 2, 300);
     })
   );
-  titulo.position.set(0, 2.35, -comprimento + 0.01);
+  titulo.position.set(0, 2.32, -comprimento + 0.01);
   cena.add(titulo);
 
   // Painéis emoldurados perto da entrada (como os textos de sala da CAL).
@@ -385,7 +385,7 @@ function montarTextosDeParede(cena, comprimento, quantidade) {
     const papel = painelDeTexto(0.92, 0.68, texturaDeCanvas(920, 680, desenhar));
     papel.position.z = 0.016;
     grupo.add(moldura, papel);
-    grupo.position.set(x, 1.55, -1.25);
+    grupo.position.set(x, 1.55, -1.0);
     grupo.rotation.y = rotacaoY;
     cena.add(grupo);
   };
