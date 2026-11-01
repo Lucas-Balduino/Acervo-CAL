@@ -12,7 +12,8 @@ Vigência: 15/05/2026 a 31/12/2026.
 - **Meta:** escanear 20 obras da Casa da Cultura da América Latina (CAL) e publicá-las em 3D.
 - **Entregas do site até dez/2026** (decididas em 01/11/2026):
   1. visualizador 3D (pronto);
-  2. galeria em grade com busca e filtros;
+  2. galeria em grade com busca e filtros (feita na branch `feat/grade-navegacao`, em avaliação pelo
+     professor contra a versão antiga, de página única com lista lateral);
   3. página "Sobre o processo": difusão do trabalho de extensão, interativa e visual, que torne o
      processo (escaneamento → tratamento → web) palpável para o público leigo;
   4. museu virtual navegável — o principal diferencial do produto.
@@ -33,11 +34,26 @@ Vigência: 15/05/2026 a 31/12/2026.
   Na prática só o Lucas (e eventualmente o professor) mexe no repositório.
 - `ferramentas/` é Node só para preparar modelos; o site não depende dele.
 
+## Estrutura do site
+
+Várias páginas estáticas que repetem o mesmo cabeçalho e rodapé (sem build, então sem includes):
+`index.html` (início), `obras.html` (grade com filtros), `obra.html?id=<id>` (visualizador + ficha),
+`museu.html` e `sobre.html` (por enquanto, avisos "em desenvolvimento"). Cada página carrega só o CSS e o
+módulo JS dela; `js/data.js` e `js/cartoes.js` são compartilhados. Ao mudar o menu, mudar nas 5 páginas.
+
+- Ordem padrão das obras: número de registro (galeria e anterior/próxima da página da obra).
+- `frente` (graus) define a vista inicial, a miniatura e o botão "Frente" do cubo; as vistas do cubo são
+  relativas a ela.
+- Distância da câmera: 115% no computador e 130% em telas estreitas; precisa de
+  `max-camera-orbit="auto auto 250%"`, senão o model-viewer trava o raio no padrão.
+
 ## Fluxo de um modelo 3D
 
 Scanner Creality CR-Scan Raptor (antes EinScan H1) → malha de 200.000 faces no Creality Scan → export
 `.obj` + `.mtl` → Blender (centralizar, orientar, material) → export `.glb` →
-`node ferramentas/otimizar-glb.mjs models/<id>/modelo.glb` → item em `data/obras.json`.
+`node ferramentas/otimizar-glb.mjs models/<id>/modelo.glb` → item em `data/obras.json` (id, modelo,
+frente) → `node ferramentas/sincronizar-acervo.mjs` → miniatura em `ferramentas/posters.html`
+(com `node ferramentas/servidor.mjs` ligado, que é o único que aceita gravar `models/<id>/poster.webp`).
 
 O script corrige a escala (o scanner exporta em mm e o glTF usa metros) e comprime a malha, que vem
 sem vértices compartilhados: ~22 MB → ~1,5 MB por obra. O decodificador Draco é carregado pelo próprio
@@ -57,10 +73,19 @@ Não alterar material ou textura sem pedir.
 
 A API REST do acervo é pública e aceita CORS do GitHub Pages:
 `https://www.acervocal.unb.br/wp-json/tainacan/v2/items/?search=CAL.0607` (coleção "Acervo", id 1565).
-Metadados úteis: `numero-de-registro`, `procedencia`, `data-de-aquisicao`, `forma-de-aquisicao`, `colecao`.
+Metadados úteis: `numero-de-registro`, `procedencia`, `data-de-aquisicao`, `forma-de-aquisicao`, `colecao`,
+`autor`, `material-tecnica`, `local-de-producao`, `data-de-producao`, `dimensoes` (os últimos estão vazios
+nas obras atuais). O site não consulta a API ao vivo: `ferramentas/sincronizar-acervo.mjs` copia os dados
+para `data/obras.json`, para o site não depender do servidor da UnB estar no ar.
 As fichas marcam as imagens como "Direitos Reservados" — não copiar fotos do acervo para este repositório.
 
 ## Testar
 
-`preview_start` com a configuração `site` de `.claude/launch.json` (porta 3000). Conferir que os modelos
-carregam, sem erros no console, e que `viewer.getDimensions()` dá medidas plausíveis em metros.
+`preview_start` com a configuração `site` de `.claude/launch.json` (porta 3000, `ferramentas/servidor.mjs`).
+Conferir que os modelos carregam, sem erros no console, e que `viewer.getDimensions()` dá medidas
+plausíveis em metros. Testar também em 390 px de largura (celular).
+
+O navegador embutido pausa o WebGL quando a janela do app está oculta ou minimizada (o `load` do
+model-viewer nunca dispara). Nesse caso, usar Chrome headless via `puppeteer-core` com
+`--use-angle=swiftshader --enable-unsafe-swiftshader` (Chrome em `C:/Program Files/Google/Chrome/Application/chrome.exe`),
+instalado fora do repositório.

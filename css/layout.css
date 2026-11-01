@@ -1,31 +1,55 @@
 /*
-  layout.css — cabeçalho, tela de entrada, sidebar e área principal.
-  A peça 3D em si está em viewer.css.
+  layout.css — estrutura comum: cabeçalho com navegação, conteúdo, seções e rodapé.
+  Cartões e filtros estão em galeria.css; a página da obra, em viewer.css.
 */
 
-.pagina {
-  height: 100%;
+body {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
+main {
+  flex: 1;
+}
+
+.recipiente {
+  width: 100%;
+  max-width: var(--largura-max);
+  margin: 0 auto;
+  padding: 0 var(--margem);
+}
+
+/* --- Cabeçalho --- */
+
 .cabecalho {
+  position: sticky;
+  top: 0;
+  z-index: 50;
   height: var(--altura-cabecalho);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
-  border-bottom: 1px solid var(--cor-borda);
+  gap: 16px;
+  /* Alinha com o conteúdo (.recipiente) em telas largas. */
+  padding: 0 max(var(--margem), calc((100% - var(--largura-max)) / 2 + var(--margem)));
   background: var(--cor-fundo);
-  flex-shrink: 0;
-  z-index: 20;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+/* Na página da obra o palco ocupa a largura toda; o cabeçalho acompanha. */
+.pagina-larga .cabecalho {
+  padding: 0 var(--margem);
 }
 
 .marca {
   display: flex;
   flex-direction: column;
-  gap: 0;
   text-decoration: none;
+  color: var(--cor-texto);
+}
+
+.marca:hover {
   color: var(--cor-texto);
 }
 
@@ -40,188 +64,196 @@
   font-weight: 700;
 }
 
-.cabecalho-link {
+.menu {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.menu a {
+  padding: 8px 12px;
   font-size: 14px;
   color: var(--cor-texto);
   text-decoration: none;
-  border-bottom: 1px solid transparent;
-  padding-bottom: 2px;
+  border-bottom: 2px solid transparent;
 }
 
-.cabecalho-link:hover {
+.menu a:hover {
+  border-bottom-color: var(--cor-borda);
+}
+
+.menu a[aria-current="page"] {
   border-bottom-color: var(--cor-destaque);
-  color: var(--cor-texto);
+  font-weight: 500;
 }
 
-/* --- Entrada (antes do visualizador) --- */
-
-.entrada {
-  position: fixed;
-  inset: 0;
-  z-index: 80;
-  background: var(--cor-fundo);
-  display: flex;
-  flex-direction: column;
-  transition: opacity 0.45s ease;
+.menu .menu-externo {
+  margin-left: 8px;
+  color: var(--cor-destaque);
 }
 
-.entrada.oculta {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.entrada[hidden] {
+.botao-menu {
   display: none;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 6px 12px;
+  border: 1px solid var(--cor-borda);
+  background: var(--cor-fundo);
+  font-size: 14px;
+  cursor: pointer;
 }
 
-.entrada-faixa {
-  height: 220px;
-  background: var(--cor-areia);
-  flex-shrink: 0;
+@media (max-width: 760px) {
+  .botao-menu {
+    display: inline-flex;
+  }
+
+  .menu {
+    position: absolute;
+    top: var(--altura-cabecalho);
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 8px var(--margem) 16px;
+    background: var(--cor-fundo);
+    border-bottom: 1px solid var(--cor-borda);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06);
+  }
+
+  .menu:not(.aberto) {
+    display: none;
+  }
+
+  .menu a {
+    padding: 14px 4px;
+    border-bottom: 1px solid var(--cor-borda);
+  }
+
+  .menu a[aria-current="page"] {
+    border-bottom-color: var(--cor-borda);
+    color: var(--cor-destaque);
+  }
+
+  .menu .menu-externo {
+    margin-left: 0;
+    border-bottom: 0;
+  }
 }
 
-.entrada-corpo {
+/* --- Seções e topo de página --- */
+
+.secao {
+  padding: 56px 0;
+}
+
+.secao + .secao {
+  border-top: 1px solid var(--cor-borda);
+}
+
+.secao-topo {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.secao-topo h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.pagina-topo {
+  padding: 48px 0 24px;
+}
+
+.pagina-topo h1 {
+  margin: 0;
+  font-size: clamp(28px, 4vw, 40px);
+}
+
+.pagina-topo p {
   max-width: 640px;
-  margin: 0 auto;
-  padding: 40px 24px;
-  text-align: center;
-}
-
-.entrada-corpo h1 {
-  font-size: 28px;
-  font-weight: 700;
-  margin: 0 0 8px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--cor-destaque);
-}
-
-.entrada-corpo p {
+  margin: 12px 0 0;
   color: var(--cor-texto-suave);
-  margin: 16px 0 0;
 }
 
-.botao-entrar {
-  margin-top: 32px;
-  background: var(--cor-fundo);
-  color: var(--cor-texto);
-  border: 1px solid var(--cor-destaque);
-  padding: 12px 28px;
-  font-size: 14px;
-  cursor: pointer;
+/* Páginas ainda em construção */
+.em-breve {
+  max-width: 720px;
+  padding-bottom: 64px;
 }
 
-.botao-entrar:hover {
-  background: var(--cor-destaque);
-  color: #fff;
-}
-
-/* --- Área do visualizador --- */
-
-.principal {
-  flex: 1;
-  display: flex;
-  min-height: 0;
-  position: relative;
-}
-
-.sidebar {
-  position: relative;
-  width: var(--largura-sidebar);
-  border-right: 1px solid var(--cor-borda);
-  display: flex;
-  flex-direction: column;
-  background: var(--cor-fundo);
-  flex-shrink: 0;
-  transition: margin-left 0.35s ease;
-  z-index: 15;
-}
-
-.sidebar.recolhida {
-  margin-left: calc(-1 * var(--largura-sidebar));
-}
-
-.sidebar-busca {
-  padding: 16px;
-  border-bottom: 1px solid var(--cor-borda);
-}
-
-.sidebar-busca input {
-  width: 100%;
-  border: 1px solid var(--cor-borda);
-  padding: 8px 12px;
-  font-size: 14px;
-  outline: none;
-}
-
-.sidebar-busca input:focus {
-  border-color: var(--cor-destaque);
-}
-
-.lista-obras {
-  flex: 1;
-  overflow-y: auto;
-  padding: 8px;
-}
-
-.item-obra {
-  display: block;
-  width: 100%;
-  text-align: left;
-  background: transparent;
-  border: 1px solid transparent;
-  padding: 10px 12px;
-  margin-bottom: 4px;
-  cursor: pointer;
-  color: var(--cor-texto);
-}
-
-.item-obra:hover {
-  border-color: var(--cor-borda);
-}
-
-.item-obra.ativa {
-  border-color: var(--cor-destaque);
-  background: #f4f8fb;
-}
-
-.item-obra-titulo {
-  display: block;
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.item-obra-autor {
-  display: block;
+.selo {
+  display: inline-block;
+  padding: 4px 10px;
+  border: 1px solid var(--cor-areia);
+  background: var(--cor-areia-clara);
   font-size: 12px;
-  color: var(--cor-texto-suave);
-  margin-top: 2px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
-.lista-vazia {
-  padding: 24px 12px;
-  font-size: 13px;
-  color: var(--cor-texto-suave);
-  text-align: center;
-}
-
-.botao-sidebar {
-  position: absolute;
-  right: -12px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 24px;
-  height: 48px;
-  border: 1px solid var(--cor-borda);
-  border-left: none;
-  background: var(--cor-fundo);
-  cursor: pointer;
-  z-index: 16;
+.etapas {
+  list-style: none;
+  counter-reset: etapa;
+  margin: 32px 0;
   padding: 0;
+  display: grid;
+  gap: 12px;
 }
 
-.estagio {
-  flex: 1;
-  position: relative;
-  min-width: 0;
-  background: var(--cor-estudio);
+.etapas li {
+  counter-increment: etapa;
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 4px 12px;
+  padding: 16px;
+  border: 1px solid var(--cor-borda);
+}
+
+.etapas li::before {
+  content: counter(etapa, decimal-leading-zero);
+  grid-row: span 2;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--cor-destaque);
+}
+
+.etapas strong {
+  font-size: 16px;
+}
+
+.etapas span {
+  color: var(--cor-texto-suave);
+  font-size: 14px;
+}
+
+/* --- Rodapé --- */
+
+.rodape {
+  background: var(--cor-rodape);
+  color: #d9d9d9;
+  font-size: 13px;
+}
+
+.rodape .recipiente {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px 32px;
+  padding-top: 28px;
+  padding-bottom: 28px;
+}
+
+.rodape p {
+  margin: 0;
+}
+
+.rodape a {
+  color: #fff;
 }

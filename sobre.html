@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sobre o processo · Gêmeos Digitais CAL</title>
+  <meta name="description" content="Como as obras da CAL são escaneadas e transformadas em Gêmeos Digitais.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3 28 9.5v13L16 29 4 22.5v-13z' fill='%231d5c86'/%3E%3Cpath d='M16 16 28 9.5M16 16 4 9.5M16 16v13' stroke='%23fff' stroke-width='1.6' fill='none'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+</head>
+<body>
+  <a class="pular-conteudo" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="cabecalho">
+    <a class="marca" href="./">
+      <span class="marca-instituicao">UnB · Casa da Cultura da América Latina</span>
+      <span class="marca-titulo">Gêmeos Digitais CAL</span>
+    </a>
+    <button type="button" class="botao-menu" aria-expanded="false" aria-controls="menu">Menu</button>
+    <nav id="menu" class="menu" aria-label="Principal">
+      <a href="./">Início</a>
+      <a href="obras.html">Obras</a>
+      <a href="museu.html">Museu virtual</a>
+      <a href="sobre.html" aria-current="page">Sobre o processo</a>
+      <a class="menu-externo" href="https://www.acervocal.unb.br/" target="_blank" rel="noopener noreferrer">Acervo CAL ↗</a>
+    </nav>
+  </header>
+
+  <main id="conteudo">
+    <div class="recipiente">
+      <div class="pagina-topo">
+        <span class="selo">Em desenvolvimento</span>
+        <h1 style="margin-top: 16px">Sobre o processo</h1>
+        <p>
+          Esta página vai contar, de forma visual e interativa, como uma obra do acervo vira um
+          Gêmeo Digital. Enquanto isso, um resumo das etapas:
+        </p>
+      </div>
+
+      <div class="em-breve">
+        <ol class="etapas">
+          <li>
+            <strong>Captura na CAL</strong>
+            <span>Com a obra apoiada num suporte fixo, a equipe circula ao redor dela com um scanner 3D portátil. Peças que podem ser viradas com segurança são escaneadas também de cabeça para baixo.</span>
+          </li>
+          <li>
+            <strong>Nuvem de pontos e malha</strong>
+            <span>O software do scanner une as capturas numa nuvem de pontos e gera uma malha de 200 mil faces, com a textura colorida da peça.</span>
+          </li>
+          <li>
+            <strong>Tratamento no Blender</strong>
+            <span>O modelo é centralizado, orientado e tem o material ajustado para ficar fiel à obra.</span>
+          </li>
+          <li>
+            <strong>Publicação</strong>
+            <span>O arquivo é comprimido (de cerca de 22 MB para 1,5 MB) e entra no site com os dados da ficha do Acervo CAL.</span>
+          </li>
+        </ol>
+        <p>
+          Projeto de extensão PJ772-2026 — “Expansão do Acervo da CAL e Consolidação de Gêmeos Digitais
+          para Preservação e Acessibilidade”, Laboratório Protip, Instituto de Artes da UnB.
+        </p>
+        <a class="botao botao-primario" href="obras.html">Ver as obras</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="rodape">
+    <div class="recipiente">
+      <p>Projeto de extensão PJ772-2026 · Laboratório Protip (IdA/UnB) · Casa da Cultura da América Latina</p>
+      <p><a href="https://www.acervocal.unb.br/" target="_blank" rel="noopener noreferrer">Fichas técnicas no Acervo CAL ↗</a></p>
+    </div>
+  </footer>
+
+  <script type="module" src="js/navegacao.js"></script>
+</body>
+</html>

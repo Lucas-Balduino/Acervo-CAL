@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Obras · Gêmeos Digitais CAL</title>
+  <meta name="description" content="Todas as obras do acervo da CAL digitalizadas em 3D, com busca e filtros.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3 28 9.5v13L16 29 4 22.5v-13z' fill='%231d5c86'/%3E%3Cpath d='M16 16 28 9.5M16 16 4 9.5M16 16v13' stroke='%23fff' stroke-width='1.6' fill='none'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/galeria.css">
+</head>
+<body>
+  <a class="pular-conteudo" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="cabecalho">
+    <a class="marca" href="./">
+      <span class="marca-instituicao">UnB · Casa da Cultura da América Latina</span>
+      <span class="marca-titulo">Gêmeos Digitais CAL</span>
+    </a>
+    <button type="button" class="botao-menu" aria-expanded="false" aria-controls="menu">Menu</button>
+    <nav id="menu" class="menu" aria-label="Principal">
+      <a href="./">Início</a>
+      <a href="obras.html" aria-current="page">Obras</a>
+      <a href="museu.html">Museu virtual</a>
+      <a href="sobre.html">Sobre o processo</a>
+      <a class="menu-externo" href="https://www.acervocal.unb.br/" target="_blank" rel="noopener noreferrer">Acervo CAL ↗</a>
+    </nav>
+  </header>
+
+  <main id="conteudo">
+    <div class="recipiente">
+      <div class="pagina-topo">
+        <h1>Obras</h1>
+        <p>
+          Peças do acervo da CAL digitalizadas em 3D. Escolha uma para girar e observar de perto;
+          a ficha museológica completa fica no Acervo CAL.
+        </p>
+      </div>
+
+      <form id="filtros" class="filtros" role="search" aria-label="Buscar e filtrar obras">
+        <label class="campo campo-busca">
+          <span>Buscar</span>
+          <input id="busca" type="search" name="q" placeholder="Título, registro ou procedência" autocomplete="off">
+        </label>
+        <div id="facetas" class="facetas"></div>
+        <label class="campo">
+          <span>Ordenar por</span>
+          <select id="ordem" name="ordem">
+            <option value="registro">Número de registro</option>
+            <option value="titulo">Título (A–Z)</option>
+            <option value="altura">Altura (maior primeiro)</option>
+          </select>
+        </label>
+      </form>
+
+      <div class="resultado-topo">
+        <p id="contagem" aria-live="polite"></p>
+        <button type="button" id="limpar" class="botao-limpar" hidden>Limpar filtros</button>
+      </div>
+
+      <h2 class="visualmente-oculto">Resultados</h2>
+      <div id="grade" class="grade" style="margin-bottom: 64px"></div>
+    </div>
+  </main>
+
+  <footer class="rodape">
+    <div class="recipiente">
+      <p>Projeto de extensão PJ772-2026 · Laboratório Protip (IdA/UnB) · Casa da Cultura da América Latina</p>
+      <p><a href="https://www.acervocal.unb.br/" target="_blank" rel="noopener noreferrer">Fichas técnicas no Acervo CAL ↗</a></p>
+    </div>
+  </footer>
+
+  <script type="module" src="js/navegacao.js"></script>
+  <script type="module" src="js/galeria.js"></script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Gerar miniaturas</title>
+  <!--
+    posters.html — gera a miniatura (poster.webp) de cada obra.
+    Só funciona com ferramentas/servidor.mjs ligado: abra
+    http://localhost:3000/ferramentas/posters.html
+    Use ?id=cal-0000 para gerar só uma obra.
+  -->
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+  <style>
+    body { font: 14px system-ui, sans-serif; margin: 24px; }
+    model-viewer { width: 480px; height: 600px; background: transparent; }
+    #registro { white-space: pre-line; }
+  </style>
+</head>
+<body>
+  <h1>Miniaturas das obras</h1>
+  <p id="registro">Carregando…</p>
+  <model-viewer id="mv" shadow-intensity="0.6" environment-image="neutral" interaction-prompt="none"></model-viewer>
+
+  <script type="module">
+    let molde = document.getElementById("mv");
+    const registro = document.getElementById("registro");
+    const so = new URLSearchParams(location.search).get("id");
+    const log = (t) => (registro.textContent += "\n" + t);
+
+    await customElements.whenDefined("model-viewer");
+    const obras = (await (await fetch("../data/obras.json", { cache: "no-store" })).json())
+      .filter((obra) => !so || obra.id === so);
+    registro.textContent = `${obras.length} obra(s)`;
+
+    for (const obra of obras) {
+      // Um <model-viewer> novo por obra: reaproveitar o mesmo deixa o enquadramento da obra anterior.
+      const mv = molde.cloneNode();
+      molde.replaceWith(mv);
+      molde = mv;
+      // Mesma vista inicial do visualizador: a "frente" da obra, um pouco de cima.
+      mv.cameraOrbit = `${obra.frente || 0}deg 78deg 105%`;
+      const carregou = new Promise((ok) => mv.addEventListener("load", ok, { once: true }));
+      mv.src = "../" + obra.modelo;
+      await carregou;
+      await new Promise((ok) => setTimeout(ok, 1000));
+
+      const imagem = await mv.toBlob({ mimeType: "image/webp", qualityArgument: 0.85 });
+      const resposta = await fetch(`/salvar-poster?id=${obra.id}`, { method: "POST", body: imagem });
+      log(`${obra.id}: ${resposta.ok ? "salva" : "erro — " + (await resposta.text())} (${(imagem.size / 1024).toFixed(0)} KB)`);
+    }
+    log("Pronto.");
+  </script>
+</body>
+</html>

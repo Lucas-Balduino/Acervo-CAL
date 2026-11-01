@@ -1,29 +1,75 @@
 [
   {
     "id": "cal-0803",
+    "registro": "CAL.0803",
     "titulo": "Escultura de casal",
-    "autoria": "Sem autoria no Acervo",
+    "autoria": "",
     "resumo": "Escultura doada pela Embaixada do Uruguai em 1993. Pertence à coleção inicial da CAL.",
+    "procedencia": "Embaixada do Uruguai",
+    "colecao": "Inicial",
+    "formaAquisicao": "Doação",
+    "anoAquisicao": "1993",
+    "materialTecnica": "",
+    "localProducao": "",
+    "dataProducao": "",
+    "dimensoesFicha": "",
+    "dimensoes": {
+      "largura": 11.1,
+      "altura": 22.5,
+      "profundidade": 6.5
+    },
     "modelo": "models/cal-0803/modelo.glb",
-    "poster": "",
+    "poster": "models/cal-0803/poster.webp",
+    "frente": 30,
     "urlAcervo": "https://www.acervocal.unb.br/acervo/escultura-de-casal/"
   },
   {
     "id": "cal-0631",
+    "registro": "CAL.0631",
     "titulo": "Escultura de mãos unidas",
-    "autoria": "Sem autoria no Acervo",
+    "autoria": "",
     "resumo": "Escultura doada pelo PNDA (Programa Nacional de Desenvolvimento do Artesanato) em 1993. Pertence à coleção inicial da CAL.",
+    "procedencia": "PNDA",
+    "colecao": "Inicial",
+    "formaAquisicao": "Doação",
+    "anoAquisicao": "1993",
+    "materialTecnica": "",
+    "localProducao": "",
+    "dataProducao": "",
+    "dimensoesFicha": "",
+    "dimensoes": {
+      "largura": 20.3,
+      "altura": 27.5,
+      "profundidade": 12.9
+    },
     "modelo": "models/cal-0631/modelo.glb",
-    "poster": "",
+    "poster": "models/cal-0631/poster.webp",
+    "frente": 0,
     "urlAcervo": "https://www.acervocal.unb.br/acervo/escultura-de-maos-unidas/"
   },
   {
     "id": "cal-0607",
+    "registro": "CAL.0607",
     "titulo": "Moringa com dois bicos",
-    "autoria": "Sem autoria no Acervo",
+    "autoria": "",
     "resumo": "Moringa doada pelo Governo de Santa Catarina em 1993. Pertence à coleção inicial da CAL.",
+    "procedencia": "Governo de Santa Catarina",
+    "colecao": "Inicial",
+    "formaAquisicao": "Doação",
+    "anoAquisicao": "1993",
+    "materialTecnica": "",
+    "localProducao": "",
+    "dataProducao": "",
+    "dimensoesFicha": "",
+    "dimensoes": {
+      "largura": 19.1,
+      "altura": 40.7,
+      "profundidade": 19.3
+    },
     "modelo": "models/cal-0607/modelo.glb",
-    "poster": "",
+    "poster": "models/cal-0607/poster.webp",
+    "frente": 90,
+    "destaque": true,
     "urlAcervo": "https://www.acervocal.unb.br/acervo/moringa-com-dois-bicos/"
   }
 ]
