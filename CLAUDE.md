@@ -38,6 +38,15 @@ O script corrige três problemas que o caminho .obj → Blender sempre traz: esc
 metros), material com Transmission 1 e Metallic 1, e malha sem vértices compartilhados. Resultado:
 ~22 MB → ~1,5 MB por obra. O decodificador Draco é carregado pelo próprio model-viewer.
 
+A textura do scanner sai desbotada e rosada. A cor é corrigida por obra com `--brilho`, `--saturacao`
+e `--matiz`, tendo uma foto da obra como referência (tabela de valores em `models/LEIA-ME.md`). Para
+calibrar: renderizar a obra no site com a mesma vista da foto e comparar a cor média de uma área lisa
+(`viewer.toDataURL()` + canvas) com a mesma área na foto. O visualizador mostra praticamente a cor da
+textura (iluminação `neutral`, exposição 1), então o ajuste vai na textura, não no visualizador.
+
+`sharp` precisa ficar na mesma versão que o `@gltf-transform/functions` usa (hoje 0.35.5): duas versões
+no mesmo processo quebram com "colourspace: parameter space not set".
+
 - `id` e pasta: `cal-` + número de registro com 4 dígitos (CAL.0607 → `cal-0607`).
 - Título e link devem bater com a ficha no acervo. URL limpa: `https://www.acervocal.unb.br/acervo/<slug>/`.
 
