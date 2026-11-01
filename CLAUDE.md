@@ -10,9 +10,14 @@ mantenedor do repositório: Lucas Balduino (Design – Programação Visual, Lab
 Vigência: 15/05/2026 a 31/12/2026.
 
 - **Meta:** escanear 20 obras da Casa da Cultura da América Latina (CAL) e publicá-las em 3D.
-- **Entregas do site até dez/2026:** visualizador 3D (pronto), página sobre o processo/metodologia da
-  extensão, e navegação pelas obras. A ideia ideal é um "museu virtual"; o mínimo aceitável é uma
-  galeria com busca e filtros.
+- **Entregas do site até dez/2026** (decididas em 01/11/2026):
+  1. visualizador 3D (pronto);
+  2. galeria em grade com busca e filtros;
+  3. página "Sobre o processo": difusão do trabalho de extensão, interativa e visual, que torne o
+     processo (escaneamento → tratamento → web) palpável para o público leigo;
+  4. museu virtual navegável — o principal diferencial do produto.
+- **Direitos:** o aviso "Direitos Reservados" das fichas vale para republicação das obras; publicar os
+  modelos 3D neste site está liberado.
 - **Hospedagem:** hoje GitHub Pages (`main` → https://lucas-balduino.github.io/Acervo-CAL/). O objetivo é
   integrar ao acervocal.unb.br (WordPress + Tainacan, editado pelo museólogo da CAL), de preferência no
   servidor e domínio da UnB, mas o formato não está definido. Até lá, tratar como site à parte —
