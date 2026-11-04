@@ -316,6 +316,17 @@
     </section>
   </main>
 
+  <!-- Visor das fotos dos bastidores em tela inteira (ligado por js/fotos.js) -->
+  <dialog class="visor" id="visor" aria-label="Fotos dos bastidores">
+    <div class="visor-palco">
+      <img class="visor-imagem" alt="">
+    </div>
+    <p class="visor-texto"><span class="visor-contador"></span><span class="visor-legenda"></span></p>
+    <button type="button" class="visor-botao visor-fechar" aria-label="Fechar">✕</button>
+    <button type="button" class="visor-botao visor-anterior" aria-label="Foto anterior">←</button>
+    <button type="button" class="visor-botao visor-proxima" aria-label="Próxima foto">→</button>
+  </dialog>
+
   <footer class="rodape">
     <div class="recipiente">
       <p>Projeto de extensão PJ772-2026 · Laboratório Protip (IdA/UnB) · Casa da Cultura da América Latina</p>

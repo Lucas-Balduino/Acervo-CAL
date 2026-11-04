@@ -2,11 +2,12 @@
   sobre.js — página "Sobre o processo": acompanha a rolagem, descobre qual etapa está sendo lida
   (e quanto dela já passou) e avisa o 3D (sobre-cena.js). Também cuida da trilha de etapas
   (à esquerda no computador), dos pontos e da barra de progresso do celular, dos botões de camada
-  (por cima do 3D, só na última etapa), do giro da peça ao rolar e da contagem de obras.
+  (por cima do 3D, só na última etapa), do giro da peça ao rolar, da contagem de obras e liga o visor das fotos (fotos.js).
   Sem WebGL (ou se o 3D falhar), a página continua legível: as etapas viram uma lista comum.
 */
 
 import { carregarObras, META_DE_OBRAS } from "./data.js";
+import { ligarVisor } from "./fotos.js";
 
 const historia = document.getElementById("historia");
 const palco = document.getElementById("palco");
@@ -30,6 +31,7 @@ const toque = window.matchMedia("(pointer: coarse)").matches;
 
 contarObras();
 mostrarMetodologia();
+ligarVisor([...document.querySelectorAll(".bastidores figure")], document.getElementById("visor"));
 
 let cena = null;
 let etapaAtiva = -1;

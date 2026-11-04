@@ -610,6 +610,160 @@
   }
 }
 
+/* Foto da galeria vira botão (fotos.js): clicar abre em tela inteira. */
+.foto-abrir {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+  overflow: hidden;
+}
+
+.foto-abrir img {
+  transition: transform 0.4s ease, opacity 0.2s;
+}
+
+.foto-abrir:hover img {
+  transform: scale(1.03);
+  opacity: 0.92;
+}
+
+/* --- Visor de fotos em tela inteira --- */
+
+.visor-aberto {
+  overflow: hidden;
+}
+
+.visor {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: #0e1012;
+  color: #fff;
+}
+
+.visor[open] {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+}
+
+.visor::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* Flex (e não grid) para o max-height: 100% da foto valer contra a altura do palco. */
+.visor-palco {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  padding: 64px 88px 16px;
+}
+
+.visor-imagem {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: opacity 0.25s ease;
+  touch-action: pan-y;
+}
+
+.visor-imagem.trocando {
+  opacity: 0;
+}
+
+.visor-texto {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 24px 28px;
+  font-size: 15px;
+  text-align: center;
+  color: #e8e8e8;
+}
+
+.visor-contador {
+  margin-right: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #9fb8cf;
+}
+
+.visor-botao {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.visor-botao:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.visor-botao:focus-visible {
+  outline-color: #fff;
+}
+
+.visor-fechar {
+  top: 12px;
+  right: 12px;
+}
+
+.visor-anterior,
+.visor-proxima {
+  top: calc(50% - 24px - 30px);
+}
+
+.visor-anterior {
+  left: 20px;
+}
+
+.visor-proxima {
+  right: 20px;
+}
+
+@media (max-width: 600px) {
+  .visor-palco {
+    padding: 60px 8px 12px;
+  }
+
+  /* No celular as setas ficam embaixo, ao lado da legenda (dá também para deslizar o dedo). */
+  .visor-texto {
+    padding: 0 64px 24px;
+    font-size: 14px;
+  }
+
+  .visor-anterior,
+  .visor-proxima {
+    top: auto;
+    bottom: 16px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .visor-anterior {
+    left: 10px;
+  }
+
+  .visor-proxima {
+    right: 10px;
+  }
+}
+
 /* --- Download da metodologia (fim da página) --- */
 
 .metodologia {

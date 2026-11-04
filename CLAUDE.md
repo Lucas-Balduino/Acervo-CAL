@@ -110,6 +110,7 @@ peça em pé (da rotação "crua", sem a do nó, para a final).
   duas câmeras com anéis de LEDs), feito com formas do three.js em `montarScanner` — sem modelo baixado.
 - `img/processo/` tem 5 fotos da equipe (enviadas pelo Lucas em 04/11/2026), da fase de testes com o scanner
   anterior (EinScan H) e um teste com celular; o texto da seção "Bastidores" diz isso.
+  Clicar numa foto abre o visor em tela inteira (`js/fotos.js`, um `<dialog>`), com legenda e setas/teclado/deslizar.
 - Download da metodologia: bloco `#metodologia` no fim da página, escondido (`hidden`) até o PDF final entrar em
   `docs/metodologia-gemeos-digitais-cal.pdf`. Ao adicionar o PDF, tirar o `hidden`; o botão mostra o tamanho sozinho.
   Não publicar a versão com trechos [CONFIRMAR].
