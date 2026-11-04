@@ -1,33 +1,54 @@
 # data/ — lista das obras
 
-`obras.json` é a lista que o visualizador lê. Não há banco de dados nem painel admin: para incluir uma peça, edite este arquivo e coloque o `.glb` (já otimizado, ver `models/LEIA-ME.md`) em `models/`.
+`obras.json` é a lista que o site lê. Não há banco de dados nem painel admin: para incluir uma
+peça, coloque o `.glb` (já otimizado, ver `models/LEIA-ME.md`) em `models/` e acrescente a obra aqui.
 
-Use o título e o link exatamente como estão na ficha do [Acervo CAL](https://www.acervocal.unb.br/), sem os parâmetros de busca no fim do link (`/acervo/nome-da-obra/` basta).
-
-## Campos de cada item
+## Campos escritos à mão
 
 | Campo | Obrigatório | Uso |
 |---|---|---|
-| `id` | sim | Identificador curto, igual ao nome da pasta em `models/` |
-| `titulo` | sim | Nome da obra na lista e no visualizador |
-| `autoria` | sim | Artista ou atribuição |
+| `id` | sim | `cal-` + número de registro com 4 dígitos; igual ao nome da pasta em `models/` |
+| `modelo` | sim | Caminho do `.glb`, a partir da raiz do site |
 | `resumo` | não | Texto curto de aproximação (não é a ficha museológica) |
-| `modelo` | sim | Caminho relativo ao `.glb`, a partir da raiz do site |
-| `poster` | não | Imagem de espera enquanto o 3D carrega (jpg/webp/png) |
-| `urlAcervo` | não | Link da ficha 2D em acervocal.unb.br |
+| `poster` | não | Miniatura (`models/<id>/poster.webp`), gerada por `ferramentas/posters.html` |
+| `frente` | não | Ângulo em graus (0–359) do lado principal da obra. É a vista inicial, a miniatura e o botão "Frente" do cubo |
+| `destaque` | não | `true` na obra que gira na página inicial (só uma) |
 
-## Exemplo de uma obra real
+## Campos vindos do Acervo CAL
+
+Preenchidos por `node ferramentas/sincronizar-acervo.mjs`, que busca o número de registro na API
+pública do acervocal.unb.br. **Não edite à mão**: a próxima sincronização sobrescreve.
+Para corrigir um dado, corrija no Tainacan e sincronize de novo.
+
+`registro`, `titulo`, `autoria`, `procedencia`, `colecao`, `formaAquisicao`, `anoAquisicao`,
+`materialTecnica`, `localProducao`, `dataProducao`, `dimensoesFicha`, `urlAcervo`.
+
+O script também mede o modelo 3D e grava `dimensoes` (largura, altura e profundidade em cm).
+
+## Filtros da página Obras
+
+Os filtros saem destes campos: procedência, tamanho (pela altura do modelo), material e técnica,
+local de produção, ano de aquisição e coleção. Um filtro só aparece quando pelo menos duas obras
+têm valores diferentes — com mais obras e fichas mais completas, aparecem sozinhos.
+
+## Exemplo
 
 ```json
 {
-  "id": "cal-0000",
-  "titulo": "Título da obra",
-  "autoria": "Nome da artista",
-  "resumo": "Um parágrafo para a visita em 3D.",
-  "modelo": "models/cal-0000/modelo.glb",
-  "poster": "models/cal-0000/poster.webp",
-  "urlAcervo": "https://www.acervocal.unb.br/acervo/..."
+  "id": "cal-0607",
+  "registro": "CAL.0607",
+  "titulo": "Moringa com dois bicos",
+  "autoria": "",
+  "resumo": "Moringa doada pelo Governo de Santa Catarina em 1993.",
+  "procedencia": "Governo de Santa Catarina",
+  "colecao": "Inicial",
+  "formaAquisicao": "Doação",
+  "anoAquisicao": "1993",
+  "dimensoes": { "largura": 19.1, "altura": 40.7, "profundidade": 19.3 },
+  "modelo": "models/cal-0607/modelo.glb",
+  "poster": "models/cal-0607/poster.webp",
+  "frente": 90,
+  "destaque": true,
+  "urlAcervo": "https://www.acervocal.unb.br/acervo/moringa-com-dois-bicos/"
 }
 ```
-
-Depois de salvar o JSON, recarregue a página no navegador (com o servidor local ligado).

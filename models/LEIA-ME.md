@@ -6,7 +6,7 @@ Cada obra ganha uma pasta com o mesmo `id` usado em `data/obras.json`.
 models/
   cal-0000/
     modelo.glb      ← arquivo principal (depois de otimizado, ~1–3 MB)
-    poster.webp     ← opcional, miniatura / imagem de espera
+    poster.webp     ← miniatura (cartões e imagem de espera), gerada por ferramentas/posters.html
 ```
 
 ## Convenção
@@ -42,3 +42,10 @@ medidas com a peça física**: se estiverem erradas, a escala precisa ser corrig
 
 A aparência da obra no site é definida no Blender (aba *Material Properties*). O script
 não muda cor nem material; se algo parecer diferente da peça, ajuste no Blender e exporte de novo.
+
+## Miniatura (poster.webp)
+
+Com o servidor local ligado (`node ferramentas/servidor.mjs`), abra
+`http://localhost:3000/ferramentas/posters.html?id=cal-0000` (sem `?id=`, gera todas).
+A página renderiza a obra pela "frente" definida em `data/obras.json` e salva
+`models/cal-0000/poster.webp` (~20–40 KB, fundo transparente).

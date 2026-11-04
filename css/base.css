@@ -1,6 +1,6 @@
 /*
-  base.css — reset leve, tipografia e elementos comuns.
-  Não posiciona o visualizador (isso está em layout.css e viewer.css).
+  base.css — reset leve, tipografia, botões e utilitários usados em todas as páginas.
+  Não define a estrutura das páginas (isso está em layout.css).
 */
 
 *,
@@ -9,13 +9,12 @@
   box-sizing: border-box;
 }
 
-html,
-body {
-  margin: 0;
-  height: 100%;
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
+  margin: 0;
   font-family: var(--fonte);
   color: var(--cor-texto);
   background: var(--cor-fundo);
@@ -28,8 +27,16 @@ img {
 }
 
 button,
-input {
-  font-family: inherit;
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.2;
 }
 
 a {
@@ -38,4 +45,112 @@ a {
 
 a:hover {
   color: var(--cor-destaque-escuro);
+}
+
+:focus-visible {
+  outline: 2px solid var(--cor-destaque);
+  outline-offset: 2px;
+}
+
+/* Some da tela, mas continua sendo lido por leitores de tela. */
+.visualmente-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.pular-conteudo {
+  position: absolute;
+  left: 8px;
+  top: -48px;
+  z-index: 100;
+  background: var(--cor-fundo);
+  padding: 8px 12px;
+  border: 1px solid var(--cor-destaque);
+}
+
+.pular-conteudo:focus {
+  top: 8px;
+}
+
+/* --- Botões --- */
+
+.botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 22px;
+  border: 1px solid var(--cor-destaque);
+  background: var(--cor-fundo);
+  color: var(--cor-destaque-escuro);
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.botao:hover {
+  background: var(--cor-destaque);
+  color: #fff;
+}
+
+.botao-primario {
+  background: var(--cor-destaque);
+  color: #fff;
+}
+
+.botao-primario:hover {
+  background: var(--cor-destaque-escuro);
+  border-color: var(--cor-destaque-escuro);
+}
+
+/* Botões pequenos que ficam por cima do 3D (página da obra e museu). */
+.botao-palco {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--cor-borda);
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.botao-palco:hover {
+  border-color: var(--cor-destaque);
+  color: var(--cor-destaque-escuro);
+}
+
+.botao-palco.icone {
+  padding: 0;
+}
+
+.link-seta {
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.link-seta:hover {
+  text-decoration: underline;
+}
+
+.sobretitulo {
+  margin: 0 0 12px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cor-destaque);
 }

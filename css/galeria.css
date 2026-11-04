@@ -1,0 +1,195 @@
+/*
+  galeria.css — cartões de obra (início e página Obras) e barra de busca/filtros.
+*/
+
+.grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 24px;
+}
+
+@media (max-width: 520px) {
+  .grade {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+/* --- Cartão --- */
+
+.cartao {
+  display: flex;
+  flex-direction: column;
+  color: var(--cor-texto);
+  text-decoration: none;
+}
+
+.cartao:hover {
+  color: var(--cor-texto);
+}
+
+.cartao-imagem {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  background: var(--cor-estudio);
+  overflow: hidden;
+  border: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.cartao-imagem img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.4s ease;
+}
+
+.cartao:hover .cartao-imagem {
+  border-color: var(--cor-destaque);
+}
+
+.cartao:hover .cartao-imagem img {
+  transform: scale(1.04);
+}
+
+.cartao-selo {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 2px 8px;
+  background: var(--cor-fundo);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--cor-destaque-escuro);
+}
+
+.cartao-texto {
+  padding: 12px 2px 0;
+}
+
+.cartao-registro {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--cor-destaque);
+}
+
+.cartao-titulo {
+  margin: 2px 0 4px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.cartao:hover .cartao-titulo {
+  text-decoration: underline;
+  text-decoration-color: var(--cor-destaque);
+  text-underline-offset: 3px;
+}
+
+.cartao-meta {
+  margin: 0;
+  font-size: 13px;
+  color: var(--cor-texto-suave);
+}
+
+/* --- Busca e filtros --- */
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px 16px;
+  padding: 20px 0;
+  border-top: 1px solid var(--cor-borda);
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 160px;
+}
+
+.campo > span {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--cor-texto-suave);
+}
+
+.campo input,
+.campo select {
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--cor-borda);
+  background: var(--cor-fundo);
+  font-size: 15px;
+  border-radius: 0;
+}
+
+.campo input:hover,
+.campo select:hover {
+  border-color: var(--cor-texto-suave);
+}
+
+.campo input:focus,
+.campo select:focus {
+  border-color: var(--cor-destaque);
+  outline: none;
+  box-shadow: 0 0 0 1px var(--cor-destaque);
+}
+
+.campo-busca {
+  flex: 1 1 260px;
+}
+
+.facetas {
+  display: contents;
+}
+
+.resultado-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 56px;
+  margin-bottom: 8px;
+}
+
+.resultado-topo p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--cor-texto-suave);
+}
+
+.botao-limpar {
+  border: 0;
+  background: none;
+  padding: 8px 0;
+  font-size: 14px;
+  color: var(--cor-destaque);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.lista-vazia {
+  grid-column: 1 / -1;
+  padding: 48px 16px;
+  text-align: center;
+  color: var(--cor-texto-suave);
+  border: 1px dashed var(--cor-borda);
+}
+
+@media (max-width: 520px) {
+  .campo {
+    flex: 1 1 calc(50% - 8px);
+    min-width: 0;
+  }
+
+  .campo-busca {
+    flex-basis: 100%;
+  }
+}

@@ -1,7 +1,7 @@
 /*
   tokens.css — identidade visual alinhada ao acervo 2D da CAL
   (acervocal.unb.br: Roboto, fundo branco, azul institucional).
-  Altere cores e fontes só neste arquivo.
+  Altere cores, fontes e medidas só neste arquivo.
 */
 
 :root {
@@ -10,11 +10,17 @@
   --cor-texto-suave: #495057;
   --cor-destaque: #1d5c86;
   --cor-destaque-escuro: #062a57;
+  --cor-destaque-claro: #f4f8fb;
   --cor-areia: #d6c7b0;
-  --cor-borda: #ededed;
+  --cor-areia-clara: #efe8dc;
+  --cor-borda: #e2e2e2;
   --cor-estudio: #ececec;
   --cor-rodape: #2c2d2d;
+
   --fonte: "Roboto", system-ui, sans-serif;
-  --largura-sidebar: 280px;
+
   --altura-cabecalho: 64px;
+  --largura-max: 1200px;
+  --margem: clamp(16px, 4vw, 40px);
+  --largura-ficha: 380px;
 }

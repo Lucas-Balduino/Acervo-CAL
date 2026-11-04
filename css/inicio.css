@@ -1,0 +1,189 @@
+/*
+  inicio.css — página inicial: destaque com obra em 3D, progresso e apresentação do projeto.
+*/
+
+.hero {
+  background: var(--cor-areia-clara);
+  border-bottom: 1px solid var(--cor-areia);
+}
+
+.hero .recipiente {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 32px;
+  min-height: min(620px, calc(100vh - var(--altura-cabecalho)));
+}
+
+.hero-texto {
+  padding: 48px 0;
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: clamp(36px, 5.5vw, 60px);
+  letter-spacing: -0.01em;
+}
+
+.hero-chamada {
+  max-width: 520px;
+  margin: 20px 0 0;
+  font-size: clamp(17px, 1.6vw, 19px);
+  color: var(--cor-texto-suave);
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.progresso {
+  max-width: 360px;
+  margin-top: 40px;
+  font-size: 14px;
+  color: var(--cor-texto-suave);
+}
+
+.progresso strong {
+  font-size: 20px;
+  color: var(--cor-texto);
+}
+
+.progresso-barra {
+  height: 4px;
+  margin-top: 8px;
+  background: var(--cor-areia);
+}
+
+.progresso-barra span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--cor-destaque);
+  transition: width 0.8s ease;
+}
+
+.hero-modelo {
+  position: relative;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  padding-top: 32px;
+}
+
+.hero-modelo model-viewer {
+  flex: 1;
+  width: 100%;
+  min-height: 420px;
+  background: transparent;
+  --poster-color: transparent;
+}
+
+.hero-legenda {
+  align-self: flex-end;
+  margin: 0 0 24px;
+  padding: 8px 12px;
+  background: var(--cor-fundo);
+  font-size: 13px;
+  text-decoration: none;
+  color: var(--cor-texto);
+}
+
+.hero-legenda strong {
+  display: block;
+  font-size: 14px;
+}
+
+.hero-legenda:hover {
+  color: var(--cor-destaque-escuro);
+  text-decoration: underline;
+}
+
+@media (max-width: 860px) {
+  .hero .recipiente {
+    grid-template-columns: 1fr;
+    gap: 0;
+    min-height: 0;
+  }
+
+  .hero-texto {
+    padding-bottom: 8px;
+  }
+
+  .hero-modelo model-viewer {
+    min-height: 360px;
+  }
+}
+
+/* --- O projeto --- */
+
+.projeto {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 48px;
+}
+
+.projeto h2 {
+  margin: 0 0 16px;
+  font-size: 24px;
+}
+
+.projeto p {
+  margin: 0 0 16px;
+  color: var(--cor-texto-suave);
+}
+
+.projeto .etapas {
+  margin: 0;
+}
+
+@media (max-width: 860px) {
+  .projeto {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+/* --- Convite para o museu virtual --- */
+
+.convite-museu {
+  background: var(--cor-destaque-escuro);
+  color: #fff;
+}
+
+.convite-museu .recipiente {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.convite-museu h2 {
+  margin: 0 0 8px;
+  font-size: 28px;
+}
+
+.convite-museu p {
+  max-width: 560px;
+  margin: 0;
+  color: #d7e3ee;
+}
+
+.convite-museu .sobretitulo {
+  margin-bottom: 8px;
+  color: var(--cor-areia);
+}
+
+.convite-museu .botao-primario {
+  background: #fff;
+  border-color: #fff;
+  color: var(--cor-destaque-escuro);
+}
+
+.convite-museu .botao-primario:hover {
+  background: var(--cor-areia-clara);
+  border-color: var(--cor-areia-clara);
+}

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Museu virtual · Gêmeos Digitais CAL</title>
+  <meta name="description" content="Uma sala virtual para visitar as obras da CAL em 3D e examiná-las de perto.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3 28 9.5v13L16 29 4 22.5v-13z' fill='%231d5c86'/%3E%3Cpath d='M16 16 28 9.5M16 16 4 9.5M16 16v13' stroke='%23fff' stroke-width='1.6' fill='none'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/museu.css">
+
+  <!-- three.js (https://threejs.org) — motor 3D da sala; vem do CDN jsDelivr -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body class="pagina-larga">
+  <a class="pular-conteudo" href="obras.html">Pular o 3D e ver a lista de obras</a>
+
+  <header class="cabecalho">
+    <a class="marca" href="./">
+      <span class="marca-instituicao">UnB · Casa da Cultura da América Latina</span>
+      <span class="marca-titulo">Gêmeos Digitais CAL</span>
+    </a>
+    <button type="button" class="botao-menu" aria-expanded="false" aria-controls="menu">Menu</button>
+    <nav id="menu" class="menu" aria-label="Principal">
+      <a href="./">Início</a>
+      <a href="obras.html">Obras</a>
+      <a href="museu.html" aria-current="page">Museu virtual</a>
+      <a href="sobre.html">Sobre o processo</a>
+      <a class="menu-externo" href="https://www.acervocal.unb.br/" target="_blank" rel="noopener noreferrer">Acervo CAL ↗</a>
+    </nav>
+  </header>
+
+  <main class="museu">
+    <div id="museu-palco" class="museu-palco">
+      <div class="museu-topo">
+        <button type="button" id="botao-ajuda" class="botao-palco" aria-expanded="false" aria-controls="museu-ajuda">Como navegar</button>
+        <ul id="museu-ajuda" class="museu-ajuda" hidden>
+          <li class="so-mouse"><strong>Arraste</strong> para olhar em volta</li>
+          <li class="so-mouse"><strong>Clique no chão</strong> para andar até lá</li>
+          <li class="so-mouse"><strong>Clique numa obra</strong> para examiná-la de perto</li>
+          <li class="so-mouse"><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> ou setas para caminhar</li>
+          <li class="so-mouse"><kbd>Esc</kbd> volta ao museu</li>
+          <li class="so-toque"><strong>Arraste</strong> para olhar em volta</li>
+          <li class="so-toque"><strong>Toque no chão</strong> para andar até lá</li>
+          <li class="so-toque"><strong>Toque numa obra</strong> para examiná-la de perto</li>
+          <li>Ou use <strong>Próxima obra</strong> para seguir o percurso</li>
+        </ul>
+      </div>
+
+      <div id="museu-rotulo" class="museu-rotulo" hidden></div>
+
+      <section id="museu-ficha" class="museu-ficha" aria-live="polite" hidden>
+        <p class="museu-ficha-registro sobretitulo"></p>
+        <h2></h2>
+        <p class="museu-ficha-procedencia"></p>
+        <p class="museu-ficha-medidas"></p>
+        <p class="museu-ficha-resumo"></p>
+        <p class="museu-ficha-dica so-mouse">Arraste para girar · role para aproximar · duplo clique centraliza</p>
+        <p class="museu-ficha-dica so-toque">Arraste para girar · pince para aproximar</p>
+        <div class="museu-ficha-acoes">
+          <a class="botao botao-primario museu-ficha-link" href="obras.html">Ver ficha completa</a>
+          <button type="button" id="botao-voltar-museu" class="botao">← Voltar ao museu</button>
+        </div>
+      </section>
+
+      <nav class="museu-percurso" aria-label="Percurso pelas obras">
+        <button type="button" id="botao-anterior">← Anterior</button>
+        <p id="museu-contador" aria-live="polite"></p>
+        <button type="button" id="botao-proxima">Próxima obra →</button>
+      </nav>
+    </div>
+
+    <div id="museu-entrada" class="museu-entrada">
+      <div class="museu-entrada-caixa">
+        <p class="sobretitulo">Gêmeos Digitais CAL</p>
+        <h1>Museu virtual</h1>
+        <p>
+          Caminhe por uma sala com as obras digitalizadas do acervo da CAL.
+          Aproxime-se de cada peça para ver a ficha e abri-la em detalhe.
+        </p>
+        <div class="museu-carga">
+          <span id="museu-estado" role="status">Preparando a sala…</span>
+          <div class="museu-carga-barra"><span id="museu-barra"></span></div>
+        </div>
+        <button type="button" id="botao-entrar" class="botao botao-primario" disabled>Carregando…</button>
+        <a class="link-alternativo" href="obras.html">Prefere uma lista? Ver as obras</a>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="js/navegacao.js"></script>
+  <script type="module" src="js/museu.js"></script>
+</body>
+</html>
