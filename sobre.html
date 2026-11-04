@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sobre o processo · Gêmeos Digitais CAL</title>
-  <meta name="description" content="Como as obras da CAL são escaneadas e transformadas em Gêmeos Digitais.">
+  <meta name="description" content="Como uma obra do acervo da CAL vira um Gêmeo Digital: escaneamento, nuvem de pontos, malha, textura, tratamento e publicação, passo a passo em 3D.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3 28 9.5v13L16 29 4 22.5v-13z' fill='%231d5c86'/%3E%3Cpath d='M16 16 28 9.5M16 16 4 9.5M16 16v13' stroke='%23fff' stroke-width='1.6' fill='none'/%3E%3C/svg%3E">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,6 +14,17 @@
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/sobre.css">
+
+  <!-- three.js (https://threejs.org) — motor 3D das etapas; vem do CDN jsDelivr -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+      }
+    }
+  </script>
 </head>
 <body>
   <a class="pular-conteudo" href="#conteudo">Pular para o conteúdo</a>
@@ -34,43 +45,287 @@
   </header>
 
   <main id="conteudo">
-    <div class="recipiente">
-      <div class="pagina-topo">
-        <span class="selo">Em desenvolvimento</span>
-        <h1 style="margin-top: 16px">Sobre o processo</h1>
-        <p>
-          Esta página vai contar, de forma visual e interativa, como uma obra do acervo vira um
-          Gêmeo Digital. Enquanto isso, um resumo das etapas:
-        </p>
+    <div class="recipiente sobre-topo">
+      <p class="sobretitulo">Sobre o processo</p>
+      <h1>Da peça ao Gêmeo Digital</h1>
+      <p class="sobre-chamada">
+        Como uma obra do acervo da CAL vira um modelo 3D que qualquer pessoa pode girar no navegador?
+        Role a página e acompanhe a <strong>Moringa com dois bicos</strong> (CAL.0607) em cada etapa.
+      </p>
+      <p class="sobre-rolar" aria-hidden="true">Role para começar ↓</p>
+    </div>
+
+    <section id="historia" class="historia" aria-label="O processo, etapa por etapa">
+      <nav class="trilha" id="trilha" aria-label="Etapas do processo"><ol></ol></nav>
+
+      <div class="historia-palco" id="palco">
+        <p class="palco-etapa" aria-hidden="true"><span id="palco-numero">01</span><span id="palco-nome">A peça</span></p>
+        <p class="palco-carga" id="palco-carga" role="status">Carregando a moringa…</p>
+        <p class="palco-dica" id="palco-dica" aria-hidden="true">Arraste para girar</p>
+        <nav class="palco-pontos" id="palco-pontos" aria-label="Ir para uma etapa"></nav>
+        <div class="camadas palco-camadas" id="camadas" role="group" aria-label="Camada do modelo" hidden>
+          <button type="button" data-camada="pontos" aria-pressed="false">Pontos</button>
+          <button type="button" data-camada="malha" aria-pressed="false">Malha</button>
+          <button type="button" data-camada="textura" aria-pressed="true">Textura</button>
+        </div>
+        <div class="palco-progresso" aria-hidden="true"><i id="palco-progresso"></i></div>
       </div>
 
-      <div class="em-breve">
-        <ol class="etapas">
-          <li>
-            <strong>Captura na CAL</strong>
-            <span>Com a obra apoiada num suporte fixo, a equipe circula ao redor dela com um scanner 3D portátil. Peças que podem ser viradas com segurança são escaneadas também de cabeça para baixo.</span>
-          </li>
-          <li>
-            <strong>Nuvem de pontos e malha</strong>
-            <span>O software do scanner une as capturas numa nuvem de pontos e gera uma malha de 200 mil faces, com a textura colorida da peça.</span>
-          </li>
-          <li>
-            <strong>Tratamento no Blender</strong>
-            <span>O modelo é centralizado, orientado e tem o material ajustado para ficar fiel à obra.</span>
-          </li>
-          <li>
-            <strong>Publicação</strong>
-            <span>O arquivo é comprimido (de cerca de 22 MB para 1,5 MB) e entra no site com os dados da ficha do Acervo CAL.</span>
-          </li>
-        </ol>
-        <p>
-          Projeto de extensão PJ772-2026 — “Expansão do Acervo da CAL e Consolidação de Gêmeos Digitais
-          para Preservação e Acessibilidade”, Laboratório Protip, Instituto de Artes da UnB.
-        </p>
-        <a class="botao botao-primario" href="obras.html">Ver as obras</a>
+      <div class="historia-etapas">
+        <article class="etapa" id="etapa-peca" data-etapa="obra" data-nome="A peça">
+          <div class="etapa-cartao">
+            <p class="etapa-numero">01</p>
+            <h2>Tudo começa com a peça</h2>
+            <p>
+              A moringa de barro, com seus dois bicos, tem cerca de 40 cm de altura e faz parte do acervo
+              da Casa da Cultura da América Latina. É uma das 20 obras escolhidas para ganhar um
+              <strong>Gêmeo Digital</strong>: uma cópia em 3D da forma e das cores da obra.
+            </p>
+            <p>
+              O Gêmeo Digital não substitui a obra. Ele serve para registrar a peça com detalhe e para
+              mostrá-la a quem não pode visitar a CAL.
+            </p>
+          </div>
+        </article>
+
+        <article class="etapa" id="etapa-captura" data-etapa="captura" data-nome="Captura">
+          <div class="etapa-cartao">
+            <p class="etapa-numero">02</p>
+            <h2>Escanear sem tocar</h2>
+            <p>
+              O scanner 3D é calibrado na própria CAL, logo antes da captura. A obra fica parada sobre um
+              suporte fixo, e a equipe circula em volta dela com o scanner na mão.
+            </p>
+            <p>
+              O aparelho projeta luz sobre a peça, e suas câmeras registram como essa luz se deforma na
+              superfície. Com isso, ele calcula a posição de milhares de <strong>pontos</strong> e guarda
+              também as cores.
+            </p>
+            <p class="etapa-dica">Role devagar: o scanner dá a volta na moringa.</p>
+            <p class="etapa-nota">Equipamento: scanner portátil Creality CR-Scan Raptor e programa Creality Scan.</p>
+          </div>
+        </article>
+
+        <article class="etapa" id="etapa-projetos" data-etapa="projetos" data-nome="Duas capturas">
+          <div class="etapa-cartao">
+            <p class="etapa-numero">03</p>
+            <h2>De cabeça para baixo</h2>
+            <p>
+              Na primeira volta, a base da peça fica escondida. Por isso, quando é seguro virar a obra, a
+              equipe faz uma <strong>segunda captura</strong>, com a peça de cabeça para baixo ou deitada.
+            </p>
+            <p>
+              No computador, as duas capturas são alinhadas pelas áreas que aparecem nas duas e se juntam
+              numa única <strong>nuvem de pontos</strong>.
+            </p>
+            <p class="etapa-nota">Quando não é seguro virar uma obra, a parte em que ela se apoia fica sem registro.</p>
+          </div>
+        </article>
+
+        <article class="etapa" id="etapa-malha" data-etapa="malha" data-nome="Malha">
+          <div class="etapa-cartao">
+            <p class="etapa-numero">04</p>
+            <h2>Pontos viram triângulos</h2>
+            <p>
+              Em seguida, o programa liga os pontos e forma uma <strong>malha</strong>: uma superfície feita
+              de triângulos. Nessa etapa também são suavizadas as imperfeições e preenchidos os pequenos furos.
+            </p>
+            <p>
+              Todas as obras usam <strong>200 mil triângulos</strong>. É detalhe suficiente para ver as marcas
+              da peça, num arquivo leve o bastante para abrir no celular.
+            </p>
+            <p class="etapa-dica">Role para aproximar e ver os triângulos.</p>
+          </div>
+        </article>
+
+        <article class="etapa" id="etapa-textura" data-etapa="textura" data-nome="Textura">
+          <div class="etapa-cartao">
+            <p class="etapa-numero">05</p>
+            <h2>A pele da peça</h2>
+            <p>
+              As cores registradas pelo scanner viram uma imagem, a <strong>textura</strong>. Para guardar
+              essa imagem, a superfície é desembrulhada em pedaços planos, como um quebra-cabeça.
+            </p>
+            <p>
+              Cada triângulo da malha sabe qual pedaço da imagem é o seu. Assim, a textura volta para o
+              lugar certo quando a peça é montada.
+            </p>
+            <p class="etapa-dica">Role para ver a moringa se abrir e se fechar.</p>
+          </div>
+        </article>
+
+        <article class="etapa" id="etapa-blender" data-etapa="blender" data-nome="Tratamento">
+          <div class="etapa-cartao">
+            <p class="etapa-numero">06</p>
+            <h2>Arrumar a peça no Blender</h2>
+            <p>
+              O modelo sai do programa do scanner deitado e fora do centro. No <strong>Blender</strong>,
+              um programa livre de modelagem 3D, ele é centralizado, colocado em pé e conferido contra
+              as medidas da obra.
+            </p>
+            <p>
+              O material também é ajustado ali, comparando o modelo com a peça, para que as cores e o
+              brilho fiquem parecidos com os da obra.
+            </p>
+          </div>
+        </article>
+
+        <article class="etapa" id="etapa-web" data-etapa="web" data-nome="Otimização">
+          <div class="etapa-cartao">
+            <p class="etapa-numero">07</p>
+            <h2>Leve para a internet</h2>
+            <p>
+              Um programa criado neste projeto guarda a malha e as cores de um jeito mais compacto, sem
+              mudar a aparência. Os mesmos 200 mil triângulos passam a ocupar cerca de
+              <strong>15 vezes menos espaço</strong>.
+            </p>
+            <div class="comparacao" role="img" aria-label="Tamanho do arquivo: cerca de 22 MB ao sair do Blender e cerca de 1,5 MB no site.">
+              <div class="comparacao-linha">
+                <span>Ao sair do Blender</span>
+                <div class="comparacao-barra"><i style="--tamanho: 1"></i></div>
+                <strong>≈ 22 MB</strong>
+              </div>
+              <div class="comparacao-linha">
+                <span>No site</span>
+                <div class="comparacao-barra"><i style="--tamanho: 0.07"></i></div>
+                <strong>≈ 1,5 MB</strong>
+              </div>
+            </div>
+            <p>Com isso, a obra abre em poucos segundos, inclusive no celular.</p>
+          </div>
+        </article>
+
+        <article class="etapa" id="etapa-site" data-etapa="site" data-nome="No site">
+          <div class="etapa-cartao">
+            <p class="etapa-numero">08</p>
+            <h2>Pronta para visitar</h2>
+            <p>
+              A obra ganha uma página neste site, com os dados da ficha do Acervo CAL, e entra no museu
+              virtual. Agora é com você: troque as camadas no 3D (pontos, malha ou textura) e veja
+              as etapas na mesma peça.
+            </p>
+            <div class="acoes">
+              <a class="botao botao-primario" href="obra.html?id=cal-0607">Ver a moringa</a>
+              <a class="botao" href="museu.html">Entrar no museu</a>
+            </div>
+          </div>
+        </article>
       </div>
-    </div>
+    </section>
+
+    <section class="secao bastidores">
+      <div class="recipiente">
+        <p class="sobretitulo">Bastidores</p>
+        <h2>A equipe em ação</h2>
+        <p class="bastidores-texto">
+          Fotos das sessões de teste, ainda com o scanner anterior (EinScan H, da Shining 3D) e com
+          outras técnicas que a equipe experimentou. O método adotado é o mesmo usado hoje com o
+          Creality Raptor: a peça parada e o scanner na mão.
+        </p>
+        <div class="bastidores-fotos">
+          <figure>
+            <img src="img/processo/escaneamento-portatil.webp" width="900" height="1200" loading="lazy"
+              alt="Integrante da equipe segura o scanner 3D, ligado por cabo ao notebook, ao lado de uma pequena peça de cerâmica apoiada sobre um cubo branco.">
+            <figcaption>A peça fica parada sobre um suporte, e quem escaneia circula em volta dela.</figcaption>
+          </figure>
+          <figure>
+            <img src="img/processo/escaneamento-em-dupla.webp" width="600" height="800" loading="lazy"
+              alt="Uma integrante aponta o scanner para uma escultura de barro sobre a mesa, enquanto outro integrante segura o cabo.">
+            <figcaption>Em dupla: uma pessoa conduz o scanner e a outra cuida do cabo.</figcaption>
+          </figure>
+          <figure>
+            <img src="img/processo/equipe-no-computador.webp" width="900" height="1200" loading="lazy"
+              alt="Três integrantes da equipe observam o notebook, que mostra a captura em andamento; o scanner está apoiado na mesa.">
+            <figcaption>No computador, a equipe confere o que ainda falta registrar.</figcaption>
+          </figure>
+          <figure>
+            <img src="img/processo/programa-do-scanner.webp" width="450" height="800" loading="lazy"
+              alt="Notebook com o programa do scanner aberto, mostrando o modelo 3D de uma peça; o scanner está na base, ao lado.">
+            <figcaption>O programa do scanner mostra o modelo se formando na tela.</figcaption>
+          </figure>
+          <figure>
+            <img src="img/processo/teste-com-celular.webp" width="450" height="800" loading="lazy"
+              alt="Dois integrantes seguram barras de luz enquanto outro fotografa com o celular uma peça sobre a mesa.">
+            <figcaption>Teste com celular e luzes de apoio, para comparar outras formas de captura.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="secao porque">
+      <div class="recipiente">
+        <p class="sobretitulo">Por que fazer isso</p>
+        <h2>O que um Gêmeo Digital permite</h2>
+        <ul class="porque-lista">
+          <li>
+            <strong>Preservar</strong>
+            <span>Um registro detalhado da forma e das cores de cada peça, que fica como referência mesmo se a obra sofrer algum dano.</span>
+          </li>
+          <li>
+            <strong>Abrir o acervo</strong>
+            <span>Peças guardadas ou que não podem ser tocadas passam a ser vistas de todos os lados, de qualquer lugar.</span>
+          </li>
+          <li>
+            <strong>Ensinar</strong>
+            <span>Os modelos podem ser usados em aulas, pesquisas e mediações sem nenhum risco para as obras.</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="secao">
+      <div class="recipiente projeto-ficha">
+        <div>
+          <p class="sobretitulo">O projeto</p>
+          <h2>Expansão do Acervo da CAL e Consolidação de Gêmeos Digitais</h2>
+          <p>
+            Projeto de extensão da Universidade de Brasília que digitaliza obras da Casa da Cultura da
+            América Latina para preservação e acessibilidade.
+            <strong id="contagem-obras">–</strong> de <span id="meta-obras">20</span> obras já estão no site.
+          </p>
+          <div class="acoes">
+            <a class="botao botao-primario" href="obras.html">Ver as obras</a>
+            <a class="botao" href="https://www.acervocal.unb.br/" target="_blank" rel="noopener noreferrer">Acervo CAL ↗</a>
+          </div>
+          <!-- Escondido até o PDF entrar em docs/: ao adicionar o arquivo, tirar o "hidden". -->
+          <div class="metodologia" id="metodologia" hidden>
+            <div>
+              <strong>Metodologia detalhada</strong>
+              <span>O passo a passo completo: equipamento, calibração, captura, processamento e preparo para a web.</span>
+            </div>
+            <a class="botao botao-primario" id="metodologia-link" href="docs/metodologia-gemeos-digitais-cal.pdf" download>Baixar PDF</a>
+          </div>
+        </div>
+        <dl class="ficha-projeto">
+          <dt>Código</dt>
+          <dd>PJ772-2026</dd>
+          <dt>Realização</dt>
+          <dd>Laboratório Protip, Instituto de Artes (IdA/UnB), com a Casa da Cultura da América Latina</dd>
+          <dt>Orientação</dt>
+          <dd>Prof. Miguel Eduardo Gutierrez Paredes</dd>
+          <dt>Bolsistas</dt>
+          <dd>Lucas Balduino e Luara Piccinin</dd>
+          <dt>Voluntário</dt>
+          <dd>Vinicius Deleon</dd>
+          <dt>Período</dt>
+          <dd>Maio a dezembro de 2026</dd>
+          <dt>Ferramentas</dt>
+          <dd>Creality CR-Scan Raptor, Creality Scan, Blender, three.js e model-viewer</dd>
+        </dl>
+      </div>
+    </section>
   </main>
+
+  <!-- Visor das fotos dos bastidores em tela inteira (ligado por js/fotos.js) -->
+  <dialog class="visor" id="visor" aria-label="Fotos dos bastidores">
+    <div class="visor-palco">
+      <img class="visor-imagem" alt="">
+    </div>
+    <p class="visor-texto"><span class="visor-contador"></span><span class="visor-legenda"></span></p>
+    <button type="button" class="visor-botao visor-fechar" aria-label="Fechar">✕</button>
+    <button type="button" class="visor-botao visor-anterior" aria-label="Foto anterior">←</button>
+    <button type="button" class="visor-botao visor-proxima" aria-label="Próxima foto">→</button>
+  </dialog>
 
   <footer class="rodape">
     <div class="recipiente">
@@ -80,5 +335,6 @@
   </footer>
 
   <script type="module" src="js/navegacao.js"></script>
+  <script type="module" src="js/sobre.js"></script>
 </body>
 </html>

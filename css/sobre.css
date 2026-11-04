@@ -1,0 +1,883 @@
+/*
+  sobre.css — página "Sobre o processo": abertura, a história em etapas (texto que rola ao lado
+  de um palco 3D fixo; no celular o palco fica em cima), fotos da equipe, "por que" e a ficha do projeto.
+  O palco só aparece com a classe .com-3d (posta por sobre.js); sem ela, as etapas viram uma lista.
+*/
+
+/* --- Abertura --- */
+
+.sobre-topo {
+  padding-top: 56px;
+  padding-bottom: 40px;
+}
+
+.sobre-topo h1 {
+  margin: 0;
+  font-size: clamp(36px, 6vw, 64px);
+  letter-spacing: -0.01em;
+}
+
+.sobre-chamada {
+  max-width: 640px;
+  margin: 20px 0 0;
+  font-size: clamp(17px, 1.7vw, 20px);
+  color: var(--cor-texto-suave);
+}
+
+.sobre-rolar {
+  margin: 32px 0 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--cor-destaque);
+}
+
+/* --- História: etapas + palco --- */
+
+.historia {
+  border-top: 1px solid var(--cor-borda);
+}
+
+.historia-palco {
+  display: none;
+}
+
+.etapa-cartao {
+  max-width: 460px;
+}
+
+.etapa-numero {
+  margin: 0;
+  font-size: 56px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--cor-areia);
+}
+
+.etapa h2 {
+  margin: 8px 0 16px;
+  font-size: clamp(26px, 3vw, 34px);
+}
+
+.etapa p {
+  margin: 0 0 14px;
+  font-size: 17px;
+  color: var(--cor-texto-suave);
+}
+
+.etapa strong {
+  color: var(--cor-texto);
+}
+
+.etapa .etapa-dica {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--cor-destaque);
+}
+
+.etapa .etapa-nota {
+  margin-top: 20px;
+  padding-left: 12px;
+  border-left: 2px solid var(--cor-areia);
+  font-size: 14px;
+}
+
+/* Sem 3D: lista comum, sem dicas de rolagem nem botões de camada. */
+.historia:not(.com-3d) .historia-etapas {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 16px var(--margem) 48px;
+}
+
+.historia:not(.com-3d) .etapa {
+  padding: 32px 0;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.historia:not(.com-3d) .etapa-dica,
+.historia:not(.com-3d) .trilha {
+  display: none;
+}
+
+/* Com 3D */
+.com-3d .historia-palco {
+  display: block;
+  position: sticky;
+  top: var(--altura-cabecalho);
+  overflow: hidden;
+  background: #efe8dc;
+  transition: background-color 0.8s ease;
+}
+
+.com-3d .historia-palco canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  cursor: grab;
+  touch-action: pan-y; /* rolar a página continua funcionando por cima do 3D */
+}
+
+.com-3d .historia-palco.pronto canvas {
+  opacity: 1;
+}
+
+.com-3d .historia-palco canvas:active {
+  cursor: grabbing;
+}
+
+/*
+  Cada etapa é bem mais alta que a tela, e o cartão de texto fica preso (sticky) enquanto ela
+  rola: a animação acontece com o texto parado. Etapas com animação ligada à rolagem são mais
+  longas (--rolagem). O progresso vai de 0 (cartão acaba de prender) a 1 (cartão vai soltar).
+*/
+.com-3d .etapa {
+  --rolagem: 480vh;
+  height: var(--rolagem);
+}
+
+.com-3d .etapa:is([data-etapa="obra"], [data-etapa="web"], [data-etapa="site"]) {
+  --rolagem: 300vh;
+}
+
+.com-3d .etapa-cartao {
+  position: sticky;
+  top: var(--topo-cartao);
+  min-height: calc(100vh - var(--topo-cartao));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start; /* sem isso, grupos de botões esticam até a largura do cartão */
+  opacity: 0.3;
+  transition: opacity 0.5s ease;
+}
+
+.com-3d .etapa-cartao > * {
+  max-width: 460px;
+}
+
+.com-3d .etapa.ativa .etapa-cartao {
+  opacity: 1;
+}
+
+/* Textos por cima do palco */
+.palco-etapa,
+.palco-carga,
+.palco-dica {
+  position: absolute;
+  margin: 0;
+  pointer-events: none;
+  color: var(--cor-texto);
+  transition: color 0.8s ease;
+}
+
+.palco-etapa {
+  top: 16px;
+  left: 16px;
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.palco-etapa span:first-child {
+  font-weight: 700;
+  color: var(--cor-destaque);
+}
+
+.palco-carga {
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+}
+
+.palco-carga[hidden] {
+  display: none;
+}
+
+.palco-dica {
+  right: 16px;
+  bottom: 16px;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.palco-pontos {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  display: flex;
+}
+
+.palco-pontos button {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.palco-pontos button::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  color: var(--cor-texto-suave);
+  transition: background 0.3s, transform 0.3s;
+}
+
+.palco-pontos button[aria-current="step"]::before {
+  background: currentColor;
+  transform: scale(1.25);
+}
+
+.historia-palco.escuro :is(.palco-etapa, .palco-carga, .palco-dica) {
+  color: #f1f1f1;
+}
+
+.historia-palco.escuro .palco-etapa span:first-child {
+  color: #8cc4ff;
+}
+
+.historia-palco.escuro .palco-pontos button::before {
+  color: #d0d0d0;
+}
+
+/* Camadas (só na última etapa), por cima do 3D */
+.palco-camadas {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  margin: 0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.palco-camadas[hidden] {
+  display: none;
+}
+
+/* Barra fina do progresso da etapa (no celular, onde não há trilha) */
+.palco-progresso {
+  display: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: rgba(127, 127, 127, 0.25);
+}
+
+.palco-progresso i {
+  display: block;
+  height: 100%;
+  width: calc(var(--progresso, 0) * 100%);
+  background: var(--cor-destaque);
+}
+
+.historia-palco.escuro .palco-progresso i {
+  background: #8cc4ff;
+}
+
+/* --- Trilha: lista das etapas à esquerda, que se preenche com a rolagem --- */
+
+.trilha {
+  display: none;
+}
+
+.trilha ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.trilha button {
+  display: grid;
+  grid-template-columns: 3px auto 1fr;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--cor-texto-suave);
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.trilha-barra {
+  position: relative;
+  height: 44px;
+  background: var(--cor-borda);
+}
+
+.trilha-barra i {
+  position: absolute;
+  inset: 0 0 auto;
+  height: calc(var(--progresso, 0) * 100%);
+  background: var(--cor-destaque);
+}
+
+.trilha-numero {
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--cor-areia);
+}
+
+.trilha button:hover {
+  color: var(--cor-destaque-escuro);
+}
+
+.trilha button[aria-current="step"] {
+  color: var(--cor-texto);
+  font-weight: 500;
+}
+
+.trilha button[aria-current="step"] .trilha-numero {
+  color: var(--cor-destaque);
+}
+
+/* Computador: texto à esquerda, palco à direita */
+@media (min-width: 900px) {
+  .historia.com-3d {
+    display: grid;
+    grid-template-columns: clamp(170px, 15vw, 230px) minmax(0, 5fr) minmax(0, 7fr);
+  }
+
+  .com-3d .trilha {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: start;
+    position: sticky;
+    top: var(--altura-cabecalho);
+    height: calc(100vh - var(--altura-cabecalho));
+    display: flex;
+    align-items: center;
+    padding: 0 16px 0 var(--margem);
+  }
+
+  .com-3d .palco-pontos {
+    display: none; /* a trilha faz esse papel */
+  }
+
+  .com-3d .historia-palco {
+    grid-column: 3;
+    grid-row: 1;
+    align-self: start; /* sem isso o item estica e o "sticky" não funciona */
+    height: calc(100vh - var(--altura-cabecalho));
+  }
+
+  .com-3d .historia-etapas {
+    grid-column: 2;
+    grid-row: 1;
+    padding: 0 40px 0 16px;
+  }
+
+  .com-3d {
+    --topo-cartao: var(--altura-cabecalho);
+  }
+}
+
+/* Telas médias: a trilha mostra só os números (o nome continua para leitores de tela). */
+@media (min-width: 900px) and (max-width: 1179px) {
+  .historia.com-3d {
+    grid-template-columns: 76px minmax(0, 5fr) minmax(0, 7fr);
+  }
+
+  .trilha-nome {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+}
+
+/* Celular e tablet: palco preso em cima, cartões passando por baixo */
+@media (max-width: 899px) {
+  .com-3d .historia-palco {
+    z-index: 2;
+    height: var(--altura-palco);
+  }
+
+  .com-3d .historia-etapas {
+    padding: 0 var(--margem);
+  }
+
+  .com-3d {
+    --altura-palco: 42svh;
+    --topo-cartao: calc(var(--altura-cabecalho) + var(--altura-palco));
+  }
+
+  /* Celulares baixos: palco menor para o texto caber embaixo. */
+  @media (max-height: 720px) {
+    .com-3d {
+      --altura-palco: 36svh;
+    }
+  }
+
+  .com-3d .etapa-cartao {
+    min-height: calc(100svh - var(--topo-cartao));
+    max-height: calc(100svh - var(--topo-cartao));
+    overflow-y: auto; /* em telas baixas, o texto rola dentro do cartão em vez de ficar cortado */
+    justify-content: flex-start;
+    width: 100%;
+    padding: 16px 0 24px;
+    background: var(--cor-fundo);
+  }
+
+  .etapa-numero {
+    font-size: 32px;
+  }
+
+  .etapa h2 {
+    margin: 4px 0 10px;
+    font-size: 23px;
+  }
+
+  .etapa p {
+    margin-bottom: 10px;
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  .etapa .etapa-nota {
+    margin-top: 12px;
+    font-size: 13px;
+  }
+
+  .palco-dica {
+    display: none;
+  }
+
+  .palco-pontos {
+    top: 6px;
+    right: 6px;
+    left: auto;
+    bottom: auto;
+  }
+
+  .palco-progresso {
+    display: block;
+  }
+
+  .palco-camadas {
+    bottom: 12px;
+  }
+
+  .palco-camadas button {
+    min-height: 34px;
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+}
+
+/* --- Comparação de tamanho (etapa 7) --- */
+
+.comparacao {
+  display: grid;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.comparacao-linha {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 12px;
+  align-items: center;
+  font-size: 14px;
+  color: var(--cor-texto-suave);
+}
+
+.comparacao-linha strong {
+  font-size: 18px;
+}
+
+.comparacao-barra {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  height: 12px;
+  background: var(--cor-estudio);
+}
+
+.comparacao-barra i {
+  display: block;
+  height: 100%;
+  width: calc(var(--tamanho) * 100%);
+  background: var(--cor-destaque);
+}
+
+.com-3d .comparacao-barra i {
+  width: 0;
+  transition: width 1.2s cubic-bezier(0.65, 0, 0.35, 1) 0.2s;
+}
+
+.com-3d .etapa.ativa .comparacao-barra i {
+  width: calc(var(--tamanho) * 100%);
+}
+
+/* --- Camadas (etapa 8) --- */
+
+.camadas {
+  display: inline-flex;
+  margin: 8px 0 0;
+  border: 1px solid var(--cor-destaque);
+}
+
+.camadas button {
+  min-height: 40px;
+  padding: 8px 16px;
+  border: 0;
+  background: var(--cor-fundo);
+  color: var(--cor-destaque-escuro);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.camadas button + button {
+  border-left: 1px solid var(--cor-destaque);
+}
+
+.camadas button[aria-pressed="true"] {
+  background: var(--cor-destaque);
+  color: #fff;
+}
+
+.etapa .acoes {
+  margin-top: 24px;
+}
+
+/* --- Bastidores (fotos da equipe) --- */
+
+.bastidores h2 {
+  margin: 0 0 12px;
+  font-size: clamp(24px, 3vw, 30px);
+}
+
+.bastidores-texto {
+  max-width: 640px;
+  margin: 0 0 32px;
+  color: var(--cor-texto-suave);
+}
+
+.bastidores-fotos {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.bastidores figure {
+  margin: 0;
+}
+
+.bastidores img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  background: var(--cor-estudio);
+}
+
+.bastidores figcaption {
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--cor-texto-suave);
+}
+
+@media (max-width: 960px) {
+  .bastidores-fotos {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .bastidores-fotos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 12px;
+  }
+}
+
+/* Foto da galeria vira botão (fotos.js): clicar abre em tela inteira. */
+.foto-abrir {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+  overflow: hidden;
+}
+
+.foto-abrir img {
+  transition: transform 0.4s ease, opacity 0.2s;
+}
+
+.foto-abrir:hover img {
+  transform: scale(1.03);
+  opacity: 0.92;
+}
+
+/* --- Visor de fotos em tela inteira --- */
+
+.visor-aberto {
+  overflow: hidden;
+}
+
+.visor {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: #0e1012;
+  color: #fff;
+}
+
+.visor[open] {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+}
+
+.visor::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* Flex (e não grid) para o max-height: 100% da foto valer contra a altura do palco. */
+.visor-palco {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  padding: 64px 88px 16px;
+}
+
+.visor-imagem {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: opacity 0.25s ease;
+  touch-action: pan-y;
+}
+
+.visor-imagem.trocando {
+  opacity: 0;
+}
+
+.visor-texto {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 24px 28px;
+  font-size: 15px;
+  text-align: center;
+  color: #e8e8e8;
+}
+
+.visor-contador {
+  margin-right: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #9fb8cf;
+}
+
+.visor-botao {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.visor-botao:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.visor-botao:focus-visible {
+  outline-color: #fff;
+}
+
+.visor-fechar {
+  top: 12px;
+  right: 12px;
+}
+
+.visor-anterior,
+.visor-proxima {
+  top: calc(50% - 24px - 30px);
+}
+
+.visor-anterior {
+  left: 20px;
+}
+
+.visor-proxima {
+  right: 20px;
+}
+
+@media (max-width: 600px) {
+  .visor-palco {
+    padding: 60px 8px 12px;
+  }
+
+  /* No celular as setas ficam embaixo, ao lado da legenda (dá também para deslizar o dedo). */
+  .visor-texto {
+    padding: 0 64px 24px;
+    font-size: 14px;
+  }
+
+  .visor-anterior,
+  .visor-proxima {
+    top: auto;
+    bottom: 16px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .visor-anterior {
+    left: 10px;
+  }
+
+  .visor-proxima {
+    right: 10px;
+  }
+}
+
+/* --- Download da metodologia (fim da página) --- */
+
+.metodologia {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+  margin-top: 40px;
+  padding: 20px;
+  border: 1px solid var(--cor-areia);
+  background: var(--cor-areia-clara);
+}
+
+.metodologia[hidden] {
+  display: none;
+}
+
+.metodologia div {
+  flex: 1 1 260px;
+}
+
+.metodologia strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.metodologia span {
+  font-size: 14px;
+  color: var(--cor-texto-suave);
+}
+
+/* --- Por que --- */
+
+.porque {
+  background: var(--cor-areia-clara);
+}
+
+.porque h2,
+.projeto-ficha h2 {
+  margin: 0 0 24px;
+  font-size: clamp(24px, 3vw, 30px);
+}
+
+.porque-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.porque-lista li {
+  padding-top: 16px;
+  border-top: 2px solid var(--cor-destaque);
+}
+
+.porque-lista strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 19px;
+}
+
+.porque-lista span {
+  color: var(--cor-texto-suave);
+}
+
+/* --- Ficha do projeto --- */
+
+.projeto-ficha {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 48px;
+  padding-bottom: 16px;
+}
+
+.projeto-ficha p {
+  margin: 0;
+  color: var(--cor-texto-suave);
+}
+
+.ficha-projeto {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 12px 16px;
+  margin: 0;
+  font-size: 15px;
+}
+
+.ficha-projeto dt {
+  font-weight: 500;
+  color: var(--cor-texto-suave);
+}
+
+.ficha-projeto dd {
+  margin: 0;
+}
+
+@media (max-width: 860px) {
+  .porque-lista,
+  .projeto-ficha {
+    grid-template-columns: 1fr;
+  }
+
+  .projeto-ficha {
+    gap: 32px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .com-3d .historia-palco,
+  .com-3d .etapa-cartao,
+  .com-3d .comparacao-barra i {
+    transition: none;
+  }
+}

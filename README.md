@@ -30,7 +30,7 @@ as miniaturas geradas por `ferramentas/posters.html`.
 | `obras.html` | Grade de obras com busca, filtros e ordenação (o estado fica no endereço) |
 | `obra.html?id=cal-0607` | Uma obra: visualizador 3D, cubo de vistas, ficha e obra anterior/próxima |
 | `museu.html` | Museu virtual: sala 3D inspirada nas salas da CAL, obras para examinar de perto, percurso de obra em obra |
-| `sobre.html` | Sobre o processo — em desenvolvimento |
+| `sobre.html` | Sobre o processo: as etapas, do escaneamento ao site, com a moringa em 3D mudando conforme a rolagem |
 
 ## Mapa da pasta
 
@@ -43,6 +43,7 @@ as miniaturas geradas por `ferramentas/posters.html`.
 | `css/inicio.css` | Página inicial |
 | `css/viewer.css` | Página da obra: palco 3D, cubo e ficha |
 | `css/museu.css` | Museu virtual: interface por cima do 3D |
+| `css/sobre.css` | Página Sobre: etapas e palco 3D |
 | `js/data.js` | Lê `data/obras.json` e formata os dados |
 | `js/navegacao.js` | Menu do celular (todas as páginas) |
 | `js/cartoes.js` | Monta o cartão de uma obra |
@@ -53,9 +54,13 @@ as miniaturas geradas por `ferramentas/posters.html`.
 | `js/museu.js` | Museu virtual: renderizador e interface |
 | `js/museu-sala.js` | Museu virtual: sala, pedestais, textos e obras (three.js) |
 | `js/museu-navegacao.js` | Museu virtual: câmera, mouse, toque e teclado |
+| `js/sobre.js` | Página Sobre: rolagem, etapas e botões |
+| `js/sobre-cena.js` | Página Sobre: a moringa em cada etapa (three.js) |
+| `js/fotos.js` | Visor de fotos em tela inteira (bastidores da página Sobre) |
 | `data/obras.json` | Obras visíveis no site |
 | `data/LEIA-ME.md` | Como cadastrar uma obra |
 | `models/` | Uma pasta por obra: `modelo.glb` e `poster.webp` |
+| `img/processo/` | Fotos da equipe usadas na página Sobre |
 | `ferramentas/` | Scripts de preparo (não fazem parte do site) |
 
 Cada arquivo em `css/` e `js/` começa com um comentário dizendo o que

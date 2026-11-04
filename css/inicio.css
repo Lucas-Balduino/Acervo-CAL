@@ -32,13 +32,6 @@
   color: var(--cor-texto-suave);
 }
 
-.acoes {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 32px;
-}
-
 .progresso {
   max-width: 360px;
   margin-top: 40px;
