@@ -29,6 +29,7 @@ const movimentoReduzido = window.matchMedia("(prefers-reduced-motion: reduce)").
 const toque = window.matchMedia("(pointer: coarse)").matches;
 
 contarObras();
+mostrarMetodologia();
 
 let cena = null;
 let etapaAtiva = -1;
@@ -181,6 +182,21 @@ async function contarObras() {
     document.getElementById("contagem-obras").textContent = obras.length;
   } catch {
     // Sem a lista de obras, a frase fica com o traço.
+  }
+}
+
+// Bloco de download da metodologia: se estiver visível, mostra o tamanho do PDF no botão.
+async function mostrarMetodologia() {
+  const bloco = document.getElementById("metodologia");
+  const link = document.getElementById("metodologia-link");
+  if (bloco.hidden) return; // o PDF ainda não foi adicionado
+  try {
+    const resposta = await fetch(link.href, { method: "HEAD" });
+    if (!resposta.ok) return;
+    const bytes = Number(resposta.headers.get("content-length"));
+    if (bytes) link.textContent = `Baixar PDF (${(bytes / 1e6).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} MB)`;
+  } catch {
+    // Sem rede, o botão fica sem o tamanho.
   }
 }
 

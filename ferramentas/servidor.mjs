@@ -29,6 +29,7 @@ const TIPOS = {
   ".png": "image/png",
   ".jpg": "image/jpeg",
   ".svg": "image/svg+xml",
+  ".pdf": "application/pdf",
 };
 
 function salvarPoster(req, res, url) {

@@ -108,8 +108,11 @@ peça em pé (da rotação "crua", sem a do nó, para a final).
   resoluções etc.). Os tamanhos "≈ 22 MB → ≈ 1,5 MB" são a média das obras.
 - O scanner da etapa 2 é um desenho do Creality CR-Scan Raptor em tamanho real (215 × 74 × 50 mm, preto, em pé,
   duas câmeras com anéis de LEDs), feito com formas do three.js em `montarScanner` — sem modelo baixado.
-- `img/processo/` tem fotos da equipe (enviadas pelo Lucas em 04/11/2026), da fase de testes com o scanner
-  anterior (EinScan H); a legenda da seção "Bastidores" diz isso.
+- `img/processo/` tem 5 fotos da equipe (enviadas pelo Lucas em 04/11/2026), da fase de testes com o scanner
+  anterior (EinScan H) e um teste com celular; o texto da seção "Bastidores" diz isso.
+- Download da metodologia: bloco `#metodologia` no fim da página, escondido (`hidden`) até o PDF final entrar em
+  `docs/metodologia-gemeos-digitais-cal.pdf`. Ao adicionar o PDF, tirar o `hidden`; o botão mostra o tamanho sozinho.
+  Não publicar a versão com trechos [CONFIRMAR].
 - Sem WebGL, `sobre.js` não põe a classe `.com-3d` e as etapas viram uma lista comum.
 
 ## Fluxo de um modelo 3D
