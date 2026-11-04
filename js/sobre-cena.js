@@ -90,7 +90,7 @@ const ETAPAS = {
     enquadrar: 0.92, elevacao: 0.42, alvoY: 0.3,
   }),
   web: () => ({ fundo: "#ececec", giro: 0.35 }),
-  site: () => ({}),
+  site: () => ({ enquadrar: 0.76, alvoY: 0.4 }), // peça um pouco acima, para caber os botões de camada
 };
 
 // Camadas que a pessoa escolhe na última etapa.
@@ -225,6 +225,14 @@ export async function criarCena(palco, { leve = false, movimentoReduzido = false
     alvo = { ...PADRAO, ...(ETAPAS[nome]?.(p) ?? {}) };
     if (nome === "site") Object.assign(alvo, CAMADAS[camada]);
     if (movimentoReduzido) alvo.giro = 0;
+  }
+
+  // Rolar a página empurra o giro da obra (só nas etapas em que ela gira sozinha):
+  // ~100 px de rolagem dão uns 20° a mais, que vão freando aos poucos.
+  function empurrarGiro(pixels) {
+    // Saltos grandes (clicar numa etapa distante) não contam como rolagem.
+    if (alvo.giro <= 0 || movimentoReduzido || arrastando || Math.abs(pixels) > 600) return;
+    velocidadeArrasto = THREE.MathUtils.clamp(velocidadeArrasto + pixels * 0.014, -8, 8);
   }
 
   function definirCamada(nome) {
@@ -379,7 +387,7 @@ export async function criarCena(palco, { leve = false, movimentoReduzido = false
   for (let i = 0; i < 300; i++) atualizar(1 / 30); // começa já no estado da primeira etapa
   renderer.render(cena, camera);
 
-  return { definirEtapa, definirCamada, ligar, atualizar, camera, renderer, cena };
+  return { definirEtapa, definirCamada, empurrarGiro, ligar, atualizar, camera, renderer, cena };
 }
 
 function definirOpacidade(material, valor, objeto) {

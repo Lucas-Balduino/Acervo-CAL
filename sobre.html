@@ -56,11 +56,19 @@
     </div>
 
     <section id="historia" class="historia" aria-label="O processo, etapa por etapa">
+      <nav class="trilha" id="trilha" aria-label="Etapas do processo"><ol></ol></nav>
+
       <div class="historia-palco" id="palco">
         <p class="palco-etapa" aria-hidden="true"><span id="palco-numero">01</span><span id="palco-nome">A peça</span></p>
         <p class="palco-carga" id="palco-carga" role="status">Carregando a moringa…</p>
         <p class="palco-dica" id="palco-dica" aria-hidden="true">Arraste para girar</p>
         <nav class="palco-pontos" id="palco-pontos" aria-label="Ir para uma etapa"></nav>
+        <div class="camadas palco-camadas" id="camadas" role="group" aria-label="Camada do modelo" hidden>
+          <button type="button" data-camada="pontos" aria-pressed="false">Pontos</button>
+          <button type="button" data-camada="malha" aria-pressed="false">Malha</button>
+          <button type="button" data-camada="textura" aria-pressed="true">Textura</button>
+        </div>
+        <div class="palco-progresso" aria-hidden="true"><i id="palco-progresso"></i></div>
       </div>
 
       <div class="historia-etapas">
@@ -193,13 +201,9 @@
             <h2>Pronta para visitar</h2>
             <p>
               A obra ganha uma página neste site, com os dados da ficha do Acervo CAL, e entra no museu
-              virtual. Agora é com você: troque as camadas e veja as etapas na mesma peça.
+              virtual. Agora é com você: troque as camadas no 3D (pontos, malha ou textura) e veja
+              as etapas na mesma peça.
             </p>
-            <div class="camadas" id="camadas" role="group" aria-label="Camada do modelo">
-              <button type="button" data-camada="pontos" aria-pressed="false">Pontos</button>
-              <button type="button" data-camada="malha" aria-pressed="false">Malha</button>
-              <button type="button" data-camada="textura" aria-pressed="true">Textura</button>
-            </div>
             <div class="acoes">
               <a class="botao botao-primario" href="obra.html?id=cal-0607">Ver a moringa</a>
               <a class="botao" href="museu.html">Entrar no museu</a>
