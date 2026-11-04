@@ -1,6 +1,6 @@
 /*
   sobre.css — página "Sobre o processo": abertura, a história em etapas (texto que rola ao lado
-  de um palco 3D fixo; no celular o palco fica em cima), "por que" e a ficha do projeto.
+  de um palco 3D fixo; no celular o palco fica em cima), fotos da equipe, "por que" e a ficha do projeto.
   O palco só aparece com a classe .com-3d (posta por sobre.js); sem ela, as etapas viram uma lista.
 */
 
@@ -557,6 +557,50 @@
 
 .etapa .acoes {
   margin-top: 24px;
+}
+
+/* --- Bastidores (fotos da equipe) --- */
+
+.bastidores h2 {
+  margin: 0 0 12px;
+  font-size: clamp(24px, 3vw, 30px);
+}
+
+.bastidores-texto {
+  max-width: 640px;
+  margin: 0 0 32px;
+  color: var(--cor-texto-suave);
+}
+
+.bastidores-fotos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  max-width: 880px;
+}
+
+.bastidores figure {
+  margin: 0;
+}
+
+.bastidores img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  background: var(--cor-estudio);
+}
+
+.bastidores figcaption {
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--cor-texto-suave);
+}
+
+@media (max-width: 600px) {
+  .bastidores-fotos {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* --- Por que --- */

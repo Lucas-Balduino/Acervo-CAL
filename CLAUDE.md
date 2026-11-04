@@ -7,6 +7,7 @@ Contexto para agentes que trabalham neste repositório. Para o uso do dia a dia,
 Projeto de extensão da UnB **PJ772-2026** — "Expansão do Acervo da CAL e Consolidação de Gêmeos
 Digitais para Preservação e Acessibilidade". Orientador: Miguel Eduardo Gutierrez Paredes. Bolsista e
 mantenedor do repositório: Lucas Balduino (Design – Programação Visual, Laboratório Protip, IdA/UnB).
+Equipe: também Luara Piccinin (bolsista) e Vinicius Deleon (voluntário).
 Vigência: 15/05/2026 a 31/12/2026.
 
 - **Meta:** escanear 20 obras da Casa da Cultura da América Latina (CAL) e publicá-las em 3D.
@@ -105,6 +106,10 @@ peça em pé (da rotação "crua", sem a do nó, para a final).
   base e a parte de baixo das laterais.
 - O texto segue a metodologia do Lucas (seções 4 e 5), sem os trechos ainda marcados [CONFIRMAR] (modo NIR,
   resoluções etc.). Os tamanhos "≈ 22 MB → ≈ 1,5 MB" são a média das obras.
+- O scanner da etapa 2 é um desenho do Creality CR-Scan Raptor em tamanho real (215 × 74 × 50 mm, preto, em pé,
+  duas câmeras com anéis de LEDs), feito com formas do three.js em `montarScanner` — sem modelo baixado.
+- `img/processo/` tem fotos da equipe (enviadas pelo Lucas em 04/11/2026), da fase de testes com o scanner
+  anterior (EinScan H); a legenda da seção "Bastidores" diz isso.
 - Sem WebGL, `sobre.js` não põe a classe `.com-3d` e as etapas viram uma lista comum.
 
 ## Fluxo de um modelo 3D

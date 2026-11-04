@@ -11,6 +11,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { MeshSurfaceSampler } from "three/addons/math/MeshSurfaceSampler.js";
+import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 
 const MODELO = "models/cal-0607/modelo.glb";
 const FRENTE_GRAUS = 90; // o mesmo "frente" de data/obras.json: vira a obra de frente para a câmera
@@ -21,7 +22,6 @@ const CORES = {
   segundaCaptura: new THREE.Color(0xf0a050),
   argila: 0xd8d2c8,
   arame: 0x6fb2ff,
-  scanner: 0x2b2b2b,
   grade: 0x5a5a5a,
   eixoX: 0xff3352, // como no Blender: X vermelho, Y verde
   eixoY: 0x8bdc00,
@@ -600,8 +600,13 @@ function montarNuvem(malha, textura, altura, quantidade) {
           // Primeira captura: o ponto aparece quando o scanner passa por ele.
           float lugar = fract((angulo - uInicio) / VOLTA);
           float visto = uVarredura >= 0.999 ? 1.0 : step(lugar, uVarredura);
-          float recente = 1.0 - smoothstep(0.0, 0.06, uVarredura - lugar);
-          c = mix(c, uCorLaser, uLaser * recente * visto);
+          // Logo atrás do scanner: 7 faixas de luz azul (como as linhas de laser do Raptor)
+          // e, mais para trás, um brilho azul que vai apagando.
+          float atras = uVarredura - lugar;
+          float recente = 1.0 - smoothstep(0.0, 0.06, atras);
+          float naJanela = step(0.0, atras) * (1.0 - step(0.035, atras));
+          float faixa = naJanela * step(fract(atras / 0.035 * 7.0), 0.45);
+          c = mix(c, uCorLaser, uLaser * visto * max(0.45 * recente, faixa));
           alfa *= visto;
         }
 
@@ -652,42 +657,75 @@ function lerTextura(textura) {
 
 /* ---------- Scanner e grade do Blender ---------- */
 
+/*
+  Scanner Creality CR-Scan Raptor em tamanho real (215 × 74 × 50 mm): corpo preto em pé, segurado
+  pela capa antiderrapante do meio; na frente, duas câmeras com anéis de LEDs e, entre elas, o
+  projetor de luz e a câmera de cor. O cabo USB sai por baixo. A frente (+z) aponta para a obra.
+*/
 function montarScanner() {
   const grupo = new THREE.Group();
-  const transparente = (material, opacidade) => {
-    material.transparent = true;
-    return opacidade;
-  };
+  const padrao = { fog: false };
+  const preto = new THREE.MeshStandardMaterial({ ...padrao, color: 0x1b1c1e, roughness: 0.4, metalness: 0.35 });
+  const borracha = new THREE.MeshStandardMaterial({ ...padrao, color: 0x2e2f33, roughness: 0.95, metalness: 0 });
+  const vidro = new THREE.MeshStandardMaterial({ ...padrao, color: 0x050607, roughness: 0.12, metalness: 0.6 });
+  const lente = new THREE.MeshStandardMaterial({ ...padrao, color: 0x0d1622, roughness: 0.05, metalness: 0.9 });
+  const ledAzul = new THREE.MeshBasicMaterial({ ...padrao, color: CORES.laser });
+  const ledBranco = new THREE.MeshBasicMaterial({ ...padrao, color: 0xf4f7ff });
+  const frente = 0.0252; // meia espessura do corpo + um fio, para as peças da frente não brigarem com ele
 
-  const corpoMaterial = new THREE.MeshStandardMaterial({ color: CORES.scanner, roughness: 0.5, metalness: 0.2, fog: false });
-  const corpo = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.045, 0.06), corpoMaterial);
-  corpo.userData.opacidade = transparente(corpoMaterial, 1);
-  const cabo = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.09, 0.03), corpoMaterial);
-  cabo.position.set(0, -0.06, -0.01);
-  cabo.userData.opacidade = 1;
+  const corpo = new THREE.Mesh(new RoundedBoxGeometry(0.074, 0.215, 0.05, 4, 0.014), preto);
+  const capa = new THREE.Mesh(new RoundedBoxGeometry(0.078, 0.085, 0.044, 3, 0.012), borracha);
+  capa.position.set(0, -0.004, -0.005);
+  const painel = new THREE.Mesh(new THREE.PlaneGeometry(0.058, 0.196), vidro);
+  painel.position.z = frente;
+  grupo.add(corpo, capa, painel);
 
-  const lente = new THREE.Mesh(
-    new THREE.PlaneGeometry(0.05, 0.02),
-    new THREE.MeshBasicMaterial({ color: CORES.laser, transparent: true, fog: false })
-  );
-  lente.position.z = 0.031;
-  lente.userData.opacidade = 1;
+  // Câmeras de cima e de baixo, cada uma com um anel de LEDs azuis.
+  for (const y of [0.066, -0.066]) {
+    const camera = new THREE.Mesh(new THREE.CircleGeometry(0.011, 32), lente);
+    const anel = new THREE.Mesh(new THREE.RingGeometry(0.0145, 0.0175, 32), ledAzul);
+    camera.position.set(0, y, frente + 0.0004);
+    anel.position.set(0, y, frente + 0.0004);
+    grupo.add(camera, anel);
+  }
+  // Meio: projetor de luz (azul) e câmera de cor com LEDs brancos em volta.
+  const projetor = new THREE.Mesh(new THREE.PlaneGeometry(0.024, 0.007), ledAzul);
+  projetor.position.set(0, 0.014, frente + 0.0004);
+  const cameraCor = new THREE.Mesh(new THREE.CircleGeometry(0.005, 24), lente);
+  cameraCor.position.set(0, -0.014, frente + 0.0004);
+  const anelBranco = new THREE.Mesh(new THREE.RingGeometry(0.0068, 0.0085, 24), ledBranco);
+  anelBranco.position.copy(cameraCor.position);
+  grupo.add(projetor, cameraCor, anelBranco);
 
-  // Feixe de luz: pirâmide do scanner até a obra.
+  // Cabo USB saindo por baixo.
+  const caminho = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(0, -0.105, -0.004),
+    new THREE.Vector3(0, -0.15, -0.012),
+    new THREE.Vector3(0.012, -0.2, -0.04),
+    new THREE.Vector3(0.03, -0.27, -0.09),
+  ]);
+  grupo.add(new THREE.Mesh(new THREE.TubeGeometry(caminho, 24, 0.0032, 6), preto));
+
+  // Feixe de luz: pirâmide do projetor até a obra.
   const comprimento = 0.34;
   const feixeGeometria = new THREE.ConeGeometry(0.11, comprimento, 4, 1, true);
   feixeGeometria.rotateX(-Math.PI / 2);
-  feixeGeometria.translate(0, 0, comprimento / 2 + 0.03);
+  feixeGeometria.translate(0, 0.014, comprimento / 2 + frente);
   const feixe = new THREE.Mesh(
     feixeGeometria,
     new THREE.MeshBasicMaterial({
-      color: CORES.laser, transparent: true, side: THREE.DoubleSide, fog: false,
-      depthWrite: false, blending: THREE.AdditiveBlending,
+      ...padrao, color: CORES.laser, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending,
     })
   );
-  feixe.userData.opacidade = 0.16;
+  feixe.userData.opacidade = 0.14;
+  grupo.add(feixe);
 
-  grupo.add(corpo, cabo, lente, feixe);
+  // Todas as peças somem juntas (opacidade controlada em atualizar).
+  grupo.traverse((o) => {
+    if (!o.material) return;
+    o.material.transparent = true;
+    o.userData.opacidade ??= 1;
+  });
   return grupo;
 }
 

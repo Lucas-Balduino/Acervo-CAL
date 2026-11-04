@@ -59,6 +59,7 @@ as miniaturas geradas por `ferramentas/posters.html`.
 | `data/obras.json` | Obras visíveis no site |
 | `data/LEIA-ME.md` | Como cadastrar uma obra |
 | `models/` | Uma pasta por obra: `modelo.glb` e `poster.webp` |
+| `img/processo/` | Fotos da equipe usadas na página Sobre |
 | `ferramentas/` | Scripts de preparo (não fazem parte do site) |
 
 Cada arquivo em `css/` e `js/` começa com um comentário dizendo o que
