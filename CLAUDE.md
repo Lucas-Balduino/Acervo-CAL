@@ -74,6 +74,9 @@ three.js direto (não usa model-viewer). `js/museu-sala.js` monta a sala a parti
   da vista seguindo o cursor, e transições com duração fixa e curva suave na entrada e na saída
   (`DURACAO`: examinar 2,2 s, entre obras 2,6 s com leve arco, voltar 1,8 s). A ficha entra com atraso
   para acompanhar a câmera. Constantes no topo de `js/museu-navegacao.js`.
+- Os `.glb` chegam do Blender com rotação interna no nó. Para apoiar a obra no pedestal, a caixa precisa ser
+  calculada vértice a vértice (`Box3.setFromObject(modelo, true)`); a caixa rápida deixava as obras até 8,5 cm
+  acima do pedestal (corrigido em 04/11/2026).
 - No celular (`pointer: coarse`) não há sombras em tempo real nem spots reais; a sombra sob os pedestais é uma
   textura e aparece sempre.
 - `window.museu` expõe `examinar`, `voltarAoMuseu`, `percurso`, `camera` e `navegacao` para testes no console.

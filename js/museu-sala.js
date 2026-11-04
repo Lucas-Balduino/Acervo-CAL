@@ -519,7 +519,10 @@ function montarPedestal(cena, lugar, indice, sombras) {
 
 /** Coloca o modelo em cima do pedestal, centralizado e com a frente virada para o visitante. */
 function colocarObra(cena, peca, modelo, sombras) {
-  const caixa = new THREE.Box3().setFromObject(modelo);
+  // Caixa calculada vértice a vértice (precise = true). A caixa rápida usa a caixa de cada
+  // malha girada junto com ela; como os modelos chegam do Blender com rotação interna, ela fica
+  // maior que a peça e a obra acabava "flutuando" acima do pedestal.
+  const caixa = new THREE.Box3().setFromObject(modelo, true);
   const centro = caixa.getCenter(new THREE.Vector3());
   const tamanho = caixa.getSize(new THREE.Vector3());
   modelo.position.set(-centro.x, -caixa.min.y, -centro.z);
