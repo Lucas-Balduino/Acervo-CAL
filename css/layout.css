@@ -181,23 +181,6 @@ main {
   color: var(--cor-texto-suave);
 }
 
-/* Páginas ainda em construção */
-.em-breve {
-  max-width: 720px;
-  padding-bottom: 64px;
-}
-
-.selo {
-  display: inline-block;
-  padding: 4px 10px;
-  border: 1px solid var(--cor-areia);
-  background: var(--cor-areia-clara);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
 .etapas {
   list-style: none;
   counter-reset: etapa;

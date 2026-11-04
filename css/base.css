@@ -136,6 +136,14 @@ a:hover {
   padding: 0;
 }
 
+/* Grupo de botões lado a lado (vários botões de ação numa linha). */
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
+}
+
 .link-seta {
   font-weight: 500;
   text-decoration: none;

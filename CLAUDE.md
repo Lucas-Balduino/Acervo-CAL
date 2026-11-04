@@ -12,12 +12,11 @@ Vigência: 15/05/2026 a 31/12/2026.
 - **Meta:** escanear 20 obras da Casa da Cultura da América Latina (CAL) e publicá-las em 3D.
 - **Entregas do site até dez/2026** (decididas em 01/11/2026):
   1. visualizador 3D (pronto);
-  2. galeria em grade com busca e filtros (feita na branch `feat/grade-navegacao`, em avaliação pelo
-     professor contra a versão antiga, de página única com lista lateral);
+  2. galeria em grade com busca e filtros (aprovada pelo professor, no ar desde 04/11/2026);
   3. página "Sobre o processo": difusão do trabalho de extensão, interativa e visual, que torne o
-     processo (escaneamento → tratamento → web) palpável para o público leigo;
-  4. museu virtual navegável — o principal diferencial do produto (primeira versão na branch
-     `feat/museu-virtual`, criada a partir de `feat/grade-navegacao`).
+     processo (escaneamento → tratamento → web) palpável para o público leigo (primeira versão na
+     branch `feat/pagina-sobre`);
+  4. museu virtual navegável — o principal diferencial do produto (aprovado, no ar desde 04/11/2026).
 - **Direitos:** o aviso "Direitos Reservados" das fichas vale para republicação das obras; publicar os
   modelos 3D neste site está liberado.
 - **Hospedagem:** hoje GitHub Pages (`main` → https://lucas-balduino.github.io/Acervo-CAL/). O objetivo é
@@ -28,7 +27,7 @@ Vigência: 15/05/2026 a 31/12/2026.
 ## Regras do repositório
 
 - Site em HTML/CSS/JS puros com ES modules, **sem framework e sem build**. Bibliotecas só por CDN com versão
-  fixa: `<model-viewer>` 3.4.0 (ajax.googleapis.com) e three.js 0.169.0 (jsDelivr, por importmap no `museu.html`).
+  fixa: `<model-viewer>` 3.4.0 (ajax.googleapis.com) e three.js 0.169.0 (jsDelivr, por importmap no `museu.html` e no `sobre.html`).
   Cada arquivo de `css/` e `js/` abre com um comentário dizendo o que faz e o que não faz — manter isso.
 - Código, comentários, nomes e textos em **português**.
 - Commits em português no formato `tipo: descrição` (ex.: `docs: Adicionar obra CAL 0607`, `feat: ...`, `fix: ...`).
@@ -40,7 +39,7 @@ Vigência: 15/05/2026 a 31/12/2026.
 
 Várias páginas estáticas que repetem o mesmo cabeçalho e rodapé (sem build, então sem includes):
 `index.html` (início), `obras.html` (grade com filtros), `obra.html?id=<id>` (visualizador + ficha),
-`museu.html` (sala 3D) e `sobre.html` (por enquanto, aviso "em desenvolvimento"). Cada página carrega só o CSS e o
+`museu.html` (sala 3D) e `sobre.html` (o processo em etapas). Cada página carrega só o CSS e o
 módulo JS dela; `js/data.js` e `js/cartoes.js` são compartilhados. Ao mudar o menu, mudar nas 5 páginas.
 
 - Ordem padrão das obras: número de registro (galeria e anterior/próxima da página da obra).
@@ -82,6 +81,23 @@ three.js direto (não usa model-viewer). `js/museu-sala.js` monta a sala a parti
 - `window.museu` expõe `examinar`, `voltarAoMuseu`, `percurso`, `camera` e `navegacao` para testes no console.
 - Testado só em Chrome headless (SwiftShader, ~2 quadros/s): o desempenho em placa de vídeo e celular real
   ainda não foi medido.
+
+## Página "Sobre o processo"
+
+Rolagem guiada: o texto das 8 etapas rola à esquerda e um palco 3D fica preso à direita (no celular, em cima).
+`js/sobre.js` mede qual etapa está na "linha de leitura" e quanto dela já passou (0 a 1); `js/sobre-cena.js`
+recebe isso e mostra a moringa (CAL.0607) naquela etapa. Partes da animação seguem a rolagem: o scanner dá a
+volta, a segunda captura (peça virada) se encaixa, a câmera aproxima da malha, a textura se desdobra no plano
+(cada vértice ganha uma segunda posição dada pelo `uv`, misturada com `morphTargetInfluences`) e o Blender põe a
+peça em pé (da rotação "crua", sem a do nó, para a final).
+
+- Cada etapa é uma função em `ETAPAS` que devolve valores-alvo (fundo, enquadramento, camadas...); o que
+  não muda vem de `PADRAO`. As cores de fundo também estão em `FUNDOS`, em `sobre.js`, para o palco não piscar.
+- A nuvem de pontos é sorteada na malha (`MeshSurfaceSampler`) com a cor da textura; a segunda captura cobre a
+  base e a parte de baixo das laterais.
+- O texto segue a metodologia do Lucas (seções 4 e 5), sem os trechos ainda marcados [CONFIRMAR] (modo NIR,
+  resoluções etc.). Os tamanhos "≈ 22 MB → ≈ 1,5 MB" são a média das obras.
+- Sem WebGL, `sobre.js` não põe a classe `.com-3d` e as etapas viram uma lista comum.
 
 ## Fluxo de um modelo 3D
 

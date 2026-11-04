@@ -1,0 +1,459 @@
+/*
+  sobre.css — página "Sobre o processo": abertura, a história em etapas (texto que rola ao lado
+  de um palco 3D fixo; no celular o palco fica em cima), "por que" e a ficha do projeto.
+  O palco só aparece com a classe .com-3d (posta por sobre.js); sem ela, as etapas viram uma lista.
+*/
+
+/* --- Abertura --- */
+
+.sobre-topo {
+  padding-top: 56px;
+  padding-bottom: 40px;
+}
+
+.sobre-topo h1 {
+  margin: 0;
+  font-size: clamp(36px, 6vw, 64px);
+  letter-spacing: -0.01em;
+}
+
+.sobre-chamada {
+  max-width: 640px;
+  margin: 20px 0 0;
+  font-size: clamp(17px, 1.7vw, 20px);
+  color: var(--cor-texto-suave);
+}
+
+.sobre-rolar {
+  margin: 32px 0 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--cor-destaque);
+}
+
+/* --- História: etapas + palco --- */
+
+.historia {
+  border-top: 1px solid var(--cor-borda);
+}
+
+.historia-palco {
+  display: none;
+}
+
+.etapa-cartao {
+  max-width: 460px;
+}
+
+.etapa-numero {
+  margin: 0;
+  font-size: 56px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--cor-areia);
+}
+
+.etapa h2 {
+  margin: 8px 0 16px;
+  font-size: clamp(26px, 3vw, 34px);
+}
+
+.etapa p {
+  margin: 0 0 14px;
+  font-size: 17px;
+  color: var(--cor-texto-suave);
+}
+
+.etapa strong {
+  color: var(--cor-texto);
+}
+
+.etapa .etapa-dica {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--cor-destaque);
+}
+
+.etapa .etapa-nota {
+  margin-top: 20px;
+  padding-left: 12px;
+  border-left: 2px solid var(--cor-areia);
+  font-size: 14px;
+}
+
+/* Sem 3D: lista comum, sem dicas de rolagem nem botões de camada. */
+.historia:not(.com-3d) .historia-etapas {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 16px var(--margem) 48px;
+}
+
+.historia:not(.com-3d) .etapa {
+  padding: 32px 0;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.historia:not(.com-3d) :is(.etapa-dica, .camadas) {
+  display: none;
+}
+
+/* Com 3D */
+.com-3d .historia-palco {
+  display: block;
+  position: sticky;
+  top: var(--altura-cabecalho);
+  overflow: hidden;
+  background: #efe8dc;
+  transition: background-color 0.8s ease;
+}
+
+.com-3d .historia-palco canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  cursor: grab;
+  touch-action: pan-y; /* rolar a página continua funcionando por cima do 3D */
+}
+
+.com-3d .historia-palco.pronto canvas {
+  opacity: 1;
+}
+
+.com-3d .historia-palco canvas:active {
+  cursor: grabbing;
+}
+
+.com-3d .etapa {
+  display: flex;
+  align-items: center;
+}
+
+.com-3d .etapa-cartao {
+  opacity: 0.3;
+  transition: opacity 0.5s ease;
+}
+
+.com-3d .etapa.ativa .etapa-cartao {
+  opacity: 1;
+}
+
+/* Textos por cima do palco */
+.palco-etapa,
+.palco-carga,
+.palco-dica {
+  position: absolute;
+  margin: 0;
+  pointer-events: none;
+  color: var(--cor-texto);
+  transition: color 0.8s ease;
+}
+
+.palco-etapa {
+  top: 16px;
+  left: 16px;
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.palco-etapa span:first-child {
+  font-weight: 700;
+  color: var(--cor-destaque);
+}
+
+.palco-carga {
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+}
+
+.palco-carga[hidden] {
+  display: none;
+}
+
+.palco-dica {
+  right: 16px;
+  bottom: 16px;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.palco-pontos {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  display: flex;
+}
+
+.palco-pontos button {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.palco-pontos button::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  color: var(--cor-texto-suave);
+  transition: background 0.3s, transform 0.3s;
+}
+
+.palco-pontos button[aria-current="step"]::before {
+  background: currentColor;
+  transform: scale(1.25);
+}
+
+.historia-palco.escuro :is(.palco-etapa, .palco-carga, .palco-dica) {
+  color: #f1f1f1;
+}
+
+.historia-palco.escuro .palco-etapa span:first-child {
+  color: #8cc4ff;
+}
+
+.historia-palco.escuro .palco-pontos button::before {
+  color: #d0d0d0;
+}
+
+/* Computador: texto à esquerda, palco à direita */
+@media (min-width: 900px) {
+  .historia.com-3d {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  }
+
+  .com-3d .historia-palco {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: start; /* sem isso o item estica e o "sticky" não funciona */
+    height: calc(100vh - var(--altura-cabecalho));
+  }
+
+  .com-3d .historia-etapas {
+    grid-column: 1;
+    grid-row: 1;
+    /* Alinha o texto com o resto da página em telas largas. */
+    padding: 0 48px 0 max(var(--margem), calc((100vw - var(--largura-max)) / 2 + var(--margem)));
+  }
+
+  .com-3d .etapa {
+    min-height: 110vh;
+  }
+
+  .com-3d .etapa:first-child {
+    min-height: 90vh;
+  }
+}
+
+/* Celular e tablet: palco preso em cima, cartões passando por baixo */
+@media (max-width: 899px) {
+  .com-3d .historia-palco {
+    z-index: 2;
+    height: 46vh;
+    height: 46svh;
+  }
+
+  .com-3d .historia-etapas {
+    padding: 0 var(--margem);
+  }
+
+  .com-3d .etapa {
+    min-height: 90vh;
+    min-height: 90svh;
+  }
+
+  .com-3d .etapa-cartao {
+    width: 100%;
+    padding: 20px;
+    background: var(--cor-fundo);
+    border: 1px solid var(--cor-borda);
+  }
+
+  .etapa-numero {
+    font-size: 40px;
+  }
+
+  .etapa p {
+    font-size: 16px;
+  }
+
+  .palco-dica {
+    display: none;
+  }
+}
+
+/* --- Comparação de tamanho (etapa 7) --- */
+
+.comparacao {
+  display: grid;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.comparacao-linha {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 12px;
+  align-items: center;
+  font-size: 14px;
+  color: var(--cor-texto-suave);
+}
+
+.comparacao-linha strong {
+  font-size: 18px;
+}
+
+.comparacao-barra {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  height: 12px;
+  background: var(--cor-estudio);
+}
+
+.comparacao-barra i {
+  display: block;
+  height: 100%;
+  width: calc(var(--tamanho) * 100%);
+  background: var(--cor-destaque);
+}
+
+.com-3d .comparacao-barra i {
+  width: 0;
+  transition: width 1.2s cubic-bezier(0.65, 0, 0.35, 1) 0.2s;
+}
+
+.com-3d .etapa.ativa .comparacao-barra i {
+  width: calc(var(--tamanho) * 100%);
+}
+
+/* --- Camadas (etapa 8) --- */
+
+.camadas {
+  display: inline-flex;
+  margin: 8px 0 0;
+  border: 1px solid var(--cor-destaque);
+}
+
+.camadas button {
+  min-height: 40px;
+  padding: 8px 16px;
+  border: 0;
+  background: var(--cor-fundo);
+  color: var(--cor-destaque-escuro);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.camadas button + button {
+  border-left: 1px solid var(--cor-destaque);
+}
+
+.camadas button[aria-pressed="true"] {
+  background: var(--cor-destaque);
+  color: #fff;
+}
+
+.etapa .acoes {
+  margin-top: 24px;
+}
+
+/* --- Por que --- */
+
+.porque {
+  background: var(--cor-areia-clara);
+}
+
+.porque h2,
+.projeto-ficha h2 {
+  margin: 0 0 24px;
+  font-size: clamp(24px, 3vw, 30px);
+}
+
+.porque-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.porque-lista li {
+  padding-top: 16px;
+  border-top: 2px solid var(--cor-destaque);
+}
+
+.porque-lista strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 19px;
+}
+
+.porque-lista span {
+  color: var(--cor-texto-suave);
+}
+
+/* --- Ficha do projeto --- */
+
+.projeto-ficha {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 48px;
+  padding-bottom: 16px;
+}
+
+.projeto-ficha p {
+  margin: 0;
+  color: var(--cor-texto-suave);
+}
+
+.ficha-projeto {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 12px 16px;
+  margin: 0;
+  font-size: 15px;
+}
+
+.ficha-projeto dt {
+  font-weight: 500;
+  color: var(--cor-texto-suave);
+}
+
+.ficha-projeto dd {
+  margin: 0;
+}
+
+@media (max-width: 860px) {
+  .porque-lista,
+  .projeto-ficha {
+    grid-template-columns: 1fr;
+  }
+
+  .projeto-ficha {
+    gap: 32px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .com-3d .historia-palco,
+  .com-3d .etapa-cartao,
+  .com-3d .comparacao-barra i {
+    transition: none;
+  }
+}
