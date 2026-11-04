@@ -98,6 +98,9 @@ peça em pé (da rotação "crua", sem a do nó, para a final).
 
 - Cada etapa é uma função em `ETAPAS` que devolve valores-alvo (fundo, enquadramento, camadas...); o que
   não muda vem de `PADRAO`. As cores de fundo também estão em `FUNDOS`, em `sobre.js`, para o palco não piscar.
+- Trocas de camada (pontos, argila, arame, textura) não usam transparência: uma linha horizontal sobe pela
+  peça (`aplicarCorte`, com um fio azul) e a camada nova aparece opaca abaixo dela. Com opacidade parcial, a
+  malha mostrava o próprio interior e os pontos ficavam por cima, e o Lucas viu isso como um glitch.
 - A nuvem de pontos é sorteada na malha (`MeshSurfaceSampler`) com a cor da textura; a segunda captura cobre a
   base e a parte de baixo das laterais.
 - O texto segue a metodologia do Lucas (seções 4 e 5), sem os trechos ainda marcados [CONFIRMAR] (modo NIR,

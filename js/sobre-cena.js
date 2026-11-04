@@ -187,6 +187,11 @@ export async function criarCena(palco, { leve = false, movimentoReduzido = false
   }
   cena.updateMatrixWorld(true);
 
+  // Trocas de camada sem transparência: cada superfície aparece de baixo para cima (ver aplicarCorte).
+  const corteTextura = aplicarCorte(materialTextura);
+  const corteArgila = aplicarCorte(materialArgila);
+  const corteArame = aplicarCorte(materialArame);
+
   // Direções "de frente para a câmera" no espaço do suporte (a obra fica girada em -frente).
   const frente = THREE.MathUtils.degToRad(FRENTE_GRAUS);
   const paraCamera = new THREE.Vector3(Math.sin(frente), 0, Math.cos(frente));
@@ -232,7 +237,7 @@ export async function criarCena(palco, { leve = false, movimentoReduzido = false
   function empurrarGiro(pixels) {
     // Saltos grandes (clicar numa etapa distante) não contam como rolagem.
     if (alvo.giro <= 0 || movimentoReduzido || arrastando || Math.abs(pixels) > 600) return;
-    velocidadeArrasto = THREE.MathUtils.clamp(velocidadeArrasto + pixels * 0.014, -8, 8);
+    velocidadeArrasto = THREE.MathUtils.clamp(velocidadeArrasto + pixels * 0.01, -8, 8);
   }
 
   function definirCamada(nome) {
@@ -311,23 +316,30 @@ export async function criarCena(palco, { leve = false, movimentoReduzido = false
     tmp.copy(centro).applyQuaternion(qPivo);
     pivo.position.copy(centro).sub(tmp).addScaledVector(deslocamentoCru, 1 - b);
 
-    // Camadas
-    definirOpacidade(materialTextura, atual.textura, malha);
-    definirOpacidade(materialArgila, atual.argila, argila);
+    /*
+      Camadas. Nada fica semitransparente durante a troca (antes, a superfície meio transparente
+      mostrava o próprio interior e os pontos ficavam por cima, e a peça parecia "estranha" até a
+      troca terminar). Agora uma linha horizontal sobe pela peça: abaixo dela, a camada nova, opaca;
+      acima, a antiga. Os valores 0 → 1 de cada camada dizem até onde a linha já subiu.
+    */
+    revelar(corteTextura, malha, atual.textura);
+    revelar(corteArgila, argila, atual.argila);
+    revelar(corteArame, arame, atual.arame);
+    if (atual.textura >= 0.999) argila.visible = false; // escondida embaixo da textura
     // Arame mais fraco quando os triângulos ficam minúsculos na tela (senão vira uma mancha azul).
     const ladoDoTriangulo = (0.002 * palco.clientHeight) / atual.enquadrar; // em pixels; arestas de ~2 mm
-    materialArame.opacity = atual.arame * 0.45 * THREE.MathUtils.smoothstep(ladoDoTriangulo, 1, 5);
-    arame.visible = atual.arame > 0.01;
-    argila.visible = argila.visible && atual.textura < 0.999;
+    materialArame.opacity = 0.45 * THREE.MathUtils.smoothstep(ladoDoTriangulo, 1, 5);
     for (const m of [malha, argila, arame]) m.morphTargetInfluences[0] = atual.desdobrar;
 
     const u = pontos.material.uniforms;
-    u.uOpacidade.value = atual.pontos;
+    // Os pontos somem de baixo para cima, na mesma linha em que a superfície aparece.
+    u.uCorteBaixo.value = atual.pontos >= 0.999 ? -1e3 : misturar(altura + 0.01, -0.01, atual.pontos);
+    u.uBrilhoCorte.value = emTroca(atual.pontos) ? 1 : 0;
     u.uVarredura.value = atual.varredura;
     u.uLaser.value = atual.laser;
     u.uSegunda.value = atual.segunda;
     u.uUniao.value = atual.uniao;
-    pontos.visible = atual.pontos > 0.01;
+    pontos.visible = atual.pontos > 0.001;
 
     // Scanner: dá a volta na obra acompanhando a varredura, subindo e descendo um pouco.
     scanner.visible = atual.scanner > 0.01;
@@ -383,18 +395,55 @@ export async function criarCena(palco, { leve = false, movimentoReduzido = false
     }
   }
 
+  // Prepara todos os shaders agora, para a primeira troca de camada não travar.
+  const objetos = [malha, argila, arame, pontos, scanner, grade];
+  const visiveis = objetos.map((o) => o.visible);
+  objetos.forEach((o) => (o.visible = true));
+  renderer.compile(cena, camera);
+  objetos.forEach((o, i) => (o.visible = visiveis[i]));
+
   definirEtapa("obra");
   for (let i = 0; i < 300; i++) atualizar(1 / 30); // começa já no estado da primeira etapa
   renderer.render(cena, camera);
 
+  // Até onde (altura no mundo) a superfície aparece: 0 = nada, 1 = tudo (sem corte).
+  function revelar(uniformes, objeto, valor) {
+    uniformes.uCorte.value = valor >= 0.999 ? 1e3 : misturar(-0.01, altura + 0.01, valor);
+    uniformes.uBrilhoCorte.value = emTroca(valor) ? 1 : 0;
+    objeto.visible = valor > 0.001;
+  }
+
   return { definirEtapa, definirCamada, empurrarGiro, ligar, atualizar, camera, renderer, cena };
 }
 
-function definirOpacidade(material, valor, objeto) {
-  material.opacity = valor;
-  material.transparent = valor < 0.999;
-  material.depthWrite = valor > 0.5;
-  objeto.visible = valor > 0.01;
+const emTroca = (valor) => valor > 0.001 && valor < 0.999;
+
+/*
+  Corte horizontal num material do three.js: some tudo acima da altura uCorte (no mundo) e
+  desenha um fio azul, como o laser do scanner, na linha do corte enquanto a troca acontece.
+*/
+function aplicarCorte(material) {
+  const uniformes = { uCorte: { value: 1e3 }, uBrilhoCorte: { value: 0 } };
+  material.onBeforeCompile = (shader) => {
+    Object.assign(shader.uniforms, uniformes);
+    shader.vertexShader = shader.vertexShader
+      .replace("#include <common>", `#include <common>
+        varying float vAlturaMundo;`)
+      .replace("#include <project_vertex>", `#include <project_vertex>
+        vAlturaMundo = (modelMatrix * vec4(transformed, 1.0)).y;`);
+    shader.fragmentShader = shader.fragmentShader
+      .replace("#include <common>", `#include <common>
+        varying float vAlturaMundo;
+        uniform float uCorte, uBrilhoCorte;`)
+      .replace("#include <clipping_planes_fragment>", `#include <clipping_planes_fragment>
+        if (vAlturaMundo > uCorte) discard;`)
+      .replace("#include <dithering_fragment>", `#include <dithering_fragment>
+        float fio = uBrilhoCorte * (1.0 - smoothstep(0.0, 0.006, uCorte - vAlturaMundo));
+        gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.30, 0.64, 1.0), fio);`);
+  };
+  material.transparent = material.transparent && material.wireframe; // só o arame é transparente
+  material.needsUpdate = true;
+  return uniformes;
 }
 
 /* ---------- Textura desdobrada ---------- */
@@ -506,7 +555,7 @@ function montarNuvem(malha, textura, altura, quantidade) {
     uniforms: {
       uTamanho: { value: tamanho },
       uEscala: { value: 800 },
-      uOpacidade: { value: 0 },
+      uOpacidade: { value: 1 },
       uVarredura: { value: 1 },
       uInicio: { value: 0 },
       uLaser: { value: 0 },
@@ -517,13 +566,15 @@ function montarNuvem(malha, textura, altura, quantidade) {
       uDeslocamento: { value: new THREE.Vector3() },
       uCorLaser: { value: CORES.laser },
       uCorSegunda: { value: CORES.segundaCaptura },
+      uCorteBaixo: { value: -1e3 },
+      uBrilhoCorte: { value: 0 },
     },
     vertexShader: /* glsl */ `
       attribute vec3 cor;
       attribute float angulo;
       attribute float captura;
       attribute float acaso;
-      uniform float uTamanho, uEscala, uOpacidade, uVarredura, uInicio, uLaser, uSegunda, uUniao;
+      uniform float uTamanho, uEscala, uOpacidade, uVarredura, uInicio, uLaser, uSegunda, uUniao, uCorteBaixo, uBrilhoCorte;
       uniform vec3 uCentro, uEixo, uDeslocamento, uCorLaser, uCorSegunda;
       varying vec3 vCor;
       varying float vAlfa;
@@ -553,6 +604,10 @@ function montarNuvem(malha, textura, altura, quantidade) {
           c = mix(c, uCorLaser, uLaser * recente * visto);
           alfa *= visto;
         }
+
+        // Troca com a superfície: abaixo da linha o ponto some; perto dela, fica azul.
+        if (p.y < uCorteBaixo) alfa = 0.0;
+        c = mix(c, uCorLaser, uBrilhoCorte * (1.0 - smoothstep(0.0, 0.008, p.y - uCorteBaixo)));
 
         vCor = c;
         vAlfa = alfa;
