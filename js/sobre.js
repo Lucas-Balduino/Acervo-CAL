@@ -69,28 +69,28 @@ function acompanharRolagem() {
   atualizarRolagem();
 }
 
-// Linha de leitura: no meio da tela; no celular, no meio do espaço que sobra abaixo do palco.
-function linhaDeLeitura() {
-  const estilo = getComputedStyle(palco);
-  if (estilo.position !== "sticky" || innerWidth >= 900) return innerHeight / 2;
-  // Usa a posição em que o palco fica preso (mesmo antes de ele chegar lá).
-  const fundoDoPalco = parseFloat(estilo.top) + palco.offsetHeight;
-  return fundoDoPalco + (innerHeight - fundoDoPalco) / 2;
+// Onde o cartão de texto fica preso (logo abaixo do cabeçalho; no celular, abaixo do palco).
+function topoDoCartao(etapa) {
+  return parseFloat(getComputedStyle(etapa.querySelector(".etapa-cartao")).top) || 0;
+}
+
+// Progresso da etapa: 0 quando o cartão prende, 1 quando ele vai soltar.
+function progressoDa(etapa) {
+  const r = etapa.getBoundingClientRect();
+  const percurso = r.height - etapa.querySelector(".etapa-cartao").offsetHeight;
+  return percurso > 0 ? (topoDoCartao(etapa) - r.top) / percurso : 0;
 }
 
 function atualizarRolagem() {
-  const linha = linhaDeLeitura();
+  // A etapa ativa é a última cujo topo já passou do meio da área do texto.
+  const topo = topoDoCartao(etapas[0]);
+  const linha = topo + (innerHeight - topo) / 2;
   let indice = 0;
-  let progresso = 0;
   etapas.forEach((etapa, i) => {
-    const r = etapa.getBoundingClientRect();
-    if (r.top <= linha) {
-      indice = i;
-      progresso = (linha - r.top) / r.height;
-    }
+    if (etapa.getBoundingClientRect().top <= linha) indice = i;
   });
-  progresso = Math.min(1, Math.max(0, progresso));
   const etapa = etapas[indice];
+  const progresso = Math.min(1, Math.max(0, progressoDa(etapa)));
 
   if (indice !== etapaAtiva) {
     etapaAtiva = indice;
@@ -113,9 +113,10 @@ function montarPontos() {
     botao.setAttribute("aria-label", `Etapa ${i + 1}: ${etapa.dataset.nome}`);
     botao.title = etapa.dataset.nome;
     botao.addEventListener("click", () => {
-      // Para no ponto da etapa em que a animação já aconteceu (perto do meio).
+      // Para logo depois de o texto prender, no começo da animação da etapa.
       const r = etapa.getBoundingClientRect();
-      const destino = scrollY + r.top + r.height * 0.55 - linhaDeLeitura();
+      const percurso = r.height - etapa.querySelector(".etapa-cartao").offsetHeight;
+      const destino = scrollY + r.top - topoDoCartao(etapa) + percurso * 0.02;
       scrollTo({ top: destino, behavior: movimentoReduzido ? "auto" : "smooth" });
     });
     navPontos.appendChild(botao);

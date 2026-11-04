@@ -84,8 +84,10 @@ three.js direto (não usa model-viewer). `js/museu-sala.js` monta a sala a parti
 
 ## Página "Sobre o processo"
 
-Rolagem guiada: o texto das 8 etapas rola à esquerda e um palco 3D fica preso à direita (no celular, em cima).
-`js/sobre.js` mede qual etapa está na "linha de leitura" e quanto dela já passou (0 a 1); `js/sobre-cena.js`
+Rolagem guiada: um palco 3D fica preso à direita (no celular, em cima) e cada etapa é bem mais alta que a tela
+(`--rolagem` em `css/sobre.css`: 320vh nas etapas animadas, 200vh nas outras), com o cartão de texto preso
+(sticky) enquanto ela rola — o Lucas pediu a animação mais longa e o texto parado na tela.
+`js/sobre.js` descobre a etapa ativa e o progresso dela (0 quando o cartão prende, 1 quando vai soltar); `js/sobre-cena.js`
 recebe isso e mostra a moringa (CAL.0607) naquela etapa. Partes da animação seguem a rolagem: o scanner dá a
 volta, a segunda captura (peça virada) se encaixa, a câmera aproxima da malha, a textura se desdobra no plano
 (cada vértice ganha uma segunda posição dada pelo `uv`, misturada com `morphTargetInfluences`) e o Blender põe a

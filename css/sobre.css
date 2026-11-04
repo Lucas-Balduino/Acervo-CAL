@@ -125,14 +125,33 @@
   cursor: grabbing;
 }
 
+/*
+  Cada etapa é bem mais alta que a tela, e o cartão de texto fica preso (sticky) enquanto ela
+  rola: a animação acontece com o texto parado. Etapas com animação ligada à rolagem são mais
+  longas (--rolagem). O progresso vai de 0 (cartão acaba de prender) a 1 (cartão vai soltar).
+*/
 .com-3d .etapa {
-  display: flex;
-  align-items: center;
+  --rolagem: 320vh;
+  height: var(--rolagem);
+}
+
+.com-3d .etapa:is([data-etapa="obra"], [data-etapa="web"], [data-etapa="site"]) {
+  --rolagem: 200vh;
 }
 
 .com-3d .etapa-cartao {
+  position: sticky;
+  top: var(--topo-cartao);
+  min-height: calc(100vh - var(--topo-cartao));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   opacity: 0.3;
   transition: opacity 0.5s ease;
+}
+
+.com-3d .etapa-cartao > * {
+  max-width: 460px;
 }
 
 .com-3d .etapa.ativa .etapa-cartao {
@@ -250,12 +269,8 @@
     padding: 0 48px 0 max(var(--margem), calc((100vw - var(--largura-max)) / 2 + var(--margem)));
   }
 
-  .com-3d .etapa {
-    min-height: 110vh;
-  }
-
-  .com-3d .etapa:first-child {
-    min-height: 90vh;
+  .com-3d {
+    --topo-cartao: var(--altura-cabecalho);
   }
 }
 
@@ -263,32 +278,53 @@
 @media (max-width: 899px) {
   .com-3d .historia-palco {
     z-index: 2;
-    height: 46vh;
-    height: 46svh;
+    height: var(--altura-palco);
   }
 
   .com-3d .historia-etapas {
     padding: 0 var(--margem);
   }
 
-  .com-3d .etapa {
-    min-height: 90vh;
-    min-height: 90svh;
+  .com-3d {
+    --altura-palco: 42svh;
+    --topo-cartao: calc(var(--altura-cabecalho) + var(--altura-palco));
+  }
+
+  /* Celulares baixos: palco menor para o texto caber embaixo. */
+  @media (max-height: 720px) {
+    .com-3d {
+      --altura-palco: 36svh;
+    }
   }
 
   .com-3d .etapa-cartao {
+    min-height: calc(100svh - var(--topo-cartao));
+    max-height: calc(100svh - var(--topo-cartao));
+    overflow-y: auto; /* em telas baixas, o texto rola dentro do cartão em vez de ficar cortado */
+    justify-content: flex-start;
     width: 100%;
-    padding: 20px;
+    padding: 16px 0 24px;
     background: var(--cor-fundo);
-    border: 1px solid var(--cor-borda);
   }
 
   .etapa-numero {
-    font-size: 40px;
+    font-size: 32px;
+  }
+
+  .etapa h2 {
+    margin: 4px 0 10px;
+    font-size: 23px;
   }
 
   .etapa p {
-    font-size: 16px;
+    margin-bottom: 10px;
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  .etapa .etapa-nota {
+    margin-top: 12px;
+    font-size: 13px;
   }
 
   .palco-dica {

@@ -62,31 +62,31 @@ const ETAPAS = {
   obra: () => ({ varredura: 0 }),
   captura: (p) => ({
     fundo: "#0f1720", enquadrar: 0.9, elevacao: 0.3, giro: 0, textura: 0,
-    pontos: 1, scanner: 1, laser: 1, varredura: faixa(p, 0.05, 0.8), uniao: 0,
+    pontos: 1, scanner: 1, laser: 1, varredura: faixa(p, 0.04, 0.88), uniao: 0,
   }),
   projetos: (p) => {
-    const uniao = faixa(p, 0.3, 0.75);
+    const uniao = faixa(p, 0.2, 0.8);
     return {
       fundo: "#0f1720", giro: 0, textura: 0, pontos: 1, segunda: 1, uniao,
       enquadrar: misturar(1.0, 0.66, uniao), alvoX: misturar(0.24, 0, uniao), elevacao: 0.18,
     };
   },
   malha: (p) => {
-    const zoom = faixa(p, 0.15, 0.75);
+    const zoom = faixa(p, 0.08, 0.85);
     return {
       fundo: "#1e2429", giro: 0.1, textura: 0, argila: 1, arame: 1,
       enquadrar: misturar(0.62, 0.15, zoom), alvoY: misturar(0.5, 0.84, zoom), elevacao: misturar(0.14, 0.3, zoom),
     };
   },
   textura: (p) => {
-    const aberta = faixa(p, 0.2, 0.5) * (1 - faixa(p, 0.78, 1));
+    const aberta = faixa(p, 0.15, 0.45) * (1 - faixa(p, 0.7, 0.95));
     return {
-      fundo: "#ececec", giro: 0, argila: 1, textura: faixa(p, 0, 0.18), desdobrar: aberta,
+      fundo: "#ececec", giro: 0, argila: 1, textura: faixa(p, 0, 0.12), desdobrar: aberta,
       enquadrar: misturar(0.62, 0.72, aberta), elevacao: misturar(0.14, 0, aberta),
     };
   },
   blender: (p) => ({
-    fundo: "#3d3d3d", giro: 0, rumo: 0.6, grade: 1, blender: faixa(p, 0.2, 0.7),
+    fundo: "#3d3d3d", giro: 0, rumo: 0.6, grade: 1, blender: faixa(p, 0.12, 0.8),
     enquadrar: 0.92, elevacao: 0.42, alvoY: 0.3,
   }),
   web: () => ({ fundo: "#ececec", giro: 0.35 }),
