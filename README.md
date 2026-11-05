@@ -68,15 +68,20 @@ ele faz e o que ele **não** faz.
 
 ## Como incluir uma obra
 
+No Claude Code, `/nova-obra CAL.0000 <caminho do .glb>` faz todos os passos abaixo e só pergunta qual
+é a frente da peça e se pode publicar. À mão:
+
 1. Exporte o `.glb` do Blender para `models/cal-<número>/modelo.glb`.
 2. Otimize: `node ferramentas/otimizar-glb.mjs models/cal-<número>/modelo.glb`
    (detalhes e instalação em `models/LEIA-ME.md`).
 3. Acrescente `{ "id": "cal-<número>", "modelo": "...", "frente": 0 }` em
    `data/obras.json` e rode `node ferramentas/sincronizar-acervo.mjs` para trazer
    título, procedência etc. do Acervo CAL e as medidas do modelo.
-4. Com o servidor ligado, abra `http://localhost:3000/ferramentas/posters.html?id=cal-<número>`
-   para gerar a miniatura.
-5. Recarregue o site e confira a peça.
+4. Escolha a `frente`: `node ferramentas/navegador.mjs vistas cal-<número>` gera uma imagem com 8 ângulos.
+5. Gere a miniatura: `node ferramentas/navegador.mjs poster cal-<número>` (ou, com o servidor ligado,
+   abra `http://localhost:3000/ferramentas/posters.html?id=cal-<número>`).
+6. Confira: `node ferramentas/navegador.mjs conferir cal-<número>` abre a página da obra e o museu,
+   mede o modelo e salva imagens numa pasta temporária.
 
 Detalhes dos campos em `data/LEIA-ME.md`.
 
