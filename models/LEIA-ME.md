@@ -45,7 +45,10 @@ não muda cor nem material; se algo parecer diferente da peça, ajuste no Blende
 
 ## Miniatura (poster.webp)
 
-Com o servidor local ligado (`node ferramentas/servidor.mjs`), abra
+O jeito mais simples: `node ferramentas/navegador.mjs poster cal-0000` (usa o Chrome sem abrir janela).
+Para ver a obra de 8 ângulos e escolher a `frente`: `node ferramentas/navegador.mjs vistas cal-0000`.
+
+Pelo navegador, com o servidor local ligado (`node ferramentas/servidor.mjs`), abra
 `http://localhost:3000/ferramentas/posters.html?id=cal-0000` (sem `?id=`, gera todas).
 A página renderiza a obra pela "frente" definida em `data/obras.json` e salva
 `models/cal-0000/poster.webp` (~20–40 KB, fundo transparente).

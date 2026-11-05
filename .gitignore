@@ -1,6 +1,7 @@
 # Dependências das ferramentas (instale com: cd ferramentas && npm install)
 node_modules/
 
-# Arquivos locais do Claude Code (launch.json é compartilhado)
+# Arquivos locais do Claude Code (launch.json e as skills são compartilhados)
 .claude/*
 !.claude/launch.json
+!.claude/skills/

@@ -15,8 +15,7 @@ Vigência: 15/05/2026 a 31/12/2026.
   1. visualizador 3D (pronto);
   2. galeria em grade com busca e filtros (aprovada pelo professor, no ar desde 04/11/2026);
   3. página "Sobre o processo": difusão do trabalho de extensão, interativa e visual, que torne o
-     processo (escaneamento → tratamento → web) palpável para o público leigo (primeira versão na
-     branch `feat/pagina-sobre`);
+     processo (escaneamento → tratamento → web) palpável para o público leigo (no ar desde 04/11/2026; falta o PDF da metodologia);
   4. museu virtual navegável — o principal diferencial do produto (aprovado, no ar desde 04/11/2026).
 - **Direitos:** o aviso "Direitos Reservados" das fichas vale para republicação das obras; publicar os
   modelos 3D neste site está liberado.
@@ -80,8 +79,8 @@ three.js direto (não usa model-viewer). `js/museu-sala.js` monta a sala a parti
 - No celular (`pointer: coarse`) não há sombras em tempo real nem spots reais; a sombra sob os pedestais é uma
   textura e aparece sempre.
 - `window.museu` expõe `examinar`, `voltarAoMuseu`, `percurso`, `camera` e `navegacao` para testes no console.
-- Testado só em Chrome headless (SwiftShader, ~2 quadros/s): o desempenho em placa de vídeo e celular real
-  ainda não foi medido.
+- Desempenho (relato do Lucas, 05/11/2026): roda bem no PC; num iPhone XR a fluidez cai um pouco, sem
+  atrapalhar a experiência.
 
 ## Página "Sobre o processo"
 
@@ -123,6 +122,13 @@ Scanner Creality CR-Scan Raptor (antes EinScan H1) → malha de 200.000 faces no
 `node ferramentas/otimizar-glb.mjs models/<id>/modelo.glb` → item em `data/obras.json` (id, modelo,
 frente) → `node ferramentas/sincronizar-acervo.mjs` → miniatura em `ferramentas/posters.html`
 (com `node ferramentas/servidor.mjs` ligado, que é o único que aceita gravar `models/<id>/poster.webp`).
+
+**Skill `/nova-obra`** (`.claude/skills/nova-obra/SKILL.md`) faz esse fluxo a partir do `.glb` exportado:
+confere a ficha, otimiza, cadastra, sincroniza, mostra 8 vistas para o Lucas escolher a `frente`, gera a
+miniatura, confere o site e o museu e faz o commit na `main` (obra nova é mudança de dados; o push só com o
+"pode publicar" dele). As etapas de navegador ficam em `ferramentas/navegador.mjs` (`vistas`, `poster`,
+`conferir`), que liga o próprio servidor na porta 3101 e usa Chrome headless — a miniatura sai igual
+byte a byte à gerada antes no navegador.
 
 O script corrige a escala (o scanner exporta em mm e o glTF usa metros) e comprime a malha, que vem
 sem vértices compartilhados: ~22 MB → ~1,5 MB por obra. O decodificador Draco é carregado pelo próprio

@@ -3,17 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <title>Gerar miniaturas</title>
+  <link rel="icon" href="data:,">
   <!--
     posters.html — gera a miniatura (poster.webp) de cada obra.
     Só funciona com ferramentas/servidor.mjs ligado: abra
     http://localhost:3000/ferramentas/posters.html
     Use ?id=cal-0000 para gerar só uma obra.
+    Com ?id=cal-0000&vistas, não salva nada: mostra a obra de 8 ângulos (0°, 45°…)
+    para escolher a "frente" que vai em data/obras.json.
   -->
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
   <style>
     body { font: 14px system-ui, sans-serif; margin: 24px; }
     model-viewer { width: 480px; height: 600px; background: transparent; }
     #registro { white-space: pre-line; }
+    .vistas { display: grid; grid-template-columns: repeat(4, 240px); gap: 12px; padding: 4px; width: max-content; }
+    .vistas figure { margin: 0; background: #f2f2f2; }
+    .vistas model-viewer { width: 240px; height: 300px; }
+    .vistas figcaption { padding: 4px 8px 8px; font-size: 22px; font-weight: 700; text-align: center; }
+    .vistas .atual { outline: 3px solid #1f5f99; }
   </style>
 </head>
 <body>
@@ -24,7 +32,8 @@
   <script type="module">
     let molde = document.getElementById("mv");
     const registro = document.getElementById("registro");
-    const so = new URLSearchParams(location.search).get("id");
+    const parametros = new URLSearchParams(location.search);
+    const so = parametros.get("id");
     const log = (t) => (registro.textContent += "\n" + t);
 
     await customElements.whenDefined("model-viewer");
@@ -32,23 +41,53 @@
       .filter((obra) => !so || obra.id === so);
     registro.textContent = `${obras.length} obra(s)`;
 
-    for (const obra of obras) {
-      // Um <model-viewer> novo por obra: reaproveitar o mesmo deixa o enquadramento da obra anterior.
-      const mv = molde.cloneNode();
-      molde.replaceWith(mv);
-      molde = mv;
-      // Mesma vista inicial do visualizador: a "frente" da obra, um pouco de cima.
-      mv.cameraOrbit = `${obra.frente || 0}deg 78deg 105%`;
-      const carregou = new Promise((ok) => mv.addEventListener("load", ok, { once: true }));
-      mv.src = "../" + obra.modelo;
-      await carregou;
-      await new Promise((ok) => setTimeout(ok, 1000));
-
-      const imagem = await mv.toBlob({ mimeType: "image/webp", qualityArgument: 0.85 });
-      const resposta = await fetch(`/salvar-poster?id=${obra.id}`, { method: "POST", body: imagem });
-      log(`${obra.id}: ${resposta.ok ? "salva" : "erro — " + (await resposta.text())} (${(imagem.size / 1024).toFixed(0)} KB)`);
-    }
+    if (parametros.has("vistas")) await mostrarVistas(obras[0]);
+    else await gerarMiniaturas();
     log("Pronto.");
+
+    async function gerarMiniaturas() {
+      for (const obra of obras) {
+        // Um <model-viewer> novo por obra: reaproveitar o mesmo deixa o enquadramento da obra anterior.
+        const mv = molde.cloneNode();
+        molde.replaceWith(mv);
+        molde = mv;
+        // Mesma vista inicial do visualizador: a "frente" da obra, um pouco de cima.
+        mv.cameraOrbit = `${obra.frente || 0}deg 78deg 105%`;
+        const carregou = new Promise((ok) => mv.addEventListener("load", ok, { once: true }));
+        mv.src = "../" + obra.modelo;
+        await carregou;
+        await new Promise((ok) => setTimeout(ok, 1000));
+
+        const imagem = await mv.toBlob({ mimeType: "image/webp", qualityArgument: 0.85 });
+        const resposta = await fetch(`/salvar-poster?id=${obra.id}`, { method: "POST", body: imagem });
+        log(`${obra.id}: ${resposta.ok ? "salva" : "erro — " + (await resposta.text())} (${(imagem.size / 1024).toFixed(0)} KB)`);
+      }
+    }
+
+    // 8 vistas em volta da obra, com o mesmo enquadramento da miniatura. A "frente" atual fica marcada.
+    async function mostrarVistas(obra) {
+      if (!obra) return log("Obra não encontrada em data/obras.json.");
+      document.querySelector("h1").textContent = `Vistas de ${obra.id} — qual é a frente?`;
+      const grade = document.createElement("div");
+      grade.className = "vistas";
+      molde.replaceWith(grade);
+      const cargas = [];
+      for (let graus = 0; graus < 360; graus += 45) {
+        const figura = document.createElement("figure");
+        if (graus === (obra.frente || 0)) figura.className = "atual";
+        const mv = molde.cloneNode();
+        mv.removeAttribute("id");
+        mv.cameraOrbit = `${graus}deg 78deg 105%`;
+        cargas.push(new Promise((ok) => mv.addEventListener("load", ok, { once: true })));
+        mv.src = "../" + obra.modelo;
+        const legenda = document.createElement("figcaption");
+        legenda.textContent = `${graus}°`;
+        figura.append(mv, legenda);
+        grade.append(figura);
+      }
+      await Promise.all(cargas);
+      await new Promise((ok) => setTimeout(ok, 1500));
+    }
   </script>
 </body>
 </html>
