@@ -5,11 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Museu virtual · Gêmeos Digitais CAL</title>
   <meta name="description" content="Um museu virtual, com uma sala para cada coleção, para visitar as obras da CAL em 3D e examiná-las de perto.">
+  <meta name="theme-color" content="#2a2421">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3 28 9.5v13L16 29 4 22.5v-13z' fill='%231d5c86'/%3E%3Cpath d='M16 16 28 9.5M16 16 4 9.5M16 16v13' stroke='%23fff' stroke-width='1.6' fill='none'/%3E%3C/svg%3E">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/base.css">
@@ -26,7 +27,24 @@
     }
   </script>
 </head>
-<body class="pagina-larga">
+<body class="pagina-larga pagina-museu">
+  <!-- Marca UnB | CAL redesenhada em vetor (símbolo da UnB + texto em Roboto), usada na
+       tela de entrada e no canto da visita. A cor vem do CSS (currentColor). -->
+  <svg class="definicoes-svg" aria-hidden="true" focusable="false">
+    <symbol id="marca-unb-cal" viewBox="-4 -4 640 108">
+      <g fill="none" stroke="currentColor">
+        <rect x="3" y="3" width="194" height="94" stroke-width="6"/>
+        <line x1="100" y1="3" x2="100" y2="97" stroke-width="5"/>
+        <path d="M3 12A122 122 0 0 0 197 12" stroke-width="5"/>
+      </g>
+      <g fill="currentColor" font-family="Roboto, Arial, sans-serif">
+        <text x="238" y="78" font-size="75" font-weight="900" letter-spacing="5">UnB</text>
+        <rect x="438.5" y="5" width="3" height="90"/>
+        <text x="478" y="78" font-size="75" font-weight="300" letter-spacing="8">CAL</text>
+      </g>
+    </symbol>
+  </svg>
+
   <a class="pular-conteudo" href="obras.html">Pular o 3D e ver a lista de obras</a>
 
   <header class="cabecalho">
@@ -46,8 +64,14 @@
 
   <main class="museu">
     <div id="museu-palco" class="museu-palco">
+      <div class="museu-vinheta" aria-hidden="true"></div>
+      <svg class="museu-marca" viewBox="-4 -4 640 108" role="img" aria-label="UnB | Casa da Cultura da América Latina"><use href="#marca-unb-cal"/></svg>
+
       <div class="museu-topo">
-        <button type="button" id="botao-ajuda" class="botao-palco" aria-expanded="false" aria-controls="museu-ajuda">Como navegar</button>
+        <button type="button" id="botao-ajuda" class="botao-vidro" aria-expanded="false" aria-controls="museu-ajuda">Como navegar</button>
+        <button type="button" id="botao-sair" class="botao-vidro museu-sair" aria-label="Sair do museu" title="Sair do museu">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
         <ul id="museu-ajuda" class="museu-ajuda" hidden>
           <li class="so-mouse"><strong>Arraste</strong> para olhar em volta</li>
           <li class="so-mouse"><strong>Clique no chão</strong> para andar até lá</li>
@@ -58,6 +82,7 @@
           <li class="so-toque"><strong>Toque no chão</strong> para andar até lá</li>
           <li class="so-toque"><strong>Toque numa obra</strong> para examiná-la de perto</li>
           <li>Ou use <strong>Próxima obra</strong> para seguir o percurso</li>
+          <li><strong>×</strong> no canto sai do museu</li>
         </ul>
       </div>
 
@@ -84,20 +109,27 @@
       </nav>
     </div>
 
+    <!-- Entrada: primeiro a marca e o carregamento; com as obras prontas, o convite para entrar. -->
     <div id="museu-entrada" class="museu-entrada">
       <div class="museu-entrada-caixa">
-        <p class="sobretitulo">Gêmeos Digitais CAL</p>
-        <h1>Museu virtual</h1>
-        <p>
-          Caminhe pelas salas, uma para cada coleção, com as obras digitalizadas do acervo da CAL.
-          Aproxime-se de cada peça para ver a ficha e abri-la em detalhe.
-        </p>
+        <svg class="museu-entrada-marca" viewBox="-4 -4 640 108" role="img" aria-label="UnB | Casa da Cultura da América Latina"><use href="#marca-unb-cal"/></svg>
         <div class="museu-carga">
-          <span id="museu-estado" role="status">Preparando a sala…</span>
-          <div class="museu-carga-barra"><span id="museu-barra"></span></div>
+          <div>
+            <div class="museu-carga-barra"><span id="museu-barra"></span></div>
+            <p id="museu-estado" role="status">Preparando as salas</p>
+          </div>
         </div>
-        <button type="button" id="botao-entrar" class="botao botao-primario" disabled>Carregando…</button>
-        <a class="link-alternativo" href="obras.html">Prefere uma lista? Ver as obras</a>
+        <div class="museu-entrada-texto">
+          <div>
+            <h1>Museu virtual</h1>
+            <p>
+              Caminhe pelas salas, uma para cada coleção, com as obras digitalizadas do acervo da CAL.
+              Aproxime-se de cada peça para ver a ficha e abri-la em detalhe.
+            </p>
+            <button type="button" id="botao-entrar" class="botao-entrar" disabled>Entrar no museu</button>
+            <a class="link-alternativo" href="obras.html">Prefere uma lista? Ver as obras</a>
+          </div>
+        </div>
       </div>
     </div>
   </main>

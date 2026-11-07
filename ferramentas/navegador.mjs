@@ -129,12 +129,14 @@ try {
     // Museu: as salas crescem com cada obra; confere que tudo carrega, entra e fotografa a vista da
     // entrada e a obra nova na sala dela (examina e volta: o visitante fica de frente para a obra).
     ({ pagina, erros } = await abrir("/museu.html", 1366, 820));
-    await pagina.waitForFunction(() => document.getElementById("museu-estado")?.textContent === "Sala pronta", { timeout: 300000 });
+    await pagina.waitForFunction(() => !document.getElementById("botao-entrar")?.disabled, { timeout: 300000 });
+    await espera(1500); // a tela de entrada troca o carregamento pelo convite
     await pagina.click("#botao-entrar");
-    await espera(4000);
+    const parado = () => pagina.waitForFunction(() => !window.museu.navegacao.emTransicao, { timeout: 120000, polling: 200 });
+    await parado(); // a câmera avança da porta para dentro da sala
+    await espera(1500);
     resultado.museu.imagem = join(SAIDA, `conferir-museu.png`);
     await pagina.screenshot({ path: resultado.museu.imagem });
-    const parado = () => pagina.waitForFunction(() => !window.museu.navegacao.emTransicao, { timeout: 120000, polling: 200 });
     resultado.museu.sala = await pagina.evaluate((id) => {
       const indice = window.museu.percurso.findIndex((peca) => peca.obra.id === id);
       window.museu.examinar(indice);

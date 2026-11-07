@@ -1,17 +1,20 @@
 /*
   museu-sala.js — constrói o museu virtual com three.js, inspirado nas salas de
   exposição da CAL: paredes terracota, piso de taco em espinha de peixe, teto
-  claro com trilhos de spots e pedestais da cor da parede.
+  claro com trilhos de spots e pedestais terracota, um pouco mais escuros que a
+  parede (o topo, sob o spot, não vira um laranja forte).
 
   As obras são agrupadas por coleção, uma sala para cada, uma depois da outra.
   Entre as salas há uma parede com uma passagem larga e uma viga mais baixa,
   e o nome da sala seguinte fica sobre a passagem. Cada obra entra num
   pedestal, ampliada (SALA.escalaDasObras) e virada pela sua "frente".
 
-  Luz (LUZ): pouca luz geral e spots quentes, para dar profundidade e destacar
-  as obras. As manchas de luz na parede e no chão são texturas (quase não pesam);
-  no computador, alguns spots reais acompanham as obras mais perto do visitante
-  (atualizarLuzes, chamado a cada quadro).
+  Luz (LUZ): pouca luz geral e um spot quente por obra, para dar profundidade e
+  destacar as obras. Cada spot fica no trilho do outro lado do corredor e ilumina
+  a obra de frente, a uns 35°; o facho continua até a parede de trás, onde aparece
+  a sombra do pedestal e da obra. Os spots, as sombras deles e o escurecimento dos
+  cantos são calculados nos shaders (museu-luz.js), igual no computador e no celular.
+  Uma névoa quente e leve escurece o que está longe.
 
   Não cuida de câmera nem de cliques (isso está em museu-navegacao.js).
 
@@ -24,6 +27,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+import { criarLuz } from "./museu-luz.js";
 
 export const SALA = {
   largura: 5.2,
@@ -46,31 +50,40 @@ export const SALA = {
 // Luz: pouca luz geral, para as obras e as manchas dos spots se destacarem.
 const LUZ = {
   ambienteObras: 0.75, // reflexo do ambiente nas obras, igual ao de antes (as metálicas dependem dele)
-  ambienteObrasLeve: 0.85, // no celular, sem spots reais
-  ambienteSala: 0.4, // reflexo do ambiente em paredes, piso, teto e pedestais
-  hemisferio: 0.3,
-  geral: 0.35, // luz do teto, com sombra (só no computador)
-  spot: 18, // candela
-  aberturaSpot: 0.26, // rad
-  spotsReais: 6, // no computador; o número é fixo porque mudá-lo recompila os shaders
+  ambienteSala: 1.5, // força do reflexo da sala (cenaDeReflexo) em paredes, piso, teto e pedestais
+  reflexoParede: [0.14, 0.05, 0.026], // cores lineares do ambiente refletido
+  reflexoPiso: [0.07, 0.035, 0.016],
+  reflexoTeto: [0.24, 0.21, 0.18],
+  reflexoSpot: [6, 5, 3.8],
+  hemisferio: 0.2,
+  geral: 0.25, // luz do teto, com sombra (só no computador)
+  spot: 34, // candela
+  aberturaSpot: 0.26, // rad, metade do facho
+  penumbraSpot: 0.55, // parte do facho em que a luz vai sumindo (0 a 1)
+  aberturaHalo: 0.8, // rad: luz fraca em volta do facho, que clareia a parede e o chão em volta
+  halo: 0.16,
+  facho: 0.12, // brilho do facho de luz no ar (0 = invisível)
+  sombraObra: 0.8, // quanto a sombra da obra escurece o facho (0 a 1)
+  nevoa: 0.03, // densidade: quanto mais longe, mais escuro e quente
 };
 
 const CORES = {
   parede: 0xa9452c, // terracota das salas da CAL
   rodape: 0x7f2f1d,
-  pedestal: 0xa3412a,
+  pedestal: 0x86463a, // mais escuro e menos saturado que a parede: o topo, sob o spot, não estoura
   teto: 0xf1ebe5,
   trilho: 0xe9e6e1,
   luzSpot: 0xffd9b0, // branco quente, como lâmpada de 3000 K
-  manchaDeLuz: "255, 214, 170",
+  nevoa: 0x2b1810,
   texto: "#212529",
   textoSuave: "#495057",
   textoParede: "#f7efe4",
   destaque: "#1d5c86",
 };
 
-// Reflexo do ambiente usado nas superfícies da sala (ver materialDaSala).
+// Reflexo do ambiente e luz calculada, usados nas superfícies da sala (ver materialDaSala).
 let ambienteDaSala = null;
+let luz = null;
 
 /**
  * Onde cada obra fica: sala, posição do pedestal e direção para onde a obra olha.
@@ -153,21 +166,39 @@ export function planejarSala(obras) {
  * @param {import("./data.js").Obra[]} obras  na ordem do percurso
  * @param {object} opcoes
  * @param {(carregadas: number, total: number) => void} [opcoes.aoProgresso]
- * @param {boolean} [opcoes.leve]  celular: sem sombras em tempo real e sem spots reais
+ * @param {boolean} [opcoes.leve]  celular: sem sombras em tempo real
  */
 export async function montarSala(renderer, obras, { aoProgresso = () => {}, leve = false } = {}) {
   const cena = new THREE.Scene();
-  cena.background = new THREE.Color(CORES.teto);
+  cena.background = new THREE.Color(CORES.nevoa);
+  cena.fog = new THREE.FogExp2(CORES.nevoa, LUZ.nevoa);
 
-  // Luz ambiente "de estúdio", parecida com a do visualizador (model-viewer, neutral). As obras a
-  // recebem com a força de cena.environmentIntensity; a sala, bem mais fraca (materialDaSala).
+  // Luz ambiente "de estúdio", parecida com a do visualizador (model-viewer, neutral), só nas obras
+  // (as metálicas dependem dela). Paredes, piso e pedestais refletem uma sala escura e quente com
+  // pontos de luz no teto (cenaDeReflexo); com o estúdio claro, o piso ficava esbranquiçado ao longe.
   const pmrem = new THREE.PMREMGenerator(renderer);
-  ambienteDaSala = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-  cena.environment = ambienteDaSala;
-  cena.environmentIntensity = leve ? LUZ.ambienteObrasLeve : LUZ.ambienteObras;
+  cena.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+  cena.environmentIntensity = LUZ.ambienteObras;
+  ambienteDaSala = pmrem.fromScene(cenaDeReflexo(), 0.02).texture;
+  pmrem.dispose();
 
   const plano = planejarSala(obras);
   const { lugares, comprimento } = plano;
+  luz = criarLuz({
+    quantidade: lugares.length,
+    divisorias: plano.divisorias,
+    sala: SALA,
+    comprimento,
+    spot: {
+      cor: CORES.luzSpot,
+      intensidade: LUZ.spot,
+      abertura: LUZ.aberturaSpot,
+      penumbra: LUZ.penumbraSpot,
+      abertaHalo: LUZ.aberturaHalo,
+      halo: LUZ.halo,
+      sombraObra: LUZ.sombraObra,
+    },
+  });
   const limites = {
     xMin: -SALA.largura / 2,
     xMax: SALA.largura / 2,
@@ -182,7 +213,7 @@ export async function montarSala(renderer, obras, { aoProgresso = () => {}, leve
   montarTextosDeParede(cena, plano, obras.length);
 
   const pecas = lugares.map((lugar, indice) => montarPedestal(cena, lugar, indice, !leve));
-  const atualizarLuzes = montarSpots(cena, pecas, plano, leve);
+  montarSpots(cena, pecas, plano);
 
   const loader = new GLTFLoader();
   const draco = new DRACOLoader();
@@ -209,15 +240,52 @@ export async function montarSala(renderer, obras, { aoProgresso = () => {}, leve
   renderer.shadowMap.autoUpdate = false;
   renderer.shadowMap.needsUpdate = true;
 
-  return { cena, pecas, limites, comprimento, salas: plano.salas, paredes, atualizarLuzes };
+  return { cena, pecas, limites, comprimento, salas: plano.salas, paredes };
 }
 
 /* ---------- Materiais e texturas ---------- */
 
-/** Material das superfícies da sala: reflete pouco o ambiente, para a sala ficar mais escura que as obras. */
+/**
+ * Material das superfícies da sala: reflete pouco o ambiente, para a sala ficar mais escura que
+ * as obras, e recebe a luz dos spots e o escurecimento dos cantos (museu-luz.js).
+ */
 function materialDaSala(parametros) {
   // Com envMap próprio, vale o envMapIntensity do material (sem ele, valeria o da cena).
-  return new THREE.MeshStandardMaterial({ envMap: ambienteDaSala, envMapIntensity: LUZ.ambienteSala, ...parametros });
+  return luz.prepararMaterialDaSala(
+    new THREE.MeshStandardMaterial({ envMap: ambienteDaSala, envMapIntensity: LUZ.ambienteSala, ...parametros })
+  );
+}
+
+/**
+ * Ambiente que as superfícies da sala refletem: uma caixa com paredes terracota na penumbra, piso
+ * de madeira, teto claro e pontos de luz quentes, como os spots. Cores em valores lineares (HDR).
+ */
+function cenaDeReflexo() {
+  const cena = new THREE.Scene();
+  const caixa = (largura, altura, profundidade, cor, x = 0, y = 0, z = 0) => {
+    const malha = new THREE.Mesh(
+      new THREE.BoxGeometry(largura, altura, profundidade),
+      new THREE.MeshBasicMaterial({ color: new THREE.Color(...cor), side: THREE.BackSide })
+    );
+    malha.position.set(x, y, z);
+    cena.add(malha);
+  };
+  const plano = (largura, profundidade, cor, x, y, z) => {
+    const malha = new THREE.Mesh(
+      new THREE.PlaneGeometry(largura, profundidade),
+      new THREE.MeshBasicMaterial({ color: new THREE.Color(...cor), side: THREE.DoubleSide })
+    );
+    malha.rotation.x = Math.PI / 2;
+    malha.position.set(x, y, z);
+    cena.add(malha);
+  };
+  caixa(5.2, 3, 12, LUZ.reflexoParede, 0, 0, 0);
+  plano(5.2, 12, LUZ.reflexoPiso, 0, -1.49, 0);
+  plano(5.2, 12, LUZ.reflexoTeto, 0, 1.49, 0);
+  for (let z = -5; z <= 5; z += 1.25) {
+    for (const x of [-0.8, 0.8]) plano(0.12, 0.12, LUZ.reflexoSpot, x, 1.45, z + (x > 0 ? 0.4 : 0));
+  }
+  return cena;
 }
 
 function texturaDeCanvas(larguraPx, alturaPx, desenhar) {
@@ -234,22 +302,29 @@ function texturaDeCanvas(larguraPx, alturaPx, desenhar) {
 /**
  * Taco em espinha de peixe. Tacos de k × 1 unidades: a peça horizontal n ocupa
  * [n, n+k] × [n, n+1] e a vertical [n+k, n+k+1] × [n+1−k, n+1]; o desenho se
- * repete a cada 2k unidades nos dois eixos. Depois a textura gira 45°.
+ * repete a cada 2k unidades nos dois eixos. A textura tem duas repetições, com
+ * cores sorteadas, para a repetição não aparecer. Depois ela gira 45°.
+ *
+ * Os tacos variam pouco de tom entre si (como um piso encerado): com mais
+ * contraste, o chão parecia um mosaico.
  */
+const TACO = { k: 4, repeticoes: 2 };
 function texturaDeTaco() {
-  const k = 4;
+  const { k, repeticoes } = TACO;
   const u = 64; // px por unidade (largura de um taco)
-  const lado = 2 * k * u;
+  const unidades = 2 * k * repeticoes;
+  const lado = unidades * u;
   let semente = 7;
   const aleatorio = () => ((semente = (semente * 16807) % 2147483647) / 2147483647);
 
   return texturaDeCanvas(lado, lado, (ctx) => {
-    ctx.fillStyle = "#5a3416"; // rejunte
+    ctx.fillStyle = "hsl(26, 40%, 27%)"; // junta entre os tacos
     ctx.fillRect(0, 0, lado, lado);
     const taco = (x, y, w, h, horizontal) => {
-      const luz = 40 + aleatorio() * 13;
-      const sat = 46 + aleatorio() * 12;
-      const matiz = 29 + aleatorio() * 6;
+      const luz = 39 + aleatorio() * 5;
+      const sat = 44 + aleatorio() * 6;
+      const matiz = 27 + aleatorio() * 3;
+      const veios = Array.from({ length: 3 }, () => 0.15 + aleatorio() * 0.7);
       for (const dx of [-lado, 0, lado]) {
         for (const dy of [-lado, 0, lado]) {
           const px = x * u + dx + 1;
@@ -261,14 +336,13 @@ function texturaDeTaco() {
             ? ctx.createLinearGradient(px, 0, px + pw, 0)
             : ctx.createLinearGradient(0, py, 0, py + ph);
           g.addColorStop(0, `hsl(${matiz}, ${sat}%, ${luz}%)`);
-          g.addColorStop(1, `hsl(${matiz + 2}, ${sat}%, ${luz - 5}%)`);
+          g.addColorStop(1, `hsl(${matiz + 1}, ${sat}%, ${luz - 2.5}%)`);
           ctx.fillStyle = g;
           ctx.fillRect(px, py, pw, ph);
-          // veios
-          ctx.strokeStyle = `hsla(${matiz - 4}, 45%, ${luz - 14}%, 0.25)`;
+          // veios da madeira, bem leves
+          ctx.strokeStyle = `hsla(${matiz - 3}, 45%, ${luz - 10}%, 0.16)`;
           ctx.lineWidth = 1;
-          for (let v = 0; v < 3; v++) {
-            const t = 0.2 + aleatorio() * 0.6;
+          for (const t of veios) {
             ctx.beginPath();
             if (horizontal) {
               ctx.moveTo(px, py + ph * t);
@@ -282,52 +356,15 @@ function texturaDeTaco() {
         }
       }
     };
-    // Faixas suficientes para cobrir a peça repetida (o resto vem das cópias deslocadas).
-    for (let faixa = -2; faixa <= 2; faixa++) {
-      for (let n = -2 * k; n <= 2 * k; n++) {
+    // Faixas suficientes para cobrir a textura (o resto vem das cópias deslocadas).
+    for (let faixa = -2 * repeticoes; faixa <= 2 * repeticoes; faixa++) {
+      for (let n = -unidades; n <= unidades; n++) {
         const ox = faixa * k;
         const oy = -faixa * k;
         taco(n + ox, n + oy, k, 1, true);
         taco(n + k + ox, n + 1 - k + oy, 1, k, false);
       }
     }
-  });
-}
-
-/**
- * Facho de spot batendo na parede: borda de cima em arco (mais alta no meio), mais forte logo
- * abaixo dela, abrindo e apagando para baixo e para os lados. Desenhada pixel a pixel.
- */
-function texturaDeManchaNaParede() {
-  return texturaDeCanvas(256, 512, (ctx, w, h) => {
-    const imagem = ctx.createImageData(w, h);
-    const [r, g, b] = CORES.manchaDeLuz.split(",").map(Number);
-    for (let y = 0; y < h; y++) {
-      for (let x = 0; x < w; x++) {
-        const u = (x / (w - 1)) * 2 - 1; // −1 (esquerda) a 1 (direita)
-        const abaixo = y / h - (0.06 + 0.3 * u * u); // distância até a borda em arco
-        if (abaixo <= 0) continue;
-        const borda = Math.min(1, abaixo / 0.035); // borda só um pouco suave
-        const largura = 0.32 + 0.35 * abaixo; // o facho abre para baixo
-        const lados = Math.exp(-(u * u) / (2 * largura * largura)) * (1 - u * u);
-        const alfa = 0.7 * borda * Math.exp(-abaixo * 3.8) * lados;
-        const i = (y * w + x) * 4;
-        imagem.data.set([r, g, b, Math.round(alfa * 255)], i);
-      }
-    }
-    ctx.putImageData(imagem, 0, 0);
-  });
-}
-
-/** Poça de luz no chão em volta do pedestal. */
-function texturaDeManchaNoPiso() {
-  return texturaDeCanvas(256, 256, (ctx, w, h) => {
-    const g = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2);
-    g.addColorStop(0, `rgba(${CORES.manchaDeLuz}, 0.42)`);
-    g.addColorStop(0.45, `rgba(${CORES.manchaDeLuz}, 0.22)`);
-    g.addColorStop(1, `rgba(${CORES.manchaDeLuz}, 0)`);
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, w, h);
   });
 }
 
@@ -368,7 +405,7 @@ function montarArquitetura(cena, plano, renderer, sombras) {
   taco.wrapS = taco.wrapT = THREE.RepeatWrapping;
   taco.center.set(0.5, 0.5);
   taco.rotation = Math.PI / 4;
-  const repeticao = 8 * SALA.larguraTaco; // a peça repetida tem 2k = 8 tacos de largura
+  const repeticao = 2 * TACO.k * TACO.repeticoes * SALA.larguraTaco; // largura da textura, em metros
   taco.repeat.set(largura / repeticao, comprimento / repeticao);
   taco.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
@@ -477,10 +514,14 @@ function montarArquitetura(cena, plano, renderer, sombras) {
   return paredes;
 }
 
-/* ---------- Trilhos, spots e manchas de luz ---------- */
+/* ---------- Trilhos e spots ---------- */
 
-/** Monta trilhos, luminárias e manchas de luz. Devolve a função que move os spots reais (a cada quadro). */
-function montarSpots(cena, pecas, plano, leve) {
+/**
+ * Monta trilhos e luminárias e passa a posição de cada spot para museu-luz.js. O spot de uma obra
+ * lateral fica no trilho do outro lado do corredor, um pouco mais perto da entrada: ilumina a obra
+ * de frente e de cima (~35°), como nas exposições, e o facho segue até a parede atrás dela.
+ */
+function montarSpots(cena, pecas, plano) {
   const { largura, peDireito } = SALA;
   const yTrilho = peDireito - 0.06;
   const xTrilho = largura / 2 - SALA.afastamentoDaParede - 0.55;
@@ -497,7 +538,8 @@ function montarSpots(cena, pecas, plano, leve) {
       cena.add(trilho);
     }
   }
-  const zTravessa = -plano.comprimento + 2.2;
+  // Trilho atravessado na última sala, à frente da obra em destaque (o facho dela chega à parede do fundo).
+  const zTravessa = -plano.comprimento + 3.0;
   const travessa = new THREE.Mesh(new THREE.BoxGeometry(xTrilho * 2, 0.03, 0.035), materialTrilho);
   travessa.position.set(0, yTrilho, zTravessa);
   cena.add(travessa);
@@ -506,94 +548,90 @@ function montarSpots(cena, pecas, plano, leve) {
   corpo.rotateX(Math.PI / 2); // o cilindro passa a apontar para +Z (lookAt)
   const lente = new THREE.CircleGeometry(0.04, 20);
   lente.translate(0, 0, 0.081);
+  const hasteGeo = new THREE.CylinderGeometry(0.008, 0.008, 0.1, 8);
 
-  // Manchas de luz: texturas somadas à cor da parede e do chão. No computador, mais fracas,
-  // porque o spot real perto do visitante já clareia um pouco.
-  const mancha = (textura) =>
-    new THREE.MeshBasicMaterial({
-      map: textura,
-      transparent: true,
-      opacity: leve ? 1 : 0.9,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
-      toneMapped: false,
-    });
-  const manchaParede = mancha(texturaDeManchaNaParede());
-  const manchaPiso = mancha(texturaDeManchaNoPiso());
+  // Facho de luz no ar: um cone aberto, com a ponta na luminária e a base na obra.
+  const coneGeo = new THREE.ConeGeometry(1, 1, 32, 1, true);
+  coneGeo.translate(0, -0.5, 0);
+  coneGeo.rotateX(-Math.PI / 2); // ponta na origem, base em z = 1
+  const materialFacho = criarMaterialDoFacho();
 
   for (const peca of pecas) {
     const destaque = peca.direcao.z > 0.99;
     const base = destaque
       ? new THREE.Vector3(0, yTrilho, zTravessa)
-      : new THREE.Vector3(Math.sign(peca.posicao.x) * xTrilho, yTrilho, peca.posicao.z + 0.4);
+      : new THREE.Vector3(-Math.sign(peca.posicao.x) * xTrilho, yTrilho, peca.posicao.z + 0.5);
     const alvo = new THREE.Vector3(peca.posicao.x, peca.topo + Math.max(0.12, peca.altura / 2), peca.posicao.z); // meio da obra
 
     const luminaria = new THREE.Group();
     luminaria.position.copy(base).add(new THREE.Vector3(0, -0.12, 0));
     luminaria.add(new THREE.Mesh(corpo, materialLuminaria), new THREE.Mesh(lente, materialLente));
-    luminaria.lookAt(alvo);
-    const haste = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.1, 8), materialTrilho);
+    const haste = new THREE.Mesh(hasteGeo, materialTrilho);
     haste.position.copy(base).add(new THREE.Vector3(0, -0.05, 0));
-    cena.add(luminaria, haste);
-    peca.luz = { posicao: luminaria.position.clone(), alvo };
+    const facho = new THREE.Mesh(coneGeo, materialFacho);
+    facho.renderOrder = 1; // depois das obras
+    cena.add(luminaria, haste, facho);
 
-    // Mancha na parede atrás da obra (fundo ou lateral) e poça no chão em volta do pedestal.
-    const naParede = new THREE.Mesh(new THREE.PlaneGeometry(destaque ? 2.4 : 1.7, 2.5), manchaParede);
-    if (destaque) {
-      naParede.position.set(0, 1.5, -plano.comprimento + 0.004);
-    } else {
-      const sinal = Math.sign(peca.posicao.x);
-      naParede.position.set(sinal * (largura / 2 - 0.004), 1.5, peca.posicao.z - 0.15);
-      naParede.rotation.y = -sinal * (Math.PI / 2);
-    }
-    const noChao = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 2.2), manchaPiso);
-    noChao.rotation.x = -Math.PI / 2;
-    noChao.position.set(peca.posicao.x + peca.direcao.x * 0.3, 0.0015, peca.posicao.z + peca.direcao.z * 0.3);
-    naParede.renderOrder = noChao.renderOrder = -1; // antes dos textos e da sombra do pedestal
-    cena.add(naParede, noChao);
+    peca.luminaria = luminaria;
+    peca.facho = facho;
+    mirarSpot(peca);
+    luz.definirForma(peca.indice, peca.tamanho, peca.giro);
   }
-
-  return leve ? () => {} : criarSpotsReais(cena, pecas);
 }
 
 /**
- * Poucos spots reais (LUZ.spotsReais) que acompanham as obras mais perto do visitante. Um spot por
- * obra pesaria demais com 20 obras. Ao trocar de obra, o spot apaga e acende aos poucos.
+ * Brilho do facho no ar: mais forte no meio do cone (onde a luz atravessa mais ar), some nas
+ * bordas, perto da luminária, perto da obra e perto da câmera (para não embaçar a vista ao passar).
  */
-function criarSpotsReais(cena, pecas) {
-  const luzes = Array.from({ length: Math.min(LUZ.spotsReais, pecas.length) }, () => {
-    const spot = new THREE.SpotLight(CORES.luzSpot, 0, 0, LUZ.aberturaSpot, 0.6, 2);
-    cena.add(spot, spot.target);
-    return { spot, peca: null, nivel: 0 };
+function criarMaterialDoFacho() {
+  return new THREE.ShaderMaterial({
+    uniforms: { uCor: { value: new THREE.Color(CORES.luzSpot) }, uForca: { value: LUZ.facho } },
+    vertexShader: /* glsl */ `
+      varying float vT;
+      varying vec3 vNormal;
+      varying vec3 vVista;
+      void main() {
+        vT = position.z;
+        vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        vVista = -mv.xyz;
+        vNormal = normalize(normalMatrix * normal);
+        gl_Position = projectionMatrix * mv;
+      }`,
+    fragmentShader: /* glsl */ `
+      uniform vec3 uCor;
+      uniform float uForca;
+      varying float vT;
+      varying vec3 vNormal;
+      varying vec3 vVista;
+      void main() {
+        float distancia = length(vVista);
+        float frente = abs(dot(normalize(vNormal), vVista / distancia));
+        float alfa = uForca * frente * frente * smoothstep(0.0, 0.2, vT) * pow(1.0 - vT, 1.4) * smoothstep(0.4, 1.4, distancia);
+        gl_FragColor = vec4(uCor * alfa, 1.0);
+      }`,
+    transparent: true,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    side: THREE.DoubleSide,
   });
-  const distancias = new Map();
-  let primeiraVez = true;
+}
 
-  return function atualizarLuzes(posicao, dt) {
-    // As obras já iluminadas levam vantagem, para os spots não ficarem trocando no meio do caminho.
-    for (const peca of pecas) {
-      const acesa = luzes.some((luz) => luz.peca === peca);
-      distancias.set(peca, peca.centro.distanceToSquared(posicao) * (acesa ? 0.7 : 1));
-    }
-    const perto = new Set([...pecas].sort((a, b) => distancias.get(a) - distancias.get(b)).slice(0, luzes.length));
-
-    for (const luz of luzes) {
-      if (!luz.peca) continue;
-      luz.nivel = THREE.MathUtils.clamp(luz.nivel + (perto.has(luz.peca) ? dt : -dt) * 1.6, 0, 1);
-      if (luz.nivel === 0) luz.peca = null;
-    }
-    for (const peca of perto) {
-      if (luzes.some((luz) => luz.peca === peca)) continue;
-      const livre = luzes.find((luz) => !luz.peca);
-      if (!livre) break;
-      livre.peca = peca;
-      livre.nivel = primeiraVez ? 1 : 0;
-      livre.spot.position.copy(peca.luz.posicao);
-      livre.spot.target.position.copy(peca.luz.alvo);
-    }
-    primeiraVez = false;
-    for (const luz of luzes) luz.spot.intensity = LUZ.spot * luz.nivel * luz.nivel * (3 - 2 * luz.nivel);
-  };
+/** Aponta o spot para o meio da obra (de novo quando o modelo chega e a altura real é conhecida). */
+function mirarSpot(peca) {
+  const alvo = new THREE.Vector3(peca.posicao.x, peca.topo + Math.max(0.12, peca.altura / 2), peca.posicao.z);
+  peca.luminaria.lookAt(alvo);
+  // O facho no ar termina um pouco antes do meio da obra, para não velar a peça.
+  const comprimento = peca.luminaria.position.distanceTo(alvo) * 0.9;
+  const raio = comprimento * Math.tan(LUZ.aberturaSpot * 0.75);
+  peca.facho.position.copy(peca.luminaria.position);
+  peca.facho.lookAt(alvo);
+  peca.facho.scale.set(raio, raio, comprimento);
+  luz.definirObra(peca.indice, {
+    luz: peca.luminaria.position,
+    alvo,
+    intensidade: LUZ.spot,
+    pedestal: { x: peca.posicao.x, z: peca.posicao.z, giro: peca.giro, lado: peca.lado },
+  });
 }
 
 /* ---------- Textos de parede ---------- */
@@ -699,20 +737,6 @@ function montarTextosDeParede(cena, plano, quantidade) {
 
 /* ---------- Pedestais e obras ---------- */
 
-let _materialSombra;
-function materialSombraDeContato() {
-  if (_materialSombra) return _materialSombra;
-  const textura = texturaDeCanvas(128, 128, (ctx, w, h) => {
-    const g = ctx.createRadialGradient(w / 2, h / 2, w * 0.2, w / 2, h / 2, w / 2);
-    g.addColorStop(0, "rgba(40,15,0,0.45)");
-    g.addColorStop(1, "rgba(40,15,0,0)");
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, w, h);
-  });
-  _materialSombra = new THREE.MeshBasicMaterial({ map: textura, transparent: true, depthWrite: false });
-  return _materialSombra;
-}
-
 let _materialPedestal;
 function materialPedestal() {
   _materialPedestal ??= materialDaSala({ color: CORES.pedestal, roughness: 0.85 });
@@ -735,12 +759,7 @@ function montarPedestal(cena, lugar, indice, sombras) {
   pedestal.receiveShadow = sombras;
   pedestal.userData.indice = indice;
   cena.add(pedestal);
-
-  const sombra = new THREE.Mesh(new THREE.PlaneGeometry(lado * 2, lado * 2), materialSombraDeContato());
-  sombra.rotation.x = -Math.PI / 2;
-  sombra.rotation.z = giro;
-  sombra.position.set(posicao.x, 0.002, posicao.z);
-  cena.add(sombra);
+  // A sombra em volta da base vem do escurecimento dos cantos (museu-luz.js), igual no celular.
 
   // Etiqueta pequena na face do pedestal, como as legendas das exposições.
   const placa = painelDeTexto(
@@ -774,6 +793,10 @@ function montarPedestal(cena, lugar, indice, sombras) {
     posicao,
     direcao,
     pedestal,
+    giro, // rotation.y do pedestal
+    lado, // m
+    luminaria: null,
+    facho: null,
     raio: (lado / 2) * Math.SQRT2,
     topo: altura,
     grupo: null,
@@ -798,6 +821,8 @@ function colocarObra(cena, peca, modelo, sombras) {
       filho.castShadow = sombras;
       filho.receiveShadow = sombras;
       filho.userData.indice = peca.indice;
+      // Só soma a luz do spot da obra; material e textura continuam os do arquivo.
+      for (const material of [filho.material].flat()) luz.prepararMaterialDaObra(material, peca.indice);
     }
   });
 
@@ -816,4 +841,6 @@ function colocarObra(cena, peca, modelo, sombras) {
   peca.tamanho.copy(tamanho);
   peca.centro.set(peca.posicao.x, peca.topo + tamanho.y / 2, peca.posicao.z);
   cena.add(grupo);
+  mirarSpot(peca);
+  luz.definirForma(peca.indice, tamanho, grupo.rotation.y);
 }

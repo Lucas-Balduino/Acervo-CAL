@@ -16,6 +16,9 @@
   sensibilidade, movimento amortecido com inércia ao soltar, e transições com
   duração fixa (2 a 2,6 s) que começam e terminam devagar.
 
+  Antes de entrar, o visitante espera na porta; ao entrar, chegar() leva a
+  câmera devagar alguns passos sala adentro.
+
   As paredes entre as salas só deixam passar pela abertura do meio, e os
   cliques não atravessam paredes (nem para andar, nem para escolher obra).
 
@@ -41,7 +44,11 @@ const GIRO_AUTOMATICO = 0.15; // rad/s ao examinar, até a primeira interação
 const PHI_EXAME = 1.32; // rad a partir da vertical: ao examinar, a câmera olha a obra ~14° de cima
 
 // Durações das transições (segundos)
-const DURACAO = { examinar: 2.2, entreObras: 2.6, voltar: 1.8 };
+const DURACAO = { examinar: 2.2, entreObras: 2.6, voltar: 1.8, chegar: 3.2 };
+
+// Onde a câmera fica antes de entrar e para onde vai ao entrar (z em metros; pitch em rad).
+const POSE_NA_PORTA = { z: -0.15, pitch: 0.02 };
+const POSE_INICIAL = { z: -0.8, pitch: -0.1 };
 
 const reduzirMovimento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -61,7 +68,8 @@ export function criarNavegacao(camera, elemento, sala, eventos) {
   let modo = "andar";
 
   // Modo andar: alvo (para onde o visitante quer olhar) e valor atual (amortecido).
-  const andar = { posicao: new THREE.Vector3(0, ALTURA_OLHOS, -0.5), yaw: 0, pitch: -0.1 };
+  // Antes de entrar, a câmera espera na porta (POSE_NA_PORTA); chegar() a leva até POSE_INICIAL.
+  const andar = { posicao: new THREE.Vector3(0, ALTURA_OLHOS, POSE_NA_PORTA.z), yaw: 0, pitch: POSE_NA_PORTA.pitch };
   let yaw = andar.yaw;
   let pitch = andar.pitch;
   const balanco = { alvo: new THREE.Vector2(), atual: new THREE.Vector2() };
@@ -575,14 +583,26 @@ export function criarNavegacao(camera, elemento, sala, eventos) {
     }
   }
 
+  /** Entrada na visita: a câmera sai da porta e avança devagar sala adentro. */
+  function chegar() {
+    if (modo !== "andar") return;
+    andar.posicao.set(0, ALTURA_OLHOS, POSE_INICIAL.z);
+    restringir(andar.posicao);
+    andar.yaw = 0;
+    andar.pitch = POSE_INICIAL.pitch;
+    yaw = andar.yaw;
+    pitch = andar.pitch;
+    iniciarTransicao(DURACAO.chegar);
+  }
+
   /** Para testes no console: põe o visitante em (x, z) olhando para yaw (rad; 0 = para o fundo). */
-  function posicionar(x, z, yawNovo = 0) {
+  function posicionar(x, z, yawNovo = 0, pitchNovo = -0.1) {
     if (modo !== "andar") return;
     transicao = null;
     andar.posicao.set(x, ALTURA_OLHOS, z);
     restringir(andar.posicao);
     andar.yaw = yaw = yawNovo;
-    andar.pitch = pitch = -0.1;
+    andar.pitch = pitch = pitchNovo;
     camera.position.copy(andar.posicao);
   }
 
@@ -590,6 +610,7 @@ export function criarNavegacao(camera, elemento, sala, eventos) {
     atualizar,
     examinar,
     voltarAAndar,
+    chegar,
     posicionar,
     get modo() {
       return modo;
