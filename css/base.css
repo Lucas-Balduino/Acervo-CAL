@@ -13,6 +13,11 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
+/* "hidden" sempre esconde, mesmo em elementos com display próprio (ex.: .botao é inline-flex). */
+[hidden] {
+  display: none !important;
+}
+
 body {
   margin: 0;
   font-family: var(--fonte);

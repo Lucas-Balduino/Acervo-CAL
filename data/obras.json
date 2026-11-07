@@ -95,5 +95,29 @@
     "poster": "models/cal-0504/poster.webp",
     "frente": 90,
     "urlAcervo": "https://www.acervocal.unb.br/acervo/escultura-14/"
+  },
+  {
+    "id": "cnrc-0307",
+    "registro": "CNRC 307",
+    "titulo": "Sapo (Brinquedo trançado)",
+    "autoria": "",
+    "resumo": "Brinquedo trançado do povo Krahó, feito com palha de buriti e tinta de jenipapo. Pertence à coleção CNRC da CAL.",
+    "procedencia": "",
+    "colecao": "CNRC",
+    "formaAquisicao": "",
+    "anoAquisicao": "",
+    "materialTecnica": "Objetos rituais, mágicos e lúdicos. Palha de buriti e tinta de jenipapo.",
+    "localProducao": "Krahó – TO/MT",
+    "dataProducao": "",
+    "dimensoesFicha": "16,5 x 8,5 cm",
+    "dimensoes": {
+      "largura": 16.1,
+      "altura": 7.8,
+      "profundidade": 12.2
+    },
+    "modelo": "models/cnrc-0307/modelo.glb",
+    "poster": "models/cnrc-0307/poster.webp",
+    "frente": 45,
+    "semFicha": true
   }
 ]

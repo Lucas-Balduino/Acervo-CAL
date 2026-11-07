@@ -9,6 +9,9 @@
   pública do acervocal.unb.br e copia título, autoria, procedência etc.
   Campos escritos à mão (resumo, frente, poster, modelo) não são tocados.
   Se o acervo estiver fora do ar, mantém o que já está no arquivo.
+  Obras com "semFicha": true (ainda não cadastradas no Tainacan) não são buscadas: os dados
+  delas são escritos à mão, e só as medidas do modelo são atualizadas. Sem isso, o número de
+  registro poderia trazer a ficha de outra peça (ex.: o Sapo, CNRC 307, e a CAL.0307 do acervo).
 */
 
 import { NodeIO } from "@gltf-transform/core";
@@ -65,7 +68,9 @@ for (const obra of obras) {
   const registro = registroDe(obra);
   const nova = { id: obra.id, registro, ...obra };
 
-  try {
+  if (obra.semFicha) {
+    console.log(`${registro}: sem ficha no acervo (semFicha); dados escritos à mão mantidos.`);
+  } else try {
     const item = await buscarFicha(registro);
     if (!item) {
       console.warn(`${registro}: não encontrado no acervo.`);
@@ -84,7 +89,7 @@ for (const obra of obras) {
   if (medidas) nova.dimensoes = medidas;
 
   // Ordem fixa das chaves, para o arquivo ficar fácil de ler.
-  const ordem = ["id", "registro", "titulo", "autoria", "resumo", ...Object.keys(CAMPOS), "dimensoes", "modelo", "poster", "frente", "destaque", "urlAcervo"];
+  const ordem = ["id", "registro", "titulo", "autoria", "resumo", ...Object.keys(CAMPOS), "dimensoes", "modelo", "poster", "frente", "destaque", "semFicha", "urlAcervo"];
   atualizadas.push(Object.fromEntries([...new Set([...ordem, ...Object.keys(nova)])].filter((k) => k in nova).map((k) => [k, nova[k] ?? ""])));
 }
 

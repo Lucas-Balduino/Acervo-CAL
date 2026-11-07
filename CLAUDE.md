@@ -138,8 +138,10 @@ O script corrige a escala (o scanner exporta em mm e o glTF usa metros) e compri
 sem vértices compartilhados: ~22 MB → ~1,5 MB por obra. O decodificador Draco é carregado pelo próprio
 model-viewer.
 
-**A aparência é decidida no Blender, não no script.** Os materiais exportados são 100% metálicos (com
-Transmission 1, que nesse caso não aparece). Em 01/11/2026 testamos trocar para material não metálico e
+**A aparência é decidida no Blender, não no script.** As três primeiras obras (0607, 0631, 0803) vieram do
+EinScan H (ExScan H): material 100% metálico (com Transmission 1, que nesse caso não aparece) e textura JPEG.
+As escaneadas com o Raptor (0504 e o Sapo) chegam sem essas características: material não metálico e textura
+PNG. As duas formas ficam como foram exportadas. Em 01/11/2026 testamos trocar para material não metálico e
 corrigir a cor da textura por foto: o Lucas achou que a aparência original representa melhor as obras.
 O script só remove transmission/IOR/specular de material 100% metálico (sem efeito visível, mas a
 transparência custa uma segunda renderização). Verificado pixel a pixel contra os originais.
@@ -147,6 +149,11 @@ Não alterar material ou textura sem pedir.
 
 - `id` e pasta: `cal-` + número de registro com 4 dígitos (CAL.0607 → `cal-0607`).
 - Título e link devem bater com a ficha no acervo. URL limpa: `https://www.acervocal.unb.br/acervo/<slug>/`.
+- Exceção: obra fora do Tainacan leva `"semFicha": true` e dados escritos à mão (a sincronização só mede o
+  modelo). Caso atual: o Sapo (Brinquedo trançado), da coleção CNRC, que não está no Tainacan. O "307" dele é o
+  número de patrimônio na coleção (planilha de curadoria do museólogo), não um número CAL — no acervo,
+  CAL.0307 é a Braçadeira emplumada. Por isso `id` `cnrc-0307` e `registro` "CNRC 307" (decisão do Lucas,
+  07/11/2026). Na planilha, cada coleção tem a própria numeração (a Moringa é 913186 lá).
 
 ## Integração com o Tainacan
 

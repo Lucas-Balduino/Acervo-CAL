@@ -34,6 +34,12 @@ node -e "fetch('https://www.acervocal.unb.br/wp-json/tainacan/v2/items/?search=C
 - Achou: diga o título ao usuário ("CAL.0612 é *Vaso com alças*").
 - Não achou: pare e pergunte se o número está certo. Se o acervo estiver fora do ar, avise e siga
   (a sincronização depois pode ser repetida).
+- O usuário disse que a obra não está no Tainacan (ou achou outra peça com o mesmo número): cadastre com
+  `"semFicha": true` e escreva à mão título e os dados que ele passar. A sincronização então só mede o
+  modelo. **Nunca** sincronize uma obra dessas sem o `semFicha`: viriam os dados da outra peça.
+- Cuidado com números da planilha de curadoria do museólogo: lá a coluna "Número de patrimônio" tem a
+  numeração de cada coleção (Moringa = 913186; Sapo = CNRC 307), não o número CAL. Peça fora da numeração
+  CAL usa a sigla da coleção: `id` `cnrc-0307`, `registro` "CNRC 307".
 
 ## 2. Encontrar e otimizar o modelo
 
