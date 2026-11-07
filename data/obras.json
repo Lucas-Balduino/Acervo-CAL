@@ -119,5 +119,29 @@
     "poster": "models/cnrc-0307/poster.webp",
     "frente": 45,
     "semFicha": true
+  },
+  {
+    "id": "cal-0808",
+    "registro": "CAL.0808",
+    "titulo": "Escultura de Vila",
+    "autoria": "",
+    "resumo": "Escultura doada pela Embaixada do Uruguai em 1993. Pertence à coleção inicial da CAL.",
+    "procedencia": "Embaixada do Uruguai",
+    "colecao": "Inicial",
+    "formaAquisicao": "Doação",
+    "anoAquisicao": "1993",
+    "materialTecnica": "",
+    "localProducao": "",
+    "dataProducao": "",
+    "dimensoesFicha": "",
+    "dimensoes": {
+      "largura": 14.2,
+      "altura": 16.8,
+      "profundidade": 33
+    },
+    "modelo": "models/cal-0808/modelo.glb",
+    "poster": "models/cal-0808/poster.webp",
+    "frente": 90,
+    "urlAcervo": "https://www.acervocal.unb.br/acervo/escultura-de-vila/"
   }
 ]

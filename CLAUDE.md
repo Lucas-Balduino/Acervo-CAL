@@ -73,7 +73,7 @@ sob o mouse; `js/museu.js` liga tudo e cuida da interface HTML por cima do canva
   um mosaico e o Lucas achou esquisita), teto claro com trilhos e spots. Cores e medidas nas constantes `SALA`,
   `LUZ`, `CORES` e `TACO`.
 - **Uma sala por coleção** (decisão do Lucas, 07/11/2026), em sequência: entre elas, uma parede com passagem
-  larga no meio (2,4 m) e viga mais baixa (2,4 m), com o nome da sala seguinte na viga ("Coleção X", dos dois
+  larga no meio (2,8 m) e viga mais baixa (2,6 m), com o nome da sala seguinte na viga ("Coleção X", dos dois
   lados). Ordem das salas: a da primeira obra em ordem de registro; a sala da obra em `destaque` vai por último,
   com ela na parede do fundo, no eixo das passagens (vista desde a entrada). O percurso segue sala por sala.
   O contador embaixo mostra a sala onde o visitante está.
@@ -99,8 +99,11 @@ sob o mouse; `js/museu.js` liga tudo e cuida da interface HTML por cima do canva
   ficha vira uma folha embaixo.
 - O Lucas pediu três vezes obras maiores na tela. Decisão de 01/11/2026: **exibir as peças ampliadas 1,5× e
   não falar em "tamanho real"** no museu (as medidas reais continuam na ficha). Campo de visão 45° (60° em tela
-  em pé), salas de 5,2 m de largura × pé-direito 3 m, pedestais de 1,05 m, laterais a 1,25 m da parede. Ao mexer
-  em `SALA`, conferir a vista da entrada: a primeira obra, a seguinte pela passagem e a do destaque no fundo.
+  em pé), salas de 6,4 m de largura × pé-direito 3,4 m, 3 m entre fileiras, pedestais de 1,05 m, laterais a 1,5 m
+  da parede e o destaque a 1,3 m do fundo. Eram 5,2 m × 3 m com 2,4 m entre fileiras; com a 4ª obra na coleção
+  Inicial o Lucas achou a sala apertada e pediu mais espaço (07/11/2026). As salas crescem todas juntas (a largura
+  é a mesma em todas; o comprimento depende das obras de cada uma). Ao mexer em `SALA`, conferir a vista da
+  entrada: a primeira obra, a seguinte pela passagem e a do destaque no fundo.
 - Paredes entre salas na navegação: andar só passa pela abertura (`restringir` empurra para fora dos trechos
   cheios; a roda e as teclas andam em passos de até 10 cm para não atravessar), cliques no chão ou numa obra
   não atravessam paredes (`sala.paredes` entra no raycast) e a câmera do exame fica dentro da sala da obra.
