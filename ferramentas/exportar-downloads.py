@@ -3,6 +3,8 @@ exportar-downloads.py — roda dentro do Blender, chamado por ferramentas/downlo
 Abre o .blend de uma obra e gera os arquivos de download em duas qualidades:
   - alta: a malha como está no .blend (todo o detalhe);
   - leve: a mesma malha simplificada para N faces (modificador Decimate), com a textura limitada a M px.
+    Se a malha já tem N faces ou menos (ex.: obras do ExScan, só com o modelo do site), sai uma só
+    qualidade, "unica".
 Cada qualidade sai em GLB (metros, com textura), OBJ (milímetros, com .mtl e textura) e STL (milímetros,
 sem cor), cada formato num .zip com um LEIA-ME.txt (licença e como citar). A peça sai na posição do
 .blend (a mesma do site), apoiada no chão e centrada. No fim grava manifesto.json com faces e tamanhos.
@@ -25,11 +27,16 @@ import numpy as np
 from mathutils import Matrix
 
 LIMITE_GITHUB = 2 * 1024**3  # cada arquivo de um release do GitHub precisa ter menos de 2 GiB
-NOMES = {"alta": "Alta resolução", "leve": "Leve"}
+NOMES = {"alta": "Alta resolução", "leve": "Leve", "unica": "Única"}
 
 
 def avisar(texto):
     print(f"[downloads] {texto}", flush=True)
+
+
+def mil(numero):
+    """216730 → "216.730" """
+    return f"{numero:,}".replace(",", ".")
 
 
 def triangulos(malhas):
@@ -110,7 +117,7 @@ def leia_me(dados, nivel, formato, faces, dimensoes):
         "Casa da Cultura da América Latina (CAL) – Universidade de Brasília",
         "Modelo 3D do projeto de extensão Gêmeos Digitais CAL",
         "",
-        f"Qualidade: {NOMES[nivel]} – {faces:,} faces".replace(",", "."),
+        f"Qualidade: {NOMES[nivel]} – {mil(faces)} faces",
         f"Formato: {formato.upper()}, {cor}",
         f"Unidade: {unidade}. Medidas da peça (L × A × P): {dimensoes}.",
         f"A peça está na mesma posição do site, apoiada no chão e centrada (eixo {eixo} para cima).",
@@ -206,7 +213,7 @@ def principal():
         o.data.transform(ajuste)
         o.data.update()
     minimo, maximo = caixa(malhas)
-    l, p, a = ((maximo - minimo) * 100).round(1)
+    l, p, a = (round(float(x), 1) for x in (maximo - minimo) * 100)
     dimensoes = f"{l:.1f} × {a:.1f} × {p:.1f} cm".replace(".", ",")
     avisar(f"escala do .blend: {'milímetros' if em_mm else 'metros'}; medidas {dimensoes}")
 
@@ -214,13 +221,15 @@ def principal():
     os.makedirs(pasta_texturas, exist_ok=True)
     preparar_imagens(malhas, pasta_texturas)
 
-    manifesto = {"id": dados["id"], "dimensoes": dimensoes}
-    manifesto["alta"] = exportar("alta", malhas, dados, saida, dimensoes)
-
+    manifesto = {"id": dados["id"], "medidas": {"largura": l, "altura": a, "profundidade": p}}
     alvo = int(dados["facesLeve"])
-    total = manifesto["alta"]["faces"]
-    if alvo < total:
-        avisar(f"simplificando {total:,} → {alvo:,} faces…".replace(",", "."))
+    total = triangulos(malhas)
+    if alvo >= total:
+        avisar(f"a malha tem {mil(total)} faces (até {mil(alvo)}): uma só qualidade, sem versão leve")
+        manifesto["unica"] = exportar("unica", malhas, dados, saida, dimensoes)
+    else:
+        manifesto["alta"] = exportar("alta", malhas, dados, saida, dimensoes)
+        avisar(f"simplificando {mil(total)} → {mil(alvo)} faces…")
         for o in malhas:
             bpy.context.view_layer.objects.active = o
             mod = o.modifiers.new("Simplificar", "DECIMATE")
@@ -228,10 +237,8 @@ def principal():
             mod.ratio = alvo / total
             mod.use_collapse_triangulate = True
             bpy.ops.object.modifier_apply(modifier=mod.name)
-    else:
-        avisar(f"a malha já tem {total:,} faces ou menos: a versão leve fica igual à alta".replace(",", "."))
-    limitar_texturas(malhas, int(dados["texturaLeve"]), pasta_texturas)
-    manifesto["leve"] = exportar("leve", malhas, dados, saida, dimensoes)
+        limitar_texturas(malhas, int(dados["texturaLeve"]), pasta_texturas)
+        manifesto["leve"] = exportar("leve", malhas, dados, saida, dimensoes)
 
     shutil.rmtree(pasta_texturas, ignore_errors=True)
     with open(os.path.join(saida, "manifesto.json"), "w", encoding="utf-8") as f:

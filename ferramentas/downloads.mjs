@@ -2,6 +2,8 @@
   downloads.mjs — prepara os arquivos do botão "Baixar modelo 3D" da página da obra.
   A partir do .blend de alta resolução, o Blender (sem janela, com exportar-downloads.py) gera duas
   qualidades — alta (a malha inteira) e leve (simplificada) — em GLB, OBJ e STL, cada uma num .zip.
+  Malha que já é leve (até --faces-leve faces, como as do ExScan) sai numa só qualidade, "unica".
+  Avisa se as medidas não batem com as do site (sinal de que a peça foi girada diferente).
   Com --enviar, manda os .zip para o release "modelos-<id>" do GitHub (criado como rascunho, que só o
   dono do repositório vê) e grava em data/obras.json o endereço e o tamanho de cada arquivo.
   Não mexe no .blend nem no modelo do site (models/<id>/modelo.glb), e não publica o release.
@@ -25,7 +27,8 @@ const ARQUIVO_OBRAS = join(RAIZ, "data/obras.json");
 const SCRIPT_BLENDER = join(RAIZ, "ferramentas/exportar-downloads.py");
 const SITE = "https://lucas-balduino.github.io/Acervo-CAL/";
 const ANO = 2026; // ano de publicação dos modelos, usado no "como citar"
-const NIVEIS = { alta: "Alta resolução", leve: "Leve" };
+// Malha com até --faces-leve faces (ex.: obras do ExScan, só com o modelo do site) sai numa só qualidade, "unica".
+const NIVEIS = { alta: "Alta resolução", leve: "Leve", unica: "Única" };
 const FORMATOS = { glb: "GLB (metros, com cor)", obj: "OBJ (milímetros, com cor)", stl: "STL (milímetros, sem cor)" };
 
 // --- Argumentos ---
@@ -74,10 +77,26 @@ if (rodada.status !== 0) {
   sair(rodada.error ? `Não consegui rodar o Blender (${rodada.error.message}). Indique o caminho com BLENDER=...` : "O Blender parou com erro (mensagens acima).");
 }
 const manifesto = JSON.parse(readFileSync(join(saida, "manifesto.json"), "utf8"));
+const niveis = Object.keys(NIVEIS).filter((nivel) => manifesto[nivel]);
 console.log(`Pronto em ${Math.round((Date.now() - inicio) / 1000)} s.\n`);
 
+// A peça precisa estar na mesma posição do modelo do site: as medidas (L × A × P) têm de bater.
+const { medidas } = manifesto;
+const site3d = obra.dimensoes;
+if (site3d) {
+  const diferenca = Math.max(...["largura", "altura", "profundidade"].map((k) => Math.abs(medidas[k] - site3d[k])));
+  const cm = (v) => v.toLocaleString("pt-BR", { maximumFractionDigits: 1 });
+  const texto = (m) => `${cm(m.largura)} × ${cm(m.altura)} × ${cm(m.profundidade)} cm`;
+  if (diferenca > 0.5) {
+    console.warn(`ATENÇÃO: medidas ${texto(medidas)}, mas o modelo do site mede ${texto(site3d)}.`);
+    console.warn("A peça deve estar girada diferente do .blend do site (copie a rotação do objeto do site; ver README).\n");
+  } else {
+    console.log(`Medidas iguais às do site (${texto(medidas)}): mesma posição.\n`);
+  }
+}
+
 const arquivos = [];
-for (const nivel of Object.keys(NIVEIS)) {
+for (const nivel of niveis) {
   const m = manifesto[nivel];
   console.log(`${NIVEIS[nivel]}: ${m.faces.toLocaleString("pt-BR")} faces, textura ${m.textura?.join(" × ") ?? "—"} px`);
   for (const formato of Object.keys(FORMATOS)) {
@@ -106,13 +125,22 @@ if (existe) {
 }
 console.log("Enviando os arquivos (pode demorar)…");
 gh(["release", "upload", tag, ...arquivos, "--clobber"], "inherit");
-const { isDraft } = JSON.parse(gh(["release", "view", tag, "--json", "isDraft"]));
+const { isDraft, assets } = JSON.parse(gh(["release", "view", tag, "--json", "isDraft,assets"]));
+
+// Arquivos de uma rodada anterior que não existem mais (ex.: a obra passou a ter uma só qualidade).
+const atuais = new Set(arquivos.map((caminho) => basename(caminho)));
+for (const { name } of assets) {
+  if (name.startsWith(`${id}-`) && name.endsWith(".zip") && !atuais.has(name)) {
+    gh(["release", "delete-asset", tag, name, "--yes"]);
+    console.log(`Removido do release: ${name}`);
+  }
+}
 
 obra.downloads = {
   endereco: `https://github.com/${repo}/releases/download/${tag}/`,
   pagina: `https://github.com/${repo}/releases/tag/${tag}`,
   ...Object.fromEntries(
-    Object.keys(NIVEIS).map((nivel) => {
+    niveis.map((nivel) => {
       const { faces, glb, obj, stl } = manifesto[nivel];
       return [nivel, { faces, glb, obj, stl }];
     })
@@ -157,14 +185,16 @@ function textoDoRelease() {
     "| Arquivo | Qualidade | Formato | Tamanho |",
     "| --- | --- | --- | --- |",
   ];
-  for (const nivel of Object.keys(NIVEIS)) {
+  for (const nivel of niveis) {
     for (const [formato, descricao] of Object.entries(FORMATOS)) {
       linhas.push(`| \`${id}-${nivel}-${formato}.zip\` | ${NIVEIS[nivel]} (${manifesto[nivel].faces.toLocaleString("pt-BR")} faces) | ${descricao} | ${megas(manifesto[nivel][formato])} |`);
     }
   }
   linhas.push(
     "",
-    "**Alta resolução**: todo o detalhe do escaneamento, para estudo e impressão grande. **Leve**: abre em qualquer computador.",
+    manifesto.unica
+      ? "Desta obra há uma só qualidade: o mesmo modelo exibido no site."
+      : "**Alta resolução**: todo o detalhe do escaneamento, para estudo e impressão grande. **Leve**: abre em qualquer computador.",
     "Cada .zip traz um LEIA-ME com unidades, orientação, licença e como citar.",
     "",
     "**Licença:** [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/deed.pt-br): pode copiar, estudar, imprimir e adaptar, citando a fonte e sem fins comerciais.",

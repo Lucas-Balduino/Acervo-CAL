@@ -17,7 +17,8 @@ const FORMATOS = [
   { chave: "stl", nome: "STL", uso: "Para imprimir em 3D", texto: "Abre no fatiador da impressora (Cura, PrusaSlicer, Bambu Studio). Sem cor, em milímetros." },
 ];
 
-const NOMES = { leve: "leve", alta: "alta resolução" };
+// "unica": obra com um só modelo (ex.: as do ExScan, sem o escaneamento completo); aí não há escolha de qualidade.
+const NOMES = { leve: "leve", alta: "alta resolução", unica: "qualidade única" };
 
 const ICONE_BAIXAR =
   '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>';
@@ -52,9 +53,21 @@ export function ligarDownloads(obra) {
 
   document.getElementById("download-obra").textContent = `${obra.registro} · ${obra.titulo}`;
   document.getElementById("download-citacao").textContent = citacao;
-  for (const nivel of Object.keys(NOMES)) {
+  const resumo = (nivel) => {
     const maior = Math.max(...FORMATOS.map((f) => d[nivel]?.[f.chave] || 0));
-    janela.querySelector(`[data-faces="${nivel}"]`).textContent = `${textoFaces(d[nivel].faces)} · até ${textoTamanho(maior)}`;
+    return `${textoFaces(d[nivel].faces)} · até ${textoTamanho(maior)}`;
+  };
+  const unica = !(d.alta && d.leve);
+  if (unica) {
+    const nivel = d.unica ? "unica" : d.alta ? "alta" : "leve";
+    janela.querySelector(`input[value="${nivel}"]`)?.click();
+    document.getElementById("download-qualidade").hidden = true;
+    document.getElementById("download-legenda-formato").textContent = "Escolha o formato";
+    const aviso = document.getElementById("download-unica");
+    aviso.textContent = `Esta obra tem uma só versão, a mesma exibida no site: ${resumo(nivel)}.`;
+    aviso.hidden = false;
+  } else {
+    for (const nivel of ["leve", "alta"]) janela.querySelector(`[data-faces="${nivel}"]`).textContent = resumo(nivel);
   }
   const pagina = document.getElementById("download-pagina");
   if (d.pagina) pagina.href = d.pagina;
@@ -80,7 +93,7 @@ export function ligarDownloads(obra) {
     );
   }
 
-  const escolhida = () => janela.querySelector('input[name="qualidade"]:checked')?.value || "leve";
+  const escolhida = () => (d.unica ? "unica" : janela.querySelector('input[name="qualidade"]:checked')?.value || "leve");
   janela.querySelectorAll('input[name="qualidade"]').forEach((opcao) => opcao.addEventListener("change", () => montarLista(escolhida())));
   montarLista(escolhida());
 

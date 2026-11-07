@@ -223,8 +223,19 @@ como ideia para uma cópia de preservação depois.
   82 MB (GLB), 117 MB (OBJ) e 141 MB (STL).
 - **Leve:** 500 mil faces e textura de até 4096 px. A simplificação do Blender não borrou a textura nas
   emendas (conferido na 0808 com 50 mil faces). A textura da alta sai idêntica à do `.blend`.
-- No teste atual (rascunho `modelos-cal-0808`), a "alta" da 0808 é a malha de 217 mil faces do site e a leve
-  tem 50 mil, só para ver a interface. Falta exportar a malha completa e rodar de novo.
+- **Mesma rotação do site:** nos `.blend` do site (0504, 0808, Sapo), a malha é o `.obj` do Creality importado
+  sem troca de eixos (Z para cima) e só deslocada; a posição final vem da rotação e da posição do objeto. A malha
+  completa sai do mesmo projeto, nas mesmas coordenadas: basta copiar a rotação do objeto do site (passo a passo
+  no README). O script compara as medidas com as do `obras.json` e avisa se passarem de 0,5 cm de diferença.
+- **Uma só qualidade:** malha com até `--faces-leve` faces sai como `unica` (arquivos `<id>-unica-*.zip`) e a
+  janela esconde a escolha Leve/Alta. É o caso das obras do ExScan (0607, 0631, 0803): o escaneamento completo
+  não foi guardado, então os downloads usam o `.blend` do site (~200 mil faces), que está no laptop do laboratório.
+- **Plano combinado (07/11/2026):** o Lucas exporta sem simplificar as 3 obras do Raptor (0504, 0808, Sapo;
+  estimativa pelas capturas: ~3–4, ~7 e ~2–3 milhões de faces) e eu avalio; com as 3 na branch, o professor
+  avalia. Aprovado, entram as do ExScan (qualidade única). O processo da fotogrametria (Luara) será definido
+  quando as obras chegarem.
+- No teste atual (rascunho `modelos-cal-0808`), a "alta" da 0808 ainda é a malha de 217 mil faces do site e a
+  leve tem 50 mil, só para ver a interface. Rodar de novo com o `CAL.0808-alta.blend` substitui os arquivos.
 
 ## Integração com o Tainacan
 
