@@ -71,5 +71,29 @@
     "frente": 90,
     "destaque": true,
     "urlAcervo": "https://www.acervocal.unb.br/acervo/moringa-com-dois-bicos/"
+  },
+  {
+    "id": "cal-0504",
+    "registro": "CAL.0504",
+    "titulo": "Escultura",
+    "autoria": "",
+    "resumo": "Escultura do povo Waunana, da Colômbia, recebida da Embaixada da Colômbia em 1989. Pertence à coleção Chocó da CAL.",
+    "procedencia": "Embaixada da Colômbia",
+    "colecao": "Chocó",
+    "formaAquisicao": "",
+    "anoAquisicao": "1989",
+    "materialTecnica": "",
+    "localProducao": "Colômbia",
+    "dataProducao": "",
+    "dimensoesFicha": "",
+    "dimensoes": {
+      "largura": 7.9,
+      "altura": 24.4,
+      "profundidade": 3.8
+    },
+    "modelo": "models/cal-0504/modelo.glb",
+    "poster": "models/cal-0504/poster.webp",
+    "frente": 90,
+    "urlAcervo": "https://www.acervocal.unb.br/acervo/escultura-14/"
   }
 ]

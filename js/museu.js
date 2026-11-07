@@ -148,13 +148,14 @@ function examinar(indice) {
   document.body.classList.add("examinando");
   contador.textContent = `${indice + 1} de ${percurso.length}`;
 
-  // Abre espaço para a ficha: à esquerda no computador, embaixo no celular.
+  // Abre espaço para a ficha (à esquerda no computador, embaixo no celular) e para a barra do
+  // percurso; a obra é enquadrada no espaço que sobra.
   const caixa = ficha.getBoundingClientRect();
   const estreita = telaEstreita();
+  const barra = palco.getBoundingClientRect().bottom - document.querySelector(".museu-percurso").getBoundingClientRect().top;
   navegacao.examinar(peca, {
-    ocupacao: estreita ? 0.62 : 1.0,
-    // No celular, centraliza a obra no espaço livre acima da ficha e da barra do percurso.
-    deslocamento: estreita ? { x: 0, y: -(caixa.height + 72) / 2 } : { x: caixa.width / 2, y: 0 },
+    ocupacao: 0.96,
+    deslocamento: estreita ? { x: 0, y: -(caixa.height + 72) / 2 } : { x: caixa.width / 2, y: -barra / 2 },
   });
 }
 
