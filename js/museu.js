@@ -1,18 +1,22 @@
 /*
   museu.js — página Museu virtual: cria o renderizador, monta a sala
-  (museu-sala.js), liga a câmera (museu-navegacao.js) e cuida da interface
-  por cima do 3D: tela de entrada, ajuda, nome da obra sob o mouse,
-  ficha da obra examinada e o percurso anterior/próxima.
+  (museu-sala.js), liga a câmera (museu-navegacao.js) e o contorno das obras
+  (museu-contorno.js), e cuida da interface por cima do 3D: tela de entrada
+  (marca e carregamento, depois o convite), modo de visita sem o cabeçalho do
+  site (com o X para sair), ajuda, nome da obra sob o mouse, ficha da obra
+  examinada, o percurso anterior/próxima e o nome da sala onde o visitante está.
 */
 
 import * as THREE from "three";
 import { carregarObras, linkDaObra, textoDimensoes, textoProcedencia } from "./data.js";
 import { montarSala } from "./museu-sala.js";
 import { criarNavegacao } from "./museu-navegacao.js";
+import { criarContorno } from "./museu-contorno.js";
 
 const palco = document.getElementById("museu-palco");
 const entrada = document.getElementById("museu-entrada");
 const botaoEntrar = document.getElementById("botao-entrar");
+const botaoSair = document.getElementById("botao-sair");
 const estadoCarga = document.getElementById("museu-estado");
 const barraCarga = document.getElementById("museu-barra");
 const rotulo = document.getElementById("museu-rotulo");
@@ -65,47 +69,86 @@ const obras = (await carregarObras()).sort((a, b) =>
 
 if (obras.length === 0) {
   estadoCarga.textContent = "Nenhuma obra cadastrada ainda.";
+  entrada.classList.add("sem-3d");
+  botaoEntrar.hidden = true;
   throw new Error("Sem obras");
 }
 
 const sala = await montarSala(renderer, obras, {
   leve: toque,
   aoProgresso(carregadas, total) {
-    estadoCarga.textContent = carregadas < total ? `Carregando obras: ${carregadas} de ${total}` : "Sala pronta";
+    estadoCarga.textContent = carregadas < total ? `Carregando as obras · ${carregadas} de ${total}` : "Salas prontas";
     barraCarga.style.width = `${(carregadas / total) * 100}%`;
   },
 });
 
-// Percurso: a ordem em que as peças estão na sala.
+// Percurso: a ordem em que as peças estão no museu (sala por sala).
 const percurso = sala.pecas;
 let examinando = -1;
+let salaNoContador = null; // sala mostrada no contador (null = recalcular)
 
+const contorno = criarContorno(renderer);
 const navegacao = criarNavegacao(camera, renderer.domElement, sala, {
-  aoClicarObra: (indice) => examinar(indice),
+  aoClicarObra(indice) {
+    examinar(indice);
+    if (toque) contorno.piscar(percurso[indice].grupo); // no celular não há "passar o mouse"
+  },
   aoAndar: () => {},
-  aoPassar: mostrarRotulo,
+  aoPassar(indice, x, y) {
+    mostrarRotulo(indice, x, y);
+    contorno.mostrar(indice >= 0 ? percurso[indice].grupo : null);
+  },
 });
-
-botaoEntrar.disabled = false;
-botaoEntrar.textContent = "Entrar no museu";
 
 /* ----- Laço de desenho ----- */
 
 const relogio = new THREE.Clock();
 renderer.setAnimationLoop(() => {
-  navegacao.atualizar(Math.min(relogio.getDelta(), 0.1));
+  const dt = Math.min(relogio.getDelta(), 0.1);
+  navegacao.atualizar(dt);
+  atualizarContador();
   renderer.render(sala.cena, camera);
+  contorno.desenhar(sala.cena, camera, dt);
 });
 
-/* ----- Interface ----- */
+// Obras prontas: a marca sobe e aparece o convite para entrar, com a sala de leve por trás.
+entrada.classList.add("pronta");
+botaoEntrar.disabled = false;
 
-botaoEntrar.addEventListener("click", () => {
+/* ----- Entrar e sair da visita ----- */
+
+let jaEntrou = false;
+
+botaoEntrar.addEventListener("click", entrar);
+botaoSair.addEventListener("click", sair);
+
+function entrar() {
+  document.body.classList.add("imersivo");
   entrada.classList.add("oculta");
-  setTimeout(() => (entrada.hidden = true), 400);
-  renderer.domElement.focus();
-  mostrarAjuda(true);
-  setTimeout(() => mostrarAjuda(false), 7000);
-});
+  setTimeout(() => {
+    if (document.body.classList.contains("imersivo")) entrada.hidden = true;
+  }, 800);
+  renderer.domElement.focus({ preventScroll: true });
+  if (!jaEntrou) {
+    jaEntrou = true;
+    navegacao.chegar(); // a câmera avança devagar sala adentro
+    mostrarAjuda(true);
+    setTimeout(() => mostrarAjuda(false), 7000);
+  }
+}
+
+/** Sai da visita: o cabeçalho volta e a tela de entrada reaparece (dá para voltar de onde parou). */
+function sair() {
+  if (examinando >= 0) voltarAoMuseu();
+  mostrarAjuda(false);
+  mostrarRotulo(-1);
+  contorno.mostrar(null);
+  document.body.classList.remove("imersivo");
+  botaoEntrar.textContent = "Voltar ao museu";
+  entrada.hidden = false;
+  requestAnimationFrame(() => entrada.classList.remove("oculta"));
+  botaoEntrar.focus({ preventScroll: true });
+}
 
 botaoAjuda.addEventListener("click", () => mostrarAjuda(ajuda.hidden));
 
@@ -135,6 +178,7 @@ function examinar(indice) {
   ficha.classList.remove("saindo");
   examinando = indice;
   mostrarRotulo(-1);
+  contorno.mostrar(null);
   mostrarAjuda(false);
 
   const { obra } = peca;
@@ -147,6 +191,7 @@ function examinar(indice) {
   ficha.hidden = false;
   document.body.classList.add("examinando");
   contador.textContent = `${indice + 1} de ${percurso.length}`;
+  salaNoContador = null;
 
   // Abre espaço para a ficha (à esquerda no computador, embaixo no celular) e para a barra do
   // percurso; a obra é enquadrada no espaço que sobra.
@@ -170,7 +215,6 @@ function voltarAoMuseu() {
     ficha.classList.remove("saindo");
   }, 500);
   document.body.classList.remove("examinando");
-  contador.textContent = textoDaSala();
   renderer.domElement.focus();
 }
 
@@ -185,13 +229,23 @@ function mostrarRotulo(indice, x, y) {
   rotulo.hidden = false;
 }
 
-const textoDaSala = () => `${percurso.length} ${percurso.length === 1 ? "obra" : "obras"} na sala`;
-contador.textContent = textoDaSala();
+// Fora do exame, o contador diz em que sala o visitante está (ou quantas obras há, se for uma só).
+function atualizarContador() {
+  if (examinando >= 0) return;
+  const z = camera.position.z;
+  const atual = sala.salas.find((s) => z > s.zMin - 0.1) || sala.salas.at(-1);
+  if (atual === salaNoContador) return;
+  salaNoContador = atual;
+  contador.textContent =
+    sala.salas.length > 1 ? atual.nome : `${percurso.length} ${percurso.length === 1 ? "obra" : "obras"} na sala`;
+}
+atualizarContador();
 
 function semWebGL() {
   estadoCarga.textContent = "Seu navegador não conseguiu abrir o 3D (WebGL).";
+  entrada.classList.add("sem-3d");
   botaoEntrar.hidden = true;
 }
 
 // Para testes e depuração no console.
-window.museu = { examinar, voltarAoMuseu, percurso, camera, navegacao };
+window.museu = { examinar, voltarAoMuseu, entrar, sair, percurso, camera, navegacao, sala, contorno };

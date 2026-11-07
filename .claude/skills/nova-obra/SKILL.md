@@ -111,9 +111,10 @@ Confira no resultado e nas imagens (leia-as):
 - `erros` vazios nas três páginas;
 - medidas iguais às do passo 2; `larguraDaPagina` = 390 no celular;
 - a obra aparece de frente na página dela;
-- no museu, a vista da entrada ainda mostra as três primeiras obras e a nova não está cortada ou
-  atravessando parede. A sala cresce sozinha com o número de obras; se algo ficou estranho, não mexa em
-  `SALA` por conta própria: mostre a imagem e explique.
+- no museu, a obra nova está na sala da coleção dela (`conferir-museu-obra.png`, de frente para ela), sem
+  ficar cortada ou atravessando parede, e a vista da entrada continua mostrando as salas em sequência.
+  As salas crescem sozinhas com o número de obras (uma coleção nova ganha sala nova); se algo ficou
+  estranho, não mexa em `SALA` por conta própria: mostre a imagem e explique.
 
 Se o navegador sem janela falhar (Chrome não encontrado), o caminho pode ser dado com `CHROME=...`.
 

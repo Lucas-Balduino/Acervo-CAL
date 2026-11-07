@@ -1,15 +1,43 @@
 /*
   museu.css — página Museu virtual: palco 3D em tela cheia e a interface
-  por cima dele (entrada, ajuda, rótulo, painel da obra, percurso).
+  por cima dele (entrada com a marca e o carregamento, ajuda, botão de sair,
+  rótulo, painel da obra, percurso).
+
+  Durante a visita (body.imersivo) o cabeçalho do site sai de cena e os
+  controles ficam em botões escuros translúcidos, para não tirar a atenção
+  das obras. Não cuida do 3D (isso está nos módulos js/museu-*.js).
 */
+
+/* O cabeçalho fica por cima do palco, que ocupa a tela toda: ao entrar no museu ele sobe e some,
+   sem o 3D mudar de tamanho. */
+.pagina-museu .cabecalho {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s;
+}
+
+.pagina-museu.imersivo .cabecalho {
+  transform: translateY(-100%);
+  visibility: hidden;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s 0.6s;
+}
+
+.definicoes-svg {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
 
 .museu {
   position: relative;
-  height: calc(100vh - var(--altura-cabecalho));
-  height: calc(100dvh - var(--altura-cabecalho));
+  height: 100vh;
+  height: 100dvh;
   min-height: 420px;
   overflow: hidden;
-  background: #fafafa;
+  background: #2a2421;
 }
 
 .museu-palco {
@@ -30,91 +58,129 @@
   cursor: grabbing;
 }
 
-/* --- Tela de entrada --- */
-
-.museu-entrada {
+/* Bordas um pouco mais escuras, como numa sala de luz baixa; o topo, um pouco mais, para a marca
+   e os botões se lerem sobre o teto claro. */
+.museu-vinheta {
   position: absolute;
   inset: 0;
-  z-index: 30;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--margem);
-  background: rgba(244, 236, 226, 0.95);
-  transition: opacity 0.4s ease;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(to bottom, rgba(18, 8, 4, 0.32), transparent 130px),
+    radial-gradient(130% 95% at 50% 45%, transparent 55%, rgba(18, 8, 4, 0.45) 100%);
 }
 
-.museu-entrada.oculta {
+/* --- Controles da visita: aparecem ao entrar --- */
+
+.museu-marca,
+.museu-topo,
+.museu-percurso {
   opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.6s ease 0.3s, visibility 0s 0.9s;
+}
+
+.imersivo .museu-marca,
+.imersivo .museu-topo,
+.imersivo .museu-percurso {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.6s ease 0.3s, visibility 0s;
+}
+
+.botao-vidro {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  background: rgba(30, 18, 12, 0.45);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  font: 500 13px var(--fonte);
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.botao-vidro:hover {
+  background: rgba(30, 18, 12, 0.7);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.botao-vidro:focus-visible,
+.museu-percurso button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* Marca no canto, como a da instituição nas exposições virtuais. */
+.museu-marca {
+  position: absolute;
+  top: 22px;
+  left: 22px;
+  z-index: 12;
+  width: 150px;
+  height: auto;
+  aspect-ratio: 640 / 108;
+  color: rgba(255, 255, 255, 0.9);
+  filter: drop-shadow(0 1px 8px rgba(0, 0, 0, 0.4));
   pointer-events: none;
 }
 
-.museu-entrada-caixa {
-  max-width: 520px;
-  text-align: center;
+.examinando .museu-marca {
+  opacity: 0;
 }
-
-.museu-entrada h1 {
-  margin: 0 0 12px;
-  font-size: clamp(30px, 5vw, 44px);
-}
-
-.museu-entrada p {
-  margin: 0 0 24px;
-  color: var(--cor-texto-suave);
-}
-
-.museu-carga {
-  max-width: 280px;
-  margin: 0 auto 24px;
-  font-size: 13px;
-  color: var(--cor-texto-suave);
-}
-
-.museu-carga-barra {
-  height: 3px;
-  margin-top: 8px;
-  background: var(--cor-areia);
-}
-
-.museu-carga-barra span {
-  display: block;
-  height: 100%;
-  width: 0;
-  background: var(--cor-destaque);
-  transition: width 0.3s;
-}
-
-.museu-entrada .botao[disabled] {
-  opacity: 0.6;
-  cursor: progress;
-}
-
-.museu-entrada .link-alternativo {
-  display: block;
-  margin-top: 16px;
-  font-size: 14px;
-}
-
-/* --- Ajuda --- */
 
 .museu-topo {
   position: absolute;
   top: 16px;
-  left: 16px;
+  right: 16px;
   z-index: 20;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
 }
 
+.museu-sair {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+}
+
+.museu-sair svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.examinando #botao-ajuda,
+.examinando .museu-ajuda {
+  display: none;
+}
+
+/* --- Ajuda --- */
+
 .museu-ajuda {
-  max-width: 300px;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 290px;
   margin: 0;
   padding: 14px 16px;
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid var(--cor-borda);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  background: rgba(30, 18, 12, 0.72);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  color: rgba(255, 255, 255, 0.9);
   font-size: 13px;
   list-style: none;
 }
@@ -127,8 +193,9 @@
   display: inline-block;
   min-width: 20px;
   padding: 0 4px;
-  border: 1px solid var(--cor-borda);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   border-bottom-width: 2px;
+  border-radius: 3px;
   font: 500 11px var(--fonte);
   text-align: center;
 }
@@ -153,13 +220,186 @@
   top: 0;
   left: 0;
   z-index: 15;
-  padding: 4px 10px;
-  background: var(--cor-fundo);
-  border: 1px solid var(--cor-borda);
+  padding: 5px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(30, 18, 12, 0.72);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: #fff;
   font-size: 13px;
   font-weight: 500;
   pointer-events: none;
   white-space: nowrap;
+}
+
+/* --- Entrada: marca, carregamento e convite --- */
+
+.museu-entrada {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--altura-cabecalho) + 24px) var(--margem) 32px;
+  overflow-y: auto;
+  background: #2a2421;
+  color: #fff;
+  transition: opacity 0.8s ease, background-color 1.4s ease;
+}
+
+/* Com as obras prontas, a sala aparece de leve por trás. */
+.museu-entrada.pronta {
+  background: rgba(34, 24, 19, 0.74);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+.museu-entrada.oculta {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.museu-entrada-caixa {
+  width: min(540px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.museu-entrada-marca {
+  width: min(300px, 72vw);
+  height: auto;
+  aspect-ratio: 640 / 108;
+  color: #fff;
+  animation: marca-aparece 1.4s ease 0.1s both;
+}
+
+@keyframes marca-aparece {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* Carregamento e texto abrem e fecham pela altura (grade de 0fr a 1fr), sem pulos. */
+.museu-carga,
+.museu-entrada-texto {
+  display: grid;
+  width: 100%;
+  transition: grid-template-rows 1s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.7s ease;
+}
+
+.museu-carga > div,
+.museu-entrada-texto > div {
+  overflow: hidden;
+}
+
+.museu-carga {
+  grid-template-rows: 1fr;
+  animation: marca-aparece 1.4s ease 0.4s both;
+}
+
+.museu-carga > div {
+  padding-top: 40px;
+}
+
+.museu-carga-barra {
+  width: 180px;
+  height: 1px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.museu-carga-barra span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: #fff;
+  transition: width 0.5s ease;
+}
+
+.museu-carga p {
+  margin: 14px 0 0;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.museu-entrada-texto {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+
+.museu-entrada.pronta .museu-carga {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+
+.museu-entrada.pronta .museu-entrada-texto,
+.museu-entrada.sem-3d .museu-entrada-texto {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transition-delay: 0.15s;
+}
+
+.museu-entrada.sem-3d .museu-carga-barra {
+  display: none;
+}
+
+.museu-entrada h1 {
+  margin: 44px 0 14px;
+  font-size: clamp(34px, 5vw, 52px);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.museu-entrada-texto p {
+  max-width: 32em;
+  margin: 0 auto 32px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.74);
+}
+
+.botao-entrar {
+  min-height: 50px;
+  padding: 0 34px;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font: 500 15px var(--fonte);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background-color 0.25s, color 0.25s;
+}
+
+.botao-entrar:hover,
+.botao-entrar:focus-visible {
+  background: #fff;
+  color: #2a2421;
+}
+
+.botao-entrar:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+.museu-entrada .link-alternativo {
+  display: block;
+  margin-top: 18px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.museu-entrada .link-alternativo:hover {
+  color: #fff;
 }
 
 /* --- Ficha da obra examinada (inspirada em exposições virtuais editoriais) --- */
@@ -241,10 +481,6 @@
   left: calc(min(440px, 40%) + (100% - min(440px, 40%)) / 2);
 }
 
-.examinando .museu-topo {
-  display: none;
-}
-
 @media (max-width: 760px) {
   .museu-ficha {
     top: auto;
@@ -318,30 +554,34 @@
 .museu-percurso {
   position: absolute;
   left: 50%;
-  bottom: 16px;
+  bottom: 18px;
   z-index: 20;
   transform: translateX(-50%);
   display: flex;
   align-items: stretch;
-  background: var(--cor-fundo);
-  border: 1px solid var(--cor-borda);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: rgba(30, 18, 12, 0.5);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
 }
 
 .museu-percurso button {
-  min-height: 48px;
-  padding: 0 18px;
+  min-height: 46px;
+  padding: 0 20px;
   border: 0;
   background: none;
   font-size: 14px;
   font-weight: 500;
-  color: var(--cor-destaque-escuro);
+  color: #fff;
   cursor: pointer;
   white-space: nowrap;
+  transition: background-color 0.2s;
 }
 
 .museu-percurso button:hover {
-  background: var(--cor-destaque-claro);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .museu-percurso p {
@@ -349,14 +589,20 @@
   align-items: center;
   margin: 0;
   padding: 0 16px;
-  border-left: 1px solid var(--cor-borda);
-  border-right: 1px solid var(--cor-borda);
+  border-left: 1px solid rgba(255, 255, 255, 0.18);
+  border-right: 1px solid rgba(255, 255, 255, 0.18);
   font-size: 13px;
-  color: var(--cor-texto-suave);
+  color: rgba(255, 255, 255, 0.75);
   white-space: nowrap;
 }
 
 @media (max-width: 760px) {
+  .museu-marca {
+    top: 18px;
+    left: 16px;
+    width: 112px;
+  }
+
   .museu-percurso {
     left: 12px;
     right: 12px;
