@@ -30,21 +30,22 @@ import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { criarLuz } from "./museu-luz.js";
 
 export const SALA = {
-  largura: 5.2,
-  peDireito: 3.0,
-  espacoEntreFileiras: 2.4,
+  largura: 6.4,
+  peDireito: 3.4,
+  espacoEntreFileiras: 3.0,
   alturaPedestal: 1.05, // com a ampliação, deixa as obras perto da altura dos olhos
   escalaDasObras: 1.5, // obras exibidas maiores que o real, para serem vistas melhor na tela
-  afastamentoDaParede: 1.25,
-  inicioDasFileiras: 2.6, // primeira sala: da entrada até a primeira fileira (espaço para os painéis)
-  margemDaPassagem: 1.7, // outras salas: da parede entre salas até a fileira mais perto
-  fundo: 3.1, // da última fileira até a parede do fundo (a obra em destaque fica a 1,1 m dela)
-  comprimentoMinimo: 3.4,
+  afastamentoDaParede: 1.5,
+  inicioDasFileiras: 3.0, // primeira sala: da entrada até a primeira fileira (espaço para os painéis)
+  margemDaPassagem: 2.0, // outras salas: da parede entre salas até a fileira mais perto
+  fundo: 3.6, // da última fileira até a parede do fundo
+  afastamentoDoDestaque: 1.3, // da obra em destaque até a parede do fundo
+  comprimentoMinimo: 4.0,
   giroLateral: 0.45, // quanto as obras laterais se viram para quem entra (0 = de frente para o corredor)
   larguraTaco: 0.07, // m
   espessuraDivisoria: 0.2, // paredes entre as salas
-  larguraPassagem: 2.4,
-  alturaPassagem: 2.4, // altura livre embaixo da viga
+  larguraPassagem: 2.8,
+  alturaPassagem: 2.6, // altura livre embaixo da viga
 };
 
 // Luz: pouca luz geral, para as obras e as manchas dos spots se destacarem.
@@ -146,7 +147,7 @@ export function planejarSala(obras) {
       lugares.push({
         obra: destaque,
         sala,
-        posicao: new THREE.Vector3(0, 0, sala.zMin + 1.1),
+        posicao: new THREE.Vector3(0, 0, sala.zMin + SALA.afastamentoDoDestaque),
         direcao: new THREE.Vector3(0, 0, 1),
       });
     }
@@ -279,11 +280,12 @@ function cenaDeReflexo() {
     malha.position.set(x, y, z);
     cena.add(malha);
   };
-  caixa(5.2, 3, 12, LUZ.reflexoParede, 0, 0, 0);
-  plano(5.2, 12, LUZ.reflexoPiso, 0, -1.49, 0);
-  plano(5.2, 12, LUZ.reflexoTeto, 0, 1.49, 0);
+  const { largura, peDireito } = SALA;
+  caixa(largura, peDireito, 12, LUZ.reflexoParede, 0, 0, 0);
+  plano(largura, 12, LUZ.reflexoPiso, 0, -peDireito / 2 + 0.01, 0);
+  plano(largura, 12, LUZ.reflexoTeto, 0, peDireito / 2 - 0.01, 0);
   for (let z = -5; z <= 5; z += 1.25) {
-    for (const x of [-0.8, 0.8]) plano(0.12, 0.12, LUZ.reflexoSpot, x, 1.45, z + (x > 0 ? 0.4 : 0));
+    for (const x of [-0.8, 0.8]) plano(0.12, 0.12, LUZ.reflexoSpot, x, peDireito / 2 - 0.05, z + (x > 0 ? 0.4 : 0));
   }
   return cena;
 }
@@ -650,7 +652,7 @@ function montarTextosDeParede(cena, plano, quantidade) {
       ctx.fillText("Acervo da Casa da Cultura da América Latina · UnB", w / 2, 300);
     })
   );
-  titulo.position.set(0, 2.32, -plano.comprimento + 0.01);
+  titulo.position.set(0, SALA.peDireito - 0.75, -plano.comprimento + 0.01);
   cena.add(titulo);
 
   // Nome da sala na viga sobre cada passagem, dos dois lados: quem chega lê o nome da sala seguinte.
