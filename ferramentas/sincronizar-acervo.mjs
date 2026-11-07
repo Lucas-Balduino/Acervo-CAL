@@ -11,7 +11,7 @@
   Se o acervo estiver fora do ar, mantém o que já está no arquivo.
   Obras com "semFicha": true (ainda não cadastradas no Tainacan) não são buscadas: os dados
   delas são escritos à mão, e só as medidas do modelo são atualizadas. Sem isso, o número de
-  registro poderia trazer a ficha de outra peça (ex.: o Sapo, etiqueta CAL.307, e a CAL.0307 do acervo).
+  registro poderia trazer a ficha de outra peça (ex.: o Sapo, CNRC 307, e a CAL.0307 do acervo).
 */
 
 import { NodeIO } from "@gltf-transform/core";

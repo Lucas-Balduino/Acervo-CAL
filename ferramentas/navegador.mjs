@@ -24,7 +24,7 @@ const SITE = `http://localhost:${PORTA}`;
 const SAIDA = join(tmpdir(), "acervo-cal");
 
 const [modo, id] = process.argv.slice(2);
-if (!["vistas", "poster", "conferir"].includes(modo) || !/^cal-\d{4}$/.test(id || "")) {
+if (!["vistas", "poster", "conferir"].includes(modo) || !/^[a-z]+-\d{4}$/.test(id || "")) {
   console.error("Uso: node ferramentas/navegador.mjs vistas|poster|conferir cal-0000");
   process.exit(1);
 }
