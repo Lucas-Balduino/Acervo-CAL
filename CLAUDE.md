@@ -147,6 +147,9 @@ Não alterar material ou textura sem pedir.
 
 - `id` e pasta: `cal-` + número de registro com 4 dígitos (CAL.0607 → `cal-0607`).
 - Título e link devem bater com a ficha no acervo. URL limpa: `https://www.acervocal.unb.br/acervo/<slug>/`.
+- Exceção: obra fora do Tainacan leva `"semFicha": true` e dados escritos à mão (a sincronização só mede o
+  modelo). Caso atual: o Sapo (Brinquedo trançado), etiqueta CAL.307 — no acervo, CAL.0307 é a Braçadeira
+  emplumada; o Lucas vai resolver o cadastro com o museólogo.
 
 ## Integração com o Tainacan
 

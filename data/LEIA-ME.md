@@ -13,6 +13,7 @@ peça, coloque o `.glb` (já otimizado, ver `models/LEIA-ME.md`) em `models/` e 
 | `poster` | não | Miniatura (`models/<id>/poster.webp`), gerada por `ferramentas/posters.html` |
 | `frente` | não | Ângulo em graus (0–359) do lado principal da obra. É a vista inicial, a miniatura e o botão "Frente" do cubo |
 | `destaque` | não | `true` na obra que gira na página inicial (só uma) |
+| `semFicha` | não | `true` se a obra ainda não está no Tainacan. A sincronização não busca dados dela (só mede o modelo); título, procedência etc. são escritos à mão |
 
 ## Campos vindos do Acervo CAL
 
@@ -22,6 +23,8 @@ Para corrigir um dado, corrija no Tainacan e sincronize de novo.
 
 `registro`, `titulo`, `autoria`, `procedencia`, `colecao`, `formaAquisicao`, `anoAquisicao`,
 `materialTecnica`, `localProducao`, `dataProducao`, `dimensoesFicha`, `urlAcervo`.
+Exceção: nas obras com `"semFicha": true` esses campos são escritos à mão (sem `urlAcervo`, a página
+da obra esconde o botão "Ficha completa no Acervo CAL").
 
 O script também mede o modelo 3D e grava `dimensoes` (largura, altura e profundidade em cm).
 
