@@ -2,7 +2,8 @@
   museu.js — página Museu virtual: cria o renderizador, monta a sala
   (museu-sala.js), liga a câmera (museu-navegacao.js) e cuida da interface
   por cima do 3D: tela de entrada, ajuda, nome da obra sob o mouse,
-  ficha da obra examinada e o percurso anterior/próxima.
+  ficha da obra examinada, o percurso anterior/próxima e o nome da sala
+  onde o visitante está.
 */
 
 import * as THREE from "three";
@@ -76,9 +77,10 @@ const sala = await montarSala(renderer, obras, {
   },
 });
 
-// Percurso: a ordem em que as peças estão na sala.
+// Percurso: a ordem em que as peças estão no museu (sala por sala).
 const percurso = sala.pecas;
 let examinando = -1;
+let salaNoContador = null; // sala mostrada no contador (null = recalcular)
 
 const navegacao = criarNavegacao(camera, renderer.domElement, sala, {
   aoClicarObra: (indice) => examinar(indice),
@@ -93,7 +95,10 @@ botaoEntrar.textContent = "Entrar no museu";
 
 const relogio = new THREE.Clock();
 renderer.setAnimationLoop(() => {
-  navegacao.atualizar(Math.min(relogio.getDelta(), 0.1));
+  const dt = Math.min(relogio.getDelta(), 0.1);
+  navegacao.atualizar(dt);
+  sala.atualizarLuzes(camera.position, dt);
+  atualizarContador();
   renderer.render(sala.cena, camera);
 });
 
@@ -147,6 +152,7 @@ function examinar(indice) {
   ficha.hidden = false;
   document.body.classList.add("examinando");
   contador.textContent = `${indice + 1} de ${percurso.length}`;
+  salaNoContador = null;
 
   // Abre espaço para a ficha (à esquerda no computador, embaixo no celular) e para a barra do
   // percurso; a obra é enquadrada no espaço que sobra.
@@ -170,7 +176,6 @@ function voltarAoMuseu() {
     ficha.classList.remove("saindo");
   }, 500);
   document.body.classList.remove("examinando");
-  contador.textContent = textoDaSala();
   renderer.domElement.focus();
 }
 
@@ -185,8 +190,17 @@ function mostrarRotulo(indice, x, y) {
   rotulo.hidden = false;
 }
 
-const textoDaSala = () => `${percurso.length} ${percurso.length === 1 ? "obra" : "obras"} na sala`;
-contador.textContent = textoDaSala();
+// Fora do exame, o contador diz em que sala o visitante está (ou quantas obras há, se for uma só).
+function atualizarContador() {
+  if (examinando >= 0) return;
+  const z = camera.position.z;
+  const atual = sala.salas.find((s) => z > s.zMin - 0.1) || sala.salas.at(-1);
+  if (atual === salaNoContador) return;
+  salaNoContador = atual;
+  contador.textContent =
+    sala.salas.length > 1 ? atual.nome : `${percurso.length} ${percurso.length === 1 ? "obra" : "obras"} na sala`;
+}
+atualizarContador();
 
 function semWebGL() {
   estadoCarga.textContent = "Seu navegador não conseguiu abrir o 3D (WebGL).";
@@ -194,4 +208,4 @@ function semWebGL() {
 }
 
 // Para testes e depuração no console.
-window.museu = { examinar, voltarAoMuseu, percurso, camera, navegacao };
+window.museu = { examinar, voltarAoMuseu, percurso, camera, navegacao, sala };

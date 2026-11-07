@@ -52,7 +52,7 @@ as miniaturas geradas por `ferramentas/posters.html`.
 | `js/obra.js` | Página da obra: ficha e navegação |
 | `js/viewer.js` | Carrega o `.glb`, câmera e cubo |
 | `js/museu.js` | Museu virtual: renderizador e interface |
-| `js/museu-sala.js` | Museu virtual: sala, pedestais, textos e obras (three.js) |
+| `js/museu-sala.js` | Museu virtual: salas por coleção, luz, pedestais, textos e obras (three.js) |
 | `js/museu-navegacao.js` | Museu virtual: câmera, mouse, toque e teclado |
 | `js/sobre.js` | Página Sobre: rolagem, etapas e botões |
 | `js/sobre-cena.js` | Página Sobre: a moringa em cada etapa (three.js) |

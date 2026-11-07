@@ -50,15 +50,27 @@ módulo JS dela; `js/data.js` e `js/cartoes.js` são compartilhados. Ao mudar o 
 
 ## Museu virtual
 
-three.js direto (não usa model-viewer). `js/museu-sala.js` monta a sala a partir das obras; `js/museu-navegacao.js`
+three.js direto (não usa model-viewer). `js/museu-sala.js` monta as salas a partir das obras; `js/museu-navegacao.js`
 é a câmera; `js/museu.js` liga tudo e cuida da interface HTML por cima do canvas.
 
-- **Ambientação inspirada nas salas da CAL** (fotos enviadas pelo Lucas em 01/11/2026): paredes e pedestais
-  terracota, piso de taco em espinha de peixe (textura desenhada em canvas), teto claro com trilhos e spots
-  (um `SpotLight` por obra, só no computador). Cores e medidas nas constantes `SALA` e `CORES`.
-- Obras ampliadas 1,5× (`SALA.escalaDasObras`; os `.glb` estão em metros reais). A sala cresce com o número de
-  obras: a de `destaque` vai na parede do fundo; as outras se alternam nas laterais, viradas um pouco para a
-  entrada (`SALA.giroLateral`). A rotação de cada obra usa o mesmo `frente` do model-viewer.
+- **Ambientação inspirada nas salas da CAL** (fotos enviadas pelo Lucas em 01/11 e 07/11/2026): paredes e
+  pedestais terracota, piso de taco em espinha de peixe (textura desenhada em canvas), teto claro com trilhos e
+  spots. Cores e medidas nas constantes `SALA`, `LUZ` e `CORES`.
+- **Uma sala por coleção** (decisão do Lucas, 07/11/2026), em sequência: entre elas, uma parede com passagem
+  larga no meio (2,4 m) e viga mais baixa (2,4 m), com o nome da sala seguinte na viga ("Coleção X", dos dois
+  lados). Ordem das salas: a da primeira obra em ordem de registro; a sala da obra em `destaque` vai por último,
+  com ela na parede do fundo, no eixo das passagens (vista desde a entrada). O percurso segue sala por sala.
+  O contador embaixo mostra a sala onde o visitante está.
+- Obras ampliadas 1,5× (`SALA.escalaDasObras`; os `.glb` estão em metros reais). Cada sala cresce com o número
+  de obras dela: as obras se alternam nas laterais (a alternância continua de uma sala para a outra), viradas
+  um pouco para a entrada (`SALA.giroLateral`). A rotação de cada obra usa o mesmo `frente` do model-viewer.
+- **Luz quente e marcante, sem pesar** (pedido do Lucas, 07/11/2026: mais perto da exposição real, sem
+  hiper-realismo): paredes, piso e teto refletem pouco o ambiente (`materialDaSala`, com `envMap` próprio — sem
+  ele vale o `environmentIntensity` da cena), enquanto as obras mantêm o reflexo de antes (as metálicas dependem
+  dele). As manchas de luz na parede atrás de cada obra e no chão em volta do pedestal são texturas somadas
+  (aditivas), em todos os aparelhos. No computador há só 6 `SpotLight` reais (`LUZ.spotsReais`), que passam
+  para as obras mais perto do visitante, acendendo e apagando aos poucos; o número fica fixo porque mudá-lo
+  recompila os shaders. A sombra da luz geral é desenhada uma vez só (nada se move na sala).
 - **Dois modos de câmera:** andar (primeira pessoa) e examinar (órbita em volta da obra, como no visualizador:
   arrastar gira, roda/pinça aproxima, duplo clique centraliza, giro automático lento até a primeira interação).
   Referência de interação citada pelo Lucas: https://www.magische-spiegelungen.de/ — ao examinar, a ficha fica
@@ -66,8 +78,11 @@ three.js direto (não usa model-viewer). `js/museu-sala.js` monta a sala a parti
   ficha vira uma folha embaixo.
 - O Lucas pediu três vezes obras maiores na tela. Decisão de 01/11/2026: **exibir as peças ampliadas 1,5× e
   não falar em "tamanho real"** no museu (as medidas reais continuam na ficha). Campo de visão 45° (60° em tela
-  em pé), sala de 5,2 m × pé-direito 3 m, pedestais de 1,05 m, laterais a 1,25 m da parede. Ao mexer em `SALA`,
-  conferir que as três primeiras obras continuam visíveis da entrada.
+  em pé), salas de 5,2 m de largura × pé-direito 3 m, pedestais de 1,05 m, laterais a 1,25 m da parede. Ao mexer
+  em `SALA`, conferir a vista da entrada: a primeira obra, a seguinte pela passagem e a do destaque no fundo.
+- Paredes entre salas na navegação: andar só passa pela abertura (`restringir` empurra para fora dos trechos
+  cheios; a roda e as teclas andam em passos de até 10 cm para não atravessar), cliques no chão ou numa obra
+  não atravessam paredes (`sala.paredes` entra no raycast) e a câmera do exame fica dentro da sala da obra.
 - Enquadramento ao examinar (`raioParaCaber`): a obra é tratada como um cilindro (altura da peça, raio da
   diagonal da base) e precisa caber, vista ~14° de cima, em 96% do espaço livre — fora da ficha e da barra
   Anterior/Próxima. Antes era uma esfera ocupando 100% da altura, e a CAL.0504 (alta e fina) ficava com o topo
@@ -82,7 +97,8 @@ three.js direto (não usa model-viewer). `js/museu-sala.js` monta a sala a parti
   acima do pedestal (corrigido em 04/11/2026).
 - No celular (`pointer: coarse`) não há sombras em tempo real nem spots reais; a sombra sob os pedestais é uma
   textura e aparece sempre.
-- `window.museu` expõe `examinar`, `voltarAoMuseu`, `percurso`, `camera` e `navegacao` para testes no console.
+- `window.museu` expõe `examinar`, `voltarAoMuseu`, `percurso`, `camera`, `navegacao` e `sala` para testes no
+  console; `navegacao.posicionar(x, z, giro)` põe o visitante num ponto.
 - Desempenho (relato do Lucas, 05/11/2026): roda bem no PC; num iPhone XR a fluidez cai um pouco, sem
   atrapalhar a experiência.
 
