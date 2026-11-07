@@ -95,5 +95,21 @@
     "poster": "models/cal-0504/poster.webp",
     "frente": 90,
     "urlAcervo": "https://www.acervocal.unb.br/acervo/escultura-14/"
+  },
+  {
+    "id": "cal-0307",
+    "registro": "CAL.0307",
+    "titulo": "Sapo (Brinquedo trançado)",
+    "autoria": "",
+    "resumo": "",
+    "dimensoes": {
+      "largura": 16.1,
+      "altura": 7.8,
+      "profundidade": 12.2
+    },
+    "modelo": "models/cal-0307/modelo.glb",
+    "poster": "models/cal-0307/poster.webp",
+    "frente": 45,
+    "semFicha": true
   }
 ]
