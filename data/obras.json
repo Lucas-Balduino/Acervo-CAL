@@ -142,6 +142,22 @@
     "modelo": "models/cal-0808/modelo.glb",
     "poster": "models/cal-0808/poster.webp",
     "frente": 90,
-    "urlAcervo": "https://www.acervocal.unb.br/acervo/escultura-de-vila/"
+    "urlAcervo": "https://www.acervocal.unb.br/acervo/escultura-de-vila/",
+    "downloads": {
+      "endereco": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/download/modelos-cal-0808/",
+      "pagina": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/tag/modelos-cal-0808",
+      "alta": {
+        "faces": 216730,
+        "glb": 11015154,
+        "obj": 12217019,
+        "stl": 5008539
+      },
+      "leve": {
+        "faces": 50000,
+        "glb": 7761698,
+        "obj": 8031479,
+        "stl": 1185871
+      }
+    }
   }
 ]

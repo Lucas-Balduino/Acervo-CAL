@@ -51,6 +51,7 @@ as miniaturas geradas por `ferramentas/posters.html`.
 | `js/galeria.js` | Página Obras: busca, filtros, ordenação |
 | `js/obra.js` | Página da obra: ficha e navegação |
 | `js/viewer.js` | Carrega o `.glb`, câmera e cubo |
+| `js/downloads.js` | Página da obra: janela "Baixar modelo 3D" (qualidade e formato) |
 | `js/museu.js` | Museu virtual: renderizador e interface (entrada, visita sem cabeçalho, ficha) |
 | `js/museu-sala.js` | Museu virtual: salas por coleção, pedestais, spots, textos e obras (three.js) |
 | `js/museu-luz.js` | Museu virtual: luz dos spots, sombras e cantos calculados nos shaders |
@@ -86,6 +87,23 @@ No Claude Code, `/nova-obra CAL.0000 <caminho do .glb>` faz todos os passos abai
    mede o modelo e salva imagens numa pasta temporária.
 
 Detalhes dos campos em `data/LEIA-ME.md`.
+
+## Downloads em alta resolução
+
+Os arquivos para baixar (GLB, OBJ e STL, em qualidade alta e leve) são pesados demais para o
+repositório: ficam no GitHub Releases, um release por obra (`modelos-cal-<número>`), sob a licença
+CC BY-NC 4.0.
+
+1. No Creality Scan, exporte a malha **sem simplificar** (no máximo 20 milhões de faces), passe pelo
+   Blender como de costume e salve como `CAL.<número>-alta.blend`.
+2. `node ferramentas/downloads.mjs cal-<número> <caminho>/CAL.<número>-alta.blend --enviar`
+   gera os 6 arquivos (cerca de 5 minutos para 7 milhões de faces), envia para um release em rascunho
+   e grava os tamanhos em `data/obras.json`. Sem `--enviar`, só gera os arquivos, para conferir.
+3. Publique o release **antes** de levar a mudança do `obras.json` para a `main`:
+   `gh release edit modelos-cal-<número> --draft=false`.
+
+Precisa do Blender instalado (o script acha a versão mais nova em `C:/Program Files/Blender Foundation`;
+outro caminho com `BLENDER=...`) e do `gh` com login feito.
 
 ## Como publicar
 

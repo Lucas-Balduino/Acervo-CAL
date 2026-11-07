@@ -33,7 +33,8 @@ Vigência: 15/05/2026 a 31/12/2026.
 - Commits em português no formato `tipo: descrição` (ex.: `docs: Adicionar obra CAL 0607`, `feat: ...`, `fix: ...`).
 - `main` está no ar: mudanças entram por branch e PR. Pequenas correções de dados podem ir direto.
   Na prática só o Lucas (e eventualmente o professor) mexe no repositório.
-- `ferramentas/` é Node só para preparar modelos; o site não depende dele.
+- `ferramentas/` é Node só para preparar modelos; o site não depende dele. A única exceção em Python é
+  `exportar-downloads.py`, que roda dentro do Blender (chamado por `downloads.mjs`).
 
 ## Estrutura do site
 
@@ -194,6 +195,36 @@ Não alterar material ou textura sem pedir.
   número de patrimônio na coleção (planilha de curadoria do museólogo), não um número CAL — no acervo,
   CAL.0307 é a Braçadeira emplumada. Por isso `id` `cnrc-0307` e `registro` "CNRC 307" (decisão do Lucas,
   07/11/2026). Na planilha, cada coleção tem a própria numeração (a Moringa é 913186 lá).
+
+## Downloads em alta resolução
+
+Botão "Baixar modelo 3D" na página da obra (`js/downloads.js`, uma `<dialog>`): a pessoa escolhe a qualidade
+(leve ou alta resolução) e baixa GLB (metros, com cor), OBJ (mm, com `.mtl` e textura) ou STL (mm, sem cor,
+Z para cima). Cada arquivo é um `.zip` com um LEIA-ME (unidades, licença, como citar). Decisões do Lucas em
+07/11/2026: arquivos no **GitHub Releases** (grátis, até 2 GiB por arquivo, sem limite de total nem de
+downloads), um release por obra com a tag `modelos-<id>`, e licença **CC BY-NC 4.0**. O Zenodo (DOI) ficou
+como ideia para uma cópia de preservação depois.
+
+- `node ferramentas/downloads.mjs <id> <arquivo-alta.blend> [--faces-leve 500000] [--enviar]`: o Blender
+  sem janela aplica as transformações, apoia a peça no chão, centraliza e converte mm → m (só na memória; o
+  `.blend` não é salvo), exporta a alta como está, simplifica (Decimate) para a leve e exporta de novo. Com
+  `--enviar`, cria o release como **rascunho** (ou atualiza, com `--clobber`) e grava em `data/obras.json` o
+  campo `downloads` (`endereco` dos arquivos, `pagina` do release, `faces` e bytes de cada `.zip` por
+  qualidade). Obra sem `downloads` fica sem o botão.
+- O release precisa ser publicado (`gh release edit modelos-<id> --draft=false`) antes de o `obras.json`
+  com os downloads ir para a `main`; enquanto é rascunho, os links só funcionam para o dono do repositório.
+  Publicar o release torna os arquivos públicos: só com o "pode publicar" do Lucas.
+- **Quantas faces na alta:** a malha completa do Creality Scan, sem simplificar. O detalhe real vem do voxel
+  do escaneamento, não do número de faces: a 0808 foi fundida a ~0,22 mm (`scanDataConfig.dat` no projeto) e
+  cada captura completa tem 3,5 e 6,7 milhões de faces (`result/Fused.ply` em cada pasta de sessão) —
+  ~7 milhões para a peça inteira. Teto: **20 milhões** (fotogrametria ou voxel menor); nesse ponto o maior
+  arquivo, o OBJ descompactado, chega perto de 2 GB. Medido por milhão de faces: STL 50 MB (22 MB no zip),
+  OBJ ~100 MB (25 MB no zip), GLB ~30 MB, mais a textura. A 0808 com 6,7 milhões levou ~5 min: zips de
+  82 MB (GLB), 117 MB (OBJ) e 141 MB (STL).
+- **Leve:** 500 mil faces e textura de até 4096 px. A simplificação do Blender não borrou a textura nas
+  emendas (conferido na 0808 com 50 mil faces). A textura da alta sai idêntica à do `.blend`.
+- No teste atual (rascunho `modelos-cal-0808`), a "alta" da 0808 é a malha de 217 mil faces do site e a leve
+  tem 50 mil, só para ver a interface. Falta exportar a malha completa e rodar de novo.
 
 ## Integração com o Tainacan
 

@@ -89,12 +89,60 @@
         <p id="ficha-autoria" class="ficha-autoria"></p>
         <p id="ficha-resumo" class="ficha-resumo"></p>
         <dl id="ficha-dados" class="ficha-dados"></dl>
-        <a id="ficha-acervo" class="botao" href="https://www.acervocal.unb.br/" target="_blank" rel="noopener noreferrer">Ficha completa no Acervo CAL ↗</a>
+        <div class="ficha-acoes">
+          <button type="button" id="botao-download" class="botao botao-primario" aria-haspopup="dialog" hidden>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>
+            Baixar modelo 3D
+          </button>
+          <a id="ficha-acervo" class="botao" href="https://www.acervocal.unb.br/" target="_blank" rel="noopener noreferrer">Ficha completa no Acervo CAL ↗</a>
+        </div>
         <p class="ficha-nota">Medidas obtidas do modelo 3D escaneado.</p>
       </div>
       <nav id="ficha-navegacao" class="ficha-navegacao" aria-label="Outras obras"></nav>
     </aside>
   </main>
+
+  <dialog id="janela-download" class="janela-download" aria-labelledby="download-titulo">
+    <div class="janela-download-corpo">
+      <button type="button" class="botao-palco icone janela-fechar" data-fechar aria-label="Fechar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+      <p id="download-obra" class="sobretitulo"></p>
+      <h2 id="download-titulo">Baixar modelo 3D</h2>
+
+      <fieldset class="download-grupo">
+        <legend>1. Escolha a qualidade</legend>
+        <div class="download-qualidades">
+          <label class="download-qualidade">
+            <span class="download-qualidade-nome"><input type="radio" name="qualidade" value="leve" checked> Leve</span>
+            <span class="download-qualidade-faces" data-faces="leve"></span>
+            <span class="download-qualidade-texto">Abre em qualquer computador.</span>
+          </label>
+          <label class="download-qualidade">
+            <span class="download-qualidade-nome"><input type="radio" name="qualidade" value="alta"> Alta resolução</span>
+            <span class="download-qualidade-faces" data-faces="alta"></span>
+            <span class="download-qualidade-texto">Todo o detalhe do escaneamento. Pede um computador potente.</span>
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset class="download-grupo">
+        <legend>2. Baixe no formato que precisa</legend>
+        <ul id="download-formatos" class="download-formatos"></ul>
+        <p class="download-nota">Cada arquivo vem num .zip com um LEIA-ME (unidades, licença e como citar).</p>
+      </fieldset>
+
+      <div class="download-licenca">
+        <p><strong>Licença <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.pt-br" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0 ↗</a></strong>: pode copiar, estudar, imprimir e adaptar, citando a fonte. Não pode ser usado para fins comerciais.</p>
+        <p class="download-citacao-rotulo">Como citar</p>
+        <div class="download-citacao">
+          <p id="download-citacao"></p>
+          <button type="button" id="download-copiar" class="botao-palco">Copiar</button>
+        </div>
+        <a id="download-pagina" class="link-seta" href="#" target="_blank" rel="noopener noreferrer">Todos os arquivos desta obra ↗</a>
+      </div>
+    </div>
+  </dialog>
 
   <script type="module" src="js/navegacao.js"></script>
   <script type="module" src="js/obra.js"></script>

@@ -118,6 +118,20 @@ Confira no resultado e nas imagens (leia-as):
 
 Se o navegador sem janela falhar (Chrome não encontrado), o caminho pode ser dado com `CHROME=...`.
 
+## 6b. Downloads em alta resolução (se houver o .blend completo)
+
+Se existir um `.blend` com a malha completa (ex.: `D:/ObrasCAL/CAL.0612/CAL.0612-alta.blend`; ver
+"Downloads em alta resolução" no `CLAUDE.md`), gere e envie os downloads:
+
+```bash
+node ferramentas/downloads.mjs <id> "<caminho do -alta.blend>" --enviar
+```
+
+Confira na saída: a escala detectada (milímetros), medidas iguais às do passo 2 e nenhum `.zip` perto de
+2 GB. O release fica em rascunho. Na hora de publicar (passo 7), com o "pode publicar" do usuário, publique o
+release **antes** do push: `gh release edit modelos-<id> --draft=false`. Sem o `.blend` completo, pule este
+passo (a obra fica sem o botão de download até lá).
+
 ## 7. Commit e publicação
 
 Adicionar obra é mudança de dados: vai direto na `main` (como as obras anteriores).

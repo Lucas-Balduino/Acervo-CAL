@@ -26,6 +26,8 @@ export const META_DE_OBRAS = 20;
  * @property {number} [frente]      ângulo (graus) da vista inicial
  * @property {boolean} [destaque]   aparece na página inicial
  * @property {string} [urlAcervo]
+ * @property {{endereco:string, pagina?:string, alta:object, leve:object}} [downloads]
+ *           arquivos para baixar (GitHub Releases), gravados por ferramentas/downloads.mjs
  */
 
 /** @returns {Promise<Obra[]>} */
