@@ -33,6 +33,7 @@ const BALANCO_CURSOR = { yaw: 0.035, pitch: 0.02 }; // rad: quanto a vista segue
 const FOLGA_PAREDE = 0.45; // m
 const FOLGA_PEDESTAL = 0.35; // m
 const GIRO_AUTOMATICO = 0.15; // rad/s ao examinar, até a primeira interação
+const PHI_EXAME = 1.32; // rad a partir da vertical: ao examinar, a câmera olha a obra ~14° de cima
 
 // Durações das transições (segundos)
 const DURACAO = { examinar: 2.2, entreObras: 2.6, voltar: 1.8 };
@@ -63,8 +64,8 @@ export function criarNavegacao(camera, elemento, sala, eventos) {
   // Modo examinar
   const exame = {
     peca: null,
-    theta: 0, phi: 1.32, raio: 1,
-    thetaAlvo: 0, phiAlvo: 1.32, raioAlvo: 1,
+    theta: 0, phi: PHI_EXAME, raio: 1,
+    thetaAlvo: 0, phiAlvo: PHI_EXAME, raioAlvo: 1,
     raioMin: 0.3, raioMax: 3,
     thetaInicial: 0, raioInicial: 1,
     girando: false,
@@ -318,10 +319,48 @@ export function criarNavegacao(camera, elemento, sala, eventos) {
 
   /* ----- Examinar uma obra ----- */
 
-  function raioParaCaber(peca, ocupacao) {
-    const esfera = peca.tamanho.length() / 2;
-    const meioFov = THREE.MathUtils.degToRad(camera.fov / 2);
-    return esfera / Math.tan(meioFov) / ocupacao;
+  /**
+   * Menor distância em que a obra inteira cabe no espaço livre da tela (fora da ficha), vista de
+   * cima como no exame. A obra é tratada como um cilindro com a altura dela e o raio da diagonal da
+   * base, para caber girando. Uma esfera envolvendo a obra deixava peças altas e finas cortadas:
+   * de perto e de cima, o topo fica maior na tela que a base.
+   */
+  function raioParaCaber(peca, ocupacao, d) {
+    const w = elemento.clientWidth || 1;
+    const h = elemento.clientHeight || 1;
+    const tanVertical = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+    // Metade do espaço livre, em tangente do ângulo a partir do centro da imagem.
+    const limiteV = tanVertical * ((h - 2 * Math.abs(d.y)) / h) * ocupacao;
+    const limiteH = tanVertical * camera.aspect * ((w - 2 * Math.abs(d.x)) / w) * ocupacao;
+    const meiaAltura = peca.tamanho.y / 2;
+    const raioBase = Math.hypot(peca.tamanho.x, peca.tamanho.z) / 2;
+    const elevacao = Math.PI / 2 - PHI_EXAME;
+    const [cos, sen] = [Math.cos(elevacao), Math.sin(elevacao)];
+
+    const cabe = (r) => {
+      // Corte vertical que passa pela câmera e pelo centro da obra (centro na origem).
+      const cx = r * cos;
+      const cy = r * sen;
+      for (const y of [-meiaAltura, meiaAltura]) {
+        for (const x of [-raioBase, raioBase]) {
+          const profundidade = (cx - x) * cos + (cy - y) * sen;
+          const vertical = (cy - y) * -cos + (cx - x) * sen; // para cima na imagem
+          if (profundidade <= 0 || Math.abs(vertical) / profundidade > limiteV) return false;
+        }
+        const profundidadeLado = cx * cos + (cy - y) * sen;
+        if (raioBase / profundidadeLado > limiteH) return false;
+      }
+      return true;
+    };
+
+    let perto = 0.05;
+    let longe = 20;
+    for (let i = 0; i < 40; i++) {
+      const meio = (perto + longe) / 2;
+      if (cabe(meio)) longe = meio;
+      else perto = meio;
+    }
+    return longe;
   }
 
   function pararGiro() {
@@ -332,22 +371,22 @@ export function criarNavegacao(camera, elemento, sala, eventos) {
   /**
    * @param {object} peca
    * @param {object} opcoes
-   * @param {number} opcoes.ocupacao  fração da altura da tela que a obra deve ocupar
+   * @param {number} opcoes.ocupacao  fração do espaço livre (fora da ficha) que a obra pode ocupar
    * @param {{x:number,y:number}} opcoes.deslocamento  px para mover a obra na tela (abre espaço ao painel)
    */
-  function examinar(peca, { ocupacao = 0.7, deslocamento: d = { x: 0, y: 0 } } = {}) {
+  function examinar(peca, { ocupacao = 0.96, deslocamento: d = { x: 0, y: 0 } } = {}) {
     const deOutraObra = modo === "obra";
     modo = "obra";
     exame.peca = peca;
     exame.thetaInicial = Math.atan2(peca.direcao.x, peca.direcao.z);
-    exame.raioInicial = raioParaCaber(peca, ocupacao);
+    exame.raioInicial = Math.max(raioParaCaber(peca, ocupacao, d), peca.tamanho.length() / 2 + 0.06);
     exame.raioMin = Math.max(peca.tamanho.length() / 2 + 0.06, 0.18);
     exame.raioMax = Math.max(exame.raioInicial * 2.5, 1.2);
     deslocamento.alvo.set(d.x, d.y);
 
     // Vai direto para a vista de frente; o caminho até lá é a transição suave.
     exame.theta = exame.thetaAlvo = exame.thetaInicial;
-    exame.phi = exame.phiAlvo = 1.32;
+    exame.phi = exame.phiAlvo = PHI_EXAME;
     exame.raio = exame.raioAlvo = exame.raioInicial;
     exame.girando = false;
     exame.esperaGiro = 1.2; // começa a girar sozinha pouco depois de chegar
@@ -362,7 +401,7 @@ export function criarNavegacao(camera, elemento, sala, eventos) {
     // Gira pelo caminho mais curto até a frente.
     exame.thetaAlvo =
       exame.theta + Math.atan2(Math.sin(exame.thetaInicial - exame.theta), Math.cos(exame.thetaInicial - exame.theta));
-    exame.phiAlvo = 1.32;
+    exame.phiAlvo = PHI_EXAME;
     exame.raioAlvo = exame.raioInicial;
     inercia.x = inercia.y = 0;
   }

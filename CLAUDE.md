@@ -68,6 +68,10 @@ three.js direto (não usa model-viewer). `js/museu-sala.js` monta a sala a parti
   não falar em "tamanho real"** no museu (as medidas reais continuam na ficha). Campo de visão 45° (60° em tela
   em pé), sala de 5,2 m × pé-direito 3 m, pedestais de 1,05 m, laterais a 1,25 m da parede. Ao mexer em `SALA`,
   conferir que as três primeiras obras continuam visíveis da entrada.
+- Enquadramento ao examinar (`raioParaCaber`): a obra é tratada como um cilindro (altura da peça, raio da
+  diagonal da base) e precisa caber, vista ~14° de cima, em 96% do espaço livre — fora da ficha e da barra
+  Anterior/Próxima. Antes era uma esfera ocupando 100% da altura, e a CAL.0504 (alta e fina) ficava com o topo
+  cortado (07/11/2026).
 - **Sensação dos controles** (pedido do Lucas, no estilo do Magical Reflections): pouca sensibilidade
   (arrastar 300 px gira ~15° andando, ~77° examinando; o Lucas pediu duas vezes para reduzir o olhar), vista amortecida com inércia ao soltar, leve balanço
   da vista seguindo o cursor, e transições com duração fixa e curva suave na entrada e na saída
