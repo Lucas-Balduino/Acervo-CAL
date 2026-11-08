@@ -8,7 +8,7 @@
 */
 
 import * as THREE from "three";
-import { carregarObras, linkDaObra, textoDimensoes, textoProcedencia } from "./data.js";
+import { carregarColecoes, carregarObras, linkDaObra, textoDimensoes, textoProcedencia } from "./data.js";
 import { montarSala } from "./museu-sala.js";
 import { criarNavegacao } from "./museu-navegacao.js";
 import { criarContorno } from "./museu-contorno.js";
@@ -63,7 +63,8 @@ redimensionar();
 
 /* ----- Obras e sala ----- */
 
-const obras = (await carregarObras()).sort((a, b) =>
+const [todasAsObras, colecoes] = await Promise.all([carregarObras(), carregarColecoes()]);
+const obras = todasAsObras.sort((a, b) =>
   (a.registro || a.id).localeCompare(b.registro || b.id, "pt-BR", { numeric: true })
 );
 
@@ -76,6 +77,7 @@ if (obras.length === 0) {
 
 const sala = await montarSala(renderer, obras, {
   leve: toque,
+  colecoes,
   aoProgresso(carregadas, total) {
     estadoCarga.textContent = carregadas < total ? `Carregando as obras · ${carregadas} de ${total}` : "Salas prontas";
     barraCarga.style.width = `${(carregadas / total) * 100}%`;

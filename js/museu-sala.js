@@ -6,8 +6,8 @@
 
   As obras são agrupadas por coleção, uma sala para cada, uma depois da outra.
   Entre as salas há uma parede com uma passagem larga e uma viga mais baixa,
-  e sobre a passagem, dos dois lados, o nome da sala do outro lado ("Próxima
-  sala" / "Sala anterior"). Cada obra entra num
+  e na parede do fundo de cada sala, à esquerda da passagem, o nome da coleção e
+  um texto sobre ela (data/colecoes.json). Cada obra entra num
   pedestal, ampliada (SALA.escalaDasObras) e virada pela sua "frente".
 
   Luz (LUZ): pouca luz geral e um spot quente por obra, para dar profundidade e
@@ -169,8 +169,9 @@ export function planejarSala(obras) {
  * @param {object} opcoes
  * @param {(carregadas: number, total: number) => void} [opcoes.aoProgresso]
  * @param {boolean} [opcoes.leve]  celular: sem sombras em tempo real
+ * @param {Record<string, {texto: string}>} [opcoes.colecoes]  texto de cada coleção (data/colecoes.json)
  */
-export async function montarSala(renderer, obras, { aoProgresso = () => {}, leve = false } = {}) {
+export async function montarSala(renderer, obras, { aoProgresso = () => {}, leve = false, colecoes = {} } = {}) {
   const cena = new THREE.Scene();
   cena.background = new THREE.Color(CORES.nevoa);
   cena.fog = new THREE.FogExp2(CORES.nevoa, LUZ.nevoa);
@@ -212,7 +213,7 @@ export async function montarSala(renderer, obras, { aoProgresso = () => {}, leve
 
   const paredes = montarArquitetura(cena, plano, renderer, !leve);
   await document.fonts.load('700 48px "Roboto"').catch(() => {});
-  montarTextosDeParede(cena, plano, obras.length);
+  montarTextosDeParede(cena, plano, obras.length, colecoes);
 
   const pecas = lugares.map((lugar, indice) => montarPedestal(cena, lugar, indice, !leve));
   montarSpots(cena, pecas, plano);
@@ -639,7 +640,51 @@ function mirarSpot(peca) {
 
 /* ---------- Textos de parede ---------- */
 
-function montarTextosDeParede(cena, plano, quantidade) {
+// Texto da sala: no meio do trecho de parede à esquerda da passagem, com o topo um pouco abaixo da viga.
+const TEXTO_DA_SALA = {
+  largura: 1.4, // m
+  x: -(SALA.larguraPassagem / 2 + SALA.largura / 2) / 2,
+  topo: 2.3,
+  pxPorMetro: 860,
+};
+
+/** Nome da coleção em letras claras direto na parede, com "Sala 1 de 3" em cima e o texto embaixo. */
+function painelDaColecao(sala, totalDeSalas, texto) {
+  const w = Math.round(TEXTO_DA_SALA.largura * TEXTO_DA_SALA.pxPorMetro);
+  const fonteTexto = '400 36px "Roboto", sans-serif';
+  const entrelinha = 54;
+  const medida = document.createElement("canvas").getContext("2d");
+  medida.font = fonteTexto;
+  const linhas = texto ? quebrarLinhas(medida, texto, w) : [];
+  const yTexto = 250;
+  const h = linhas.length ? yTexto + (linhas.length - 1) * entrelinha + 24 : 190;
+
+  const painel = painelDeTexto(
+    TEXTO_DA_SALA.largura,
+    h / TEXTO_DA_SALA.pxPorMetro,
+    texturaDeCanvas(w, h, (ctx) => {
+      ctx.fillStyle = CORES.textoParede;
+      if (totalDeSalas > 1) {
+        ctx.globalAlpha = 0.72;
+        ctx.font = '500 28px "Roboto", sans-serif';
+        if ("letterSpacing" in ctx) ctx.letterSpacing = "5px";
+        ctx.fillText(`SALA ${sala.indice + 1} DE ${totalDeSalas}`, 0, 36);
+        if ("letterSpacing" in ctx) ctx.letterSpacing = "0px";
+        ctx.globalAlpha = 1;
+      }
+      ctx.font = '700 88px "Roboto", sans-serif';
+      ctx.fillText(sala.nome, 0, 130, w);
+      if (!linhas.length) return;
+      ctx.fillRect(0, 168, 72, 4);
+      ctx.font = fonteTexto;
+      linhas.forEach((linha, i) => ctx.fillText(linha, 0, yTexto + i * entrelinha));
+    })
+  );
+  painel.userData.altura = h / TEXTO_DA_SALA.pxPorMetro;
+  return painel;
+}
+
+function montarTextosDeParede(cena, plano, quantidade, colecoes) {
   // Título em letras claras direto na parede do fundo, acima da obra em destaque.
   const titulo = painelDeTexto(
     3.2,
@@ -656,37 +701,14 @@ function montarTextosDeParede(cena, plano, quantidade) {
   titulo.position.set(0, SALA.peDireito - 0.75, -plano.comprimento + 0.01);
   cena.add(titulo);
 
-  // Nome da sala do outro lado da passagem, na viga, dos dois lados. Leva um sobretítulo
-  // ("Próxima sala" / "Sala anterior"): só o nome parecia dizer em que sala o visitante já estava.
-  const larguraLetreiro = SALA.larguraPassagem - 0.1;
-  const alturaLetreiro = (larguraLetreiro * 200) / 1150; // mesma proporção do canvas
-  const yLetreiro = SALA.alturaPassagem + (SALA.peDireito - 0.25 - SALA.alturaPassagem) / 2;
-  const letreiro = (sobretitulo, nome, z, rotacaoY) => {
-    const placa = painelDeTexto(
-      larguraLetreiro,
-      alturaLetreiro,
-      texturaDeCanvas(1150, 200, (ctx, w) => {
-        ctx.fillStyle = CORES.textoParede;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.globalAlpha = 0.72;
-        ctx.font = '500 32px "Roboto", sans-serif';
-        if ("letterSpacing" in ctx) ctx.letterSpacing = "6px";
-        ctx.fillText(sobretitulo.toUpperCase(), w / 2, 46);
-        ctx.globalAlpha = 1;
-        if ("letterSpacing" in ctx) ctx.letterSpacing = "0px";
-        ctx.font = '500 72px "Roboto", sans-serif';
-        ctx.fillText(nome, w / 2, 130, w - 40);
-      })
-    );
-    placa.position.set(0, yLetreiro, z);
-    placa.rotation.y = rotacaoY;
-    cena.add(placa);
-  };
-  plano.divisorias.forEach((d, i) => {
-    letreiro("Próxima sala", plano.salas[i + 1].nome, d.zMax + 0.003, 0);
-    letreiro("Sala anterior", plano.salas[i].nome, d.zMin - 0.003, Math.PI);
-  });
+  // Texto de cada sala na parede do fundo dela (a que se vê ao entrar), à esquerda da passagem:
+  // o nome da coleção e um pouco sobre ela. Antes o nome ficava na viga e indicava a sala
+  // seguinte, mas parecia dizer em que sala o visitante estava.
+  for (const sala of plano.salas) {
+    const painel = painelDaColecao(sala, plano.salas.length, colecoes[sala.colecao]?.texto);
+    painel.position.set(TEXTO_DA_SALA.x, TEXTO_DA_SALA.topo - painel.userData.altura / 2, sala.zMin + 0.01);
+    cena.add(painel);
+  }
 
   // Painéis emoldurados perto da entrada (como os textos de sala da CAL).
   const materialMoldura = new THREE.MeshStandardMaterial({ color: 0xf6f3ee, roughness: 0.6 });

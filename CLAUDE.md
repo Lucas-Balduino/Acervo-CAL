@@ -75,8 +75,10 @@ sob o mouse; `js/museu.js` liga tudo e cuida da interface HTML por cima do canva
   um mosaico e o Lucas achou esquisita), teto claro com trilhos e spots. Cores e medidas nas constantes `SALA`,
   `LUZ`, `CORES` e `TACO`.
 - **Uma sala por coleção** (decisão do Lucas, 07/11/2026), em sequência: entre elas, uma parede com passagem
-  larga no meio (2,8 m) e viga mais baixa (2,6 m), com o nome da sala do outro lado na viga, dos dois lados, sob um sobretítulo
-  "Próxima sala" / "Sala anterior" (só o nome parecia indicar a sala onde o visitante estava, 08/11/2026). Ordem das salas: a da primeira obra em ordem de registro; a sala da obra em `destaque` vai por último,
+  larga no meio (2,8 m) e viga mais baixa (2,6 m), sem nada escrito na viga. Na parede do fundo de cada sala (a que se vê ao entrar), à esquerda da
+  passagem, ficam em letras claras "Sala 1 de 3", o nome da coleção e um texto curto sobre ela, vindo de
+  `data/colecoes.json` (resumo, com palavras nossas, da página Sobre do acervocal.unb.br). Antes o nome da sala
+  seguinte ficava na viga e parecia dizer em que sala o visitante estava (pedido do Lucas, 08/11/2026). Ordem das salas: a da primeira obra em ordem de registro; a sala da obra em `destaque` vai por último,
   com ela na parede do fundo, no eixo das passagens (vista desde a entrada). O percurso segue sala por sala.
   O contador embaixo mostra a sala onde o visitante está.
 - Obras ampliadas 1,5× (`SALA.escalaDasObras`; os `.glb` estão em metros reais). Cada sala cresce com o número
