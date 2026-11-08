@@ -118,7 +118,23 @@
     "modelo": "models/cnrc-0307/modelo.glb",
     "poster": "models/cnrc-0307/poster.webp",
     "frente": 45,
-    "semFicha": true
+    "semFicha": true,
+    "downloads": {
+      "endereco": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/download/modelos-cnrc-0307/",
+      "pagina": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/tag/modelos-cnrc-0307",
+      "alta": {
+        "faces": 2055616,
+        "glb": 42269052,
+        "obj": 53205469,
+        "stl": 46064065
+      },
+      "leve": {
+        "faces": 500000,
+        "glb": 12473536,
+        "obj": 15232944,
+        "stl": 11538491
+      }
+    }
   },
   {
     "id": "cal-0808",
@@ -147,16 +163,16 @@
       "endereco": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/download/modelos-cal-0808/",
       "pagina": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/tag/modelos-cal-0808",
       "alta": {
-        "faces": 216730,
-        "glb": 11015154,
-        "obj": 12217019,
-        "stl": 5008539
+        "faces": 7050674,
+        "glb": 149534750,
+        "obj": 189537338,
+        "stl": 162908609
       },
       "leve": {
-        "faces": 50000,
-        "glb": 7761698,
-        "obj": 8031479,
-        "stl": 1185871
+        "faces": 500000,
+        "glb": 16517618,
+        "obj": 19630129,
+        "stl": 11818069
       }
     }
   }

@@ -237,26 +237,8 @@ como ideia para uma cópia de preservação depois.
   estimativa pelas capturas: ~3–4, ~7 e ~2–3 milhões de faces) e eu avalio; com as 3 na branch, o professor
   avalia. Aprovado, entram as do ExScan (qualidade única). O processo da fotogrametria (Luara) será definido
   quando as obras chegarem.
-- No teste atual (rascunho `modelos-cal-0808`), a "alta" da 0808 ainda é a malha de 217 mil faces do site e a
-  leve tem 50 mil, só para ver a interface. Rodar de novo com o `CAL.0808-alta.blend` substitui os arquivos.
-
-## Integração com o Tainacan
-
-A API REST do acervo é pública e aceita CORS do GitHub Pages:
-`https://www.acervocal.unb.br/wp-json/tainacan/v2/items/?search=CAL.0607` (coleção "Acervo", id 1565).
-Metadados úteis: `numero-de-registro`, `procedencia`, `data-de-aquisicao`, `forma-de-aquisicao`, `colecao`,
-`autor`, `material-tecnica`, `local-de-producao`, `data-de-producao`, `dimensoes` (os últimos estão vazios
-nas obras atuais). O site não consulta a API ao vivo: `ferramentas/sincronizar-acervo.mjs` copia os dados
-para `data/obras.json`, para o site não depender do servidor da UnB estar no ar.
-As fichas marcam as imagens como "Direitos Reservados" — não copiar fotos do acervo para este repositório.
-
-## Testar
-
-`preview_start` com a configuração `site` de `.claude/launch.json` (porta 3000, `ferramentas/servidor.mjs`).
-Conferir que os modelos carregam, sem erros no console, e que `viewer.getDimensions()` dá medidas
-plausíveis em metros. Testar também em 390 px de largura (celular).
-
-O navegador embutido pausa o WebGL quando a janela do app está oculta ou minimizada (o `load` do
-model-viewer nunca dispara). Nesse caso, usar Chrome headless via `puppeteer-core` com
-`--use-angle=swiftshader --enable-unsafe-swiftshader` (Chrome em `C:/Program Files/Google/Chrome/Application/chrome.exe`),
-instalado fora do repositório.
+- **Malhas detalhadas (08/11/2026):** `D:/ObrasCAL/<pasta>/DetalhadoCAL.<n>.blend`, exportadas pelo Lucas sem
+  simplificar: 0504 com 2,2 milhões de faces, Sapo 2,1 milhões e 0808 7,1 milhões (zips de 40 a 190 MB). A textura
+  sai na mesma resolução das do site (2048 px; 4096 na 0808). Sapo e 0808 estão nos rascunhos
+  `modelos-cnrc-0307` e `modelos-cal-0808`. A 0504 ficou de fora: a textura nova tem cor diferente da do site
+  (corpo mais rosado e claro), e o Lucas vai decidir qual usar.
