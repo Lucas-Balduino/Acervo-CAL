@@ -60,7 +60,9 @@ sob o mouse; `js/museu.js` liga tudo e cuida da interface HTML por cima do canva
   mostra a marca UnB | CAL (símbolo `#marca-unb-cal` no `museu.html`, redesenhado em vetor, com o texto em
   Roboto) e uma barra fina; depois aparece o convite "Entrar no museu", com a sala desfocada por trás. Ao entrar,
   o cabeçalho do site sobe e some (`body.imersivo`), a câmera avança da porta (`navegacao.chegar()`) e ficam só
-  botões escuros translúcidos: "Como navegar" e um X que sai da visita (a entrada volta com "Voltar ao museu").
+  botões escuros translúcidos: "Como navegar" (as instruções abrem sozinhas na primeira entrada
+  e têm um X próprio; Esc também fecha) e um X no canto que, com uma obra aberta, fecha a obra e, andando, sai
+  da visita (a entrada volta com "Voltar ao museu"). Antes o X saía do museu mesmo com a obra aberta (08/11/2026).
   Comparamos as outras duas marcas da CAL (quadrado vermelho e "CAL" horizontal): o vermelho briga com a
   terracota e a horizontal pesa mais que o título; ficou a UnB | CAL.
 - **Contorno ao passar o mouse** numa obra (no celular, um piscar ao tocar), para mostrar que dá para clicar:
@@ -73,8 +75,8 @@ sob o mouse; `js/museu.js` liga tudo e cuida da interface HTML por cima do canva
   um mosaico e o Lucas achou esquisita), teto claro com trilhos e spots. Cores e medidas nas constantes `SALA`,
   `LUZ`, `CORES` e `TACO`.
 - **Uma sala por coleção** (decisão do Lucas, 07/11/2026), em sequência: entre elas, uma parede com passagem
-  larga no meio (2,8 m) e viga mais baixa (2,6 m), com o nome da sala seguinte na viga ("Coleção X", dos dois
-  lados). Ordem das salas: a da primeira obra em ordem de registro; a sala da obra em `destaque` vai por último,
+  larga no meio (2,8 m) e viga mais baixa (2,6 m), com o nome da sala do outro lado na viga, dos dois lados, sob um sobretítulo
+  "Próxima sala" / "Sala anterior" (só o nome parecia indicar a sala onde o visitante estava, 08/11/2026). Ordem das salas: a da primeira obra em ordem de registro; a sala da obra em `destaque` vai por último,
   com ela na parede do fundo, no eixo das passagens (vista desde a entrada). O percurso segue sala por sala.
   O contador embaixo mostra a sala onde o visitante está.
 - Obras ampliadas 1,5× (`SALA.escalaDasObras`; os `.glb` estão em metros reais). Cada sala cresce com o número

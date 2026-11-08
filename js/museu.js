@@ -3,7 +3,7 @@
   (museu-sala.js), liga a câmera (museu-navegacao.js) e o contorno das obras
   (museu-contorno.js), e cuida da interface por cima do 3D: tela de entrada
   (marca e carregamento, depois o convite), modo de visita sem o cabeçalho do
-  site (com o X para sair), ajuda, nome da obra sob o mouse, ficha da obra
+  site (com o X que fecha a obra ou sai), ajuda, nome da obra sob o mouse, ficha da obra
   examinada, o percurso anterior/próxima e o nome da sala onde o visitante está.
 */
 
@@ -120,7 +120,15 @@ botaoEntrar.disabled = false;
 let jaEntrou = false;
 
 botaoEntrar.addEventListener("click", entrar);
-botaoSair.addEventListener("click", sair);
+// O X do canto fecha primeiro a obra examinada; só fora do exame ele sai do museu.
+botaoSair.addEventListener("click", () => (examinando >= 0 ? voltarAoMuseu() : sair()));
+
+/** Ajusta o nome do X ao que ele faz agora (fechar a obra ou sair do museu). */
+function nomearBotaoSair() {
+  const nome = examinando >= 0 ? "Fechar a obra e voltar a andar" : "Sair do museu";
+  botaoSair.setAttribute("aria-label", nome);
+  botaoSair.title = nome;
+}
 
 function entrar() {
   document.body.classList.add("imersivo");
@@ -133,7 +141,7 @@ function entrar() {
     jaEntrou = true;
     navegacao.chegar(); // a câmera avança devagar sala adentro
     mostrarAjuda(true);
-    setTimeout(() => mostrarAjuda(false), 7000);
+    fechamentoDaAjuda = setTimeout(() => mostrarAjuda(false), 7000);
   }
 }
 
@@ -151,8 +159,15 @@ function sair() {
 }
 
 botaoAjuda.addEventListener("click", () => mostrarAjuda(ajuda.hidden));
+document.getElementById("botao-fechar-ajuda").addEventListener("click", () => {
+  mostrarAjuda(false);
+  botaoAjuda.focus({ preventScroll: true });
+});
+
+let fechamentoDaAjuda = 0;
 
 function mostrarAjuda(visivel) {
+  clearTimeout(fechamentoDaAjuda); // aberta pelo botão, a ajuda não some sozinha
   ajuda.hidden = !visivel;
   botaoAjuda.setAttribute("aria-expanded", String(visivel));
 }
@@ -166,7 +181,9 @@ document.getElementById("botao-proxima").addEventListener("click", () =>
 document.getElementById("botao-voltar-museu").addEventListener("click", voltarAoMuseu);
 
 window.addEventListener("keydown", (evento) => {
-  if (evento.key === "Escape" && examinando >= 0) voltarAoMuseu();
+  if (evento.key !== "Escape") return;
+  if (examinando >= 0) voltarAoMuseu();
+  else if (!ajuda.hidden) mostrarAjuda(false);
 });
 
 let saidaDaFicha = 0;
@@ -177,6 +194,7 @@ function examinar(indice) {
   clearTimeout(saidaDaFicha);
   ficha.classList.remove("saindo");
   examinando = indice;
+  nomearBotaoSair();
   mostrarRotulo(-1);
   contorno.mostrar(null);
   mostrarAjuda(false);
@@ -207,6 +225,7 @@ function examinar(indice) {
 function voltarAoMuseu() {
   if (examinando < 0) return;
   examinando = -1;
+  nomearBotaoSair();
   navegacao.voltarAAndar();
   // A ficha sai devagar, junto com a câmera.
   ficha.classList.add("saindo");

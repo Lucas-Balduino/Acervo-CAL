@@ -6,7 +6,8 @@
 
   As obras são agrupadas por coleção, uma sala para cada, uma depois da outra.
   Entre as salas há uma parede com uma passagem larga e uma viga mais baixa,
-  e o nome da sala seguinte fica sobre a passagem. Cada obra entra num
+  e sobre a passagem, dos dois lados, o nome da sala do outro lado ("Próxima
+  sala" / "Sala anterior"). Cada obra entra num
   pedestal, ampliada (SALA.escalaDasObras) e virada pela sua "frente".
 
   Luz (LUZ): pouca luz geral e um spot quente por obra, para dar profundidade e
@@ -655,19 +656,27 @@ function montarTextosDeParede(cena, plano, quantidade) {
   titulo.position.set(0, SALA.peDireito - 0.75, -plano.comprimento + 0.01);
   cena.add(titulo);
 
-  // Nome da sala na viga sobre cada passagem, dos dois lados: quem chega lê o nome da sala seguinte.
-  const alturaLetreiro = 0.32;
+  // Nome da sala do outro lado da passagem, na viga, dos dois lados. Leva um sobretítulo
+  // ("Próxima sala" / "Sala anterior"): só o nome parecia dizer em que sala o visitante já estava.
+  const larguraLetreiro = SALA.larguraPassagem - 0.1;
+  const alturaLetreiro = (larguraLetreiro * 200) / 1150; // mesma proporção do canvas
   const yLetreiro = SALA.alturaPassagem + (SALA.peDireito - 0.25 - SALA.alturaPassagem) / 2;
-  const letreiro = (nome, z, rotacaoY) => {
+  const letreiro = (sobretitulo, nome, z, rotacaoY) => {
     const placa = painelDeTexto(
-      SALA.larguraPassagem - 0.1,
+      larguraLetreiro,
       alturaLetreiro,
-      texturaDeCanvas(1150, 160, (ctx, w, h) => {
+      texturaDeCanvas(1150, 200, (ctx, w) => {
         ctx.fillStyle = CORES.textoParede;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.font = '500 80px "Roboto", sans-serif';
-        ctx.fillText(nome, w / 2, h / 2 + 4, w - 40);
+        ctx.globalAlpha = 0.72;
+        ctx.font = '500 32px "Roboto", sans-serif';
+        if ("letterSpacing" in ctx) ctx.letterSpacing = "6px";
+        ctx.fillText(sobretitulo.toUpperCase(), w / 2, 46);
+        ctx.globalAlpha = 1;
+        if ("letterSpacing" in ctx) ctx.letterSpacing = "0px";
+        ctx.font = '500 72px "Roboto", sans-serif';
+        ctx.fillText(nome, w / 2, 130, w - 40);
       })
     );
     placa.position.set(0, yLetreiro, z);
@@ -675,8 +684,8 @@ function montarTextosDeParede(cena, plano, quantidade) {
     cena.add(placa);
   };
   plano.divisorias.forEach((d, i) => {
-    letreiro(plano.salas[i + 1].nome, d.zMax + 0.003, 0);
-    letreiro(plano.salas[i].nome, d.zMin - 0.003, Math.PI);
+    letreiro("Próxima sala", plano.salas[i + 1].nome, d.zMax + 0.003, 0);
+    letreiro("Sala anterior", plano.salas[i].nome, d.zMin - 0.003, Math.PI);
   });
 
   // Painéis emoldurados perto da entrada (como os textos de sala da CAL).
