@@ -72,18 +72,26 @@
         <button type="button" id="botao-sair" class="botao-vidro museu-sair" aria-label="Sair do museu" title="Sair do museu">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
         </button>
-        <ul id="museu-ajuda" class="museu-ajuda" hidden>
-          <li class="so-mouse"><strong>Arraste</strong> para olhar em volta</li>
-          <li class="so-mouse"><strong>Clique no chão</strong> para andar até lá</li>
-          <li class="so-mouse"><strong>Clique numa obra</strong> para examiná-la de perto</li>
-          <li class="so-mouse"><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> ou setas para caminhar</li>
-          <li class="so-mouse"><kbd>Esc</kbd> volta ao museu</li>
-          <li class="so-toque"><strong>Arraste</strong> para olhar em volta</li>
-          <li class="so-toque"><strong>Toque no chão</strong> para andar até lá</li>
-          <li class="so-toque"><strong>Toque numa obra</strong> para examiná-la de perto</li>
-          <li>Ou use <strong>Próxima obra</strong> para seguir o percurso</li>
-          <li><strong>×</strong> no canto sai do museu</li>
-        </ul>
+        <div id="museu-ajuda" class="museu-ajuda" hidden>
+          <div class="museu-ajuda-topo">
+            <p>Como navegar</p>
+            <button type="button" id="botao-fechar-ajuda" class="museu-ajuda-fechar" aria-label="Fechar as instruções" title="Fechar">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+            </button>
+          </div>
+          <ul>
+            <li class="so-mouse"><strong>Arraste</strong> para olhar em volta</li>
+            <li class="so-mouse"><strong>Clique no chão</strong> para andar até lá</li>
+            <li class="so-mouse"><strong>Clique numa obra</strong> para examiná-la de perto</li>
+            <li class="so-mouse"><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> ou setas para caminhar</li>
+            <li class="so-mouse"><kbd>Esc</kbd> fecha a obra e volta a andar</li>
+            <li class="so-toque"><strong>Arraste</strong> para olhar em volta</li>
+            <li class="so-toque"><strong>Toque no chão</strong> para andar até lá</li>
+            <li class="so-toque"><strong>Toque numa obra</strong> para examiná-la de perto</li>
+            <li>Ou use <strong>Próxima obra</strong> para seguir o percurso</li>
+            <li><strong>×</strong> no canto fecha a obra ou sai do museu</li>
+          </ul>
+        </div>
       </div>
 
       <div id="museu-rotulo" class="museu-rotulo" hidden></div>

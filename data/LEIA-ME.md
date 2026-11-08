@@ -28,6 +28,19 @@ da obra esconde o botão "Ficha completa no Acervo CAL").
 
 O script também mede o modelo 3D e grava `dimensoes` (largura, altura e profundidade em cm).
 
+## Textos das coleções (`colecoes.json`)
+
+No museu virtual, cada coleção tem uma sala, e na parede do fundo dela aparecem o nome da coleção e um
+texto curto sobre ela. O texto vem de `colecoes.json`, pelo nome da coleção (o mesmo do campo `colecao`
+das obras):
+
+```json
+{ "Chocó": { "texto": "Reunida para a exposição…", "fonte": "https://www.acervocal.unb.br/sobre/" } }
+```
+
+Escrito à mão (o Tainacan não tem descrição das coleções). Coleção sem texto mostra só o nome. Mantenha
+o texto curto, com umas 50 palavras, para caber na parede.
+
 ## Filtros da página Obras
 
 Os filtros saem destes campos: procedência, tamanho (pela altura do modelo), material e técnica,
