@@ -89,6 +89,9 @@ sob o mouse; `js/museu.js` liga tudo e cuida da interface HTML por cima do canva
   perdiam o sentido (Lucas, 07/11/2026); calculada, a luz fica certa de qualquer ângulo e é igual no celular.
   Cada ponto só soma os spots da própria sala (`salaDe`, pelas paredes entre salas). Nas obras entra só o spot
   delas, sem mexer em material ou textura. Fachos visíveis no ar: cones aditivos (`LUZ.facho`).
+  Debaixo da obra, o topo do pedestal fica na sombra do elipsoide e escurece numa mancha suave (gaussiana);
+  antes os pontos dentro do elipsoide contavam como iluminados e a pegada escurecia por igual, e sob o Sapo
+  (patas abertas) aparecia um disco com borda (corrigido em 08/11/2026).
 - Reflexo do ambiente: paredes, piso e teto usam um `envMap` próprio, escuro e quente (`cenaDeReflexo`); com o
   `RoomEnvironment` da cena o piso ficava claro e lavado ao longe. As obras mantêm o `RoomEnvironment` (as
   metálicas dependem dele). Névoa `FogExp2` quente (`LUZ.nevoa`) escurece o fundo e dá profundidade.

@@ -117,6 +117,8 @@ export function criarLuz({ quantidade, divisorias, sala, comprimento, spot }) {
     }
 
     // Sombra suave da obra, tratada como um elipsoide do tamanho dela, em cima do pedestal.
+    // Pontos do topo do pedestal que caem dentro do elipsoide (debaixo da obra) também ficam
+    // na sombra: tratá-los como iluminados abria um disco claro com borda sob a peça.
     float sombraDaObra(vec3 p, vec3 luz, vec4 ped, vec4 forma) {
       vec3 centro = vec3(ped.x, uSala.z + forma.y, ped.y);
       vec3 a = p - centro;
@@ -126,7 +128,6 @@ export function criarLuz({ quantidade, divisorias, sala, comprimento, spot }) {
       vec3 raios = max(forma.xyz, vec3(0.02));
       a /= raios;
       b /= raios;
-      if (dot(a, a) < 1.0) return 1.0;
       vec3 ab = b - a;
       float k = clamp(-dot(a, ab) / max(dot(ab, ab), 1e-6), 0.0, 1.0);
       float d = length(a + ab * k);
@@ -159,14 +160,16 @@ export function criarLuz({ quantidade, divisorias, sala, comprimento, spot }) {
             ao *= canto(distCaixa(paraLocal(p.xz - ped.xy, ped.z), vec2(ped.w)), 0.5, 0.13);
           }
         } else {
-          // Topo do pedestal: um pouco mais escuro junto à base da obra.
+          // Topo do pedestal: uma mancha suave sob a obra, mais escura no meio e sem borda.
+          // (Antes era a elipse inteira da pegada escurecida por igual, e em peças largas e
+          // vazadas, como o sapo de patas abertas, aparecia como um disco.)
           for (int i = 0; i < N_OBRAS; i++) {
             if (abs(uLuzB[i].w - sala) > 0.5) continue;
             vec4 ped = uPedestal[i];
             if (distCaixa(paraLocal(p.xz - ped.xy, ped.z), vec2(ped.w)) > 0.01) continue;
             vec4 forma = uForma[i];
             vec2 q = paraLocal(p.xz - ped.xy, forma.w) / max(forma.xz, vec2(0.02));
-            ao *= canto((length(q) - 1.0) * min(forma.x, forma.z), 0.35, 0.05);
+            ao *= 1.0 - 0.3 * exp(-2.5 * dot(q, q));
           }
         }
       } else if (n.y < -0.5) {
