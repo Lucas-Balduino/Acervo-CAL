@@ -239,9 +239,9 @@ como ideia para uma cópia de preservação depois.
   quando as obras chegarem.
 - **Malhas detalhadas (08/11/2026):** `D:/ObrasCAL/<pasta>/DetalhadoCAL.<n>.blend`, exportadas pelo Lucas sem
   simplificar: 0504 com 2,2 milhões de faces, Sapo 2,1 milhões e 0808 7,1 milhões (zips de 40 a 190 MB). A textura
-  sai na mesma resolução das do site (2048 px; 4096 na 0808). Sapo e 0808 estão nos rascunhos
-  `modelos-cnrc-0307` e `modelos-cal-0808`. A 0504 ficou de fora: a textura nova tem cor diferente da do site
-  (corpo mais rosado e claro), e o Lucas vai decidir qual usar.
+  sai na mesma resolução das do site (2048 px; 4096 na 0808). As três estão nos rascunhos `modelos-cal-0504`,
+  `modelos-cnrc-0307` e `modelos-cal-0808`. Na 0504 a textura nova tem cor diferente da do site (corpo mais
+  rosado e claro); o Lucas escolheu usar a nova nos downloads, e o site continua com a dele.
 
 ## Integração com o Tainacan
 

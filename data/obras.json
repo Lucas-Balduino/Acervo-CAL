@@ -94,7 +94,23 @@
     "modelo": "models/cal-0504/modelo.glb",
     "poster": "models/cal-0504/poster.webp",
     "frente": 90,
-    "urlAcervo": "https://www.acervocal.unb.br/acervo/escultura-14/"
+    "urlAcervo": "https://www.acervocal.unb.br/acervo/escultura-14/",
+    "downloads": {
+      "endereco": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/download/modelos-cal-0504/",
+      "pagina": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/tag/modelos-cal-0504",
+      "alta": {
+        "faces": 2229562,
+        "glb": 45217693,
+        "obj": 55984814,
+        "stl": 49613580
+      },
+      "leve": {
+        "faces": 500000,
+        "glb": 12124569,
+        "obj": 14590157,
+        "stl": 11369527
+      }
+    }
   },
   {
     "id": "cnrc-0307",
