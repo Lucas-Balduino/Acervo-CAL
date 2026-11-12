@@ -155,7 +155,8 @@ peça em pé (da rotação "crua", sem a do nó, para a final).
 - A nuvem de pontos é sorteada na malha (`MeshSurfaceSampler`) com a cor da textura; a segunda captura cobre a
   base e a parte de baixo das laterais.
 - O texto segue a metodologia do Lucas (seções 4 e 5), sem os trechos ainda marcados [CONFIRMAR] (modo NIR,
-  resoluções etc.). Os tamanhos "≈ 22 MB → ≈ 1,5 MB" são a média das obras.
+  resoluções etc.). A etapa 7 compara a moringa (≈ 22 MB ao sair do Blender → ≈ 1,6 MB no site, 13 vezes
+  menos) e diz, numa nota, a faixa atual das obras (1,4 a 3,8 MB); ao entrar obra maior ou menor, conferir a nota.
 - O scanner da etapa 2 é um desenho do Creality CR-Scan Raptor em tamanho real (215 × 74 × 50 mm, preto, em pé,
   duas câmeras com anéis de LEDs), feito com formas do three.js em `montarScanner` — sem modelo baixado.
 - `img/processo/` tem 5 fotos da equipe (enviadas pelo Lucas em 04/11/2026), da fase de testes com o scanner
@@ -182,7 +183,8 @@ miniatura, confere o site e o museu e faz o commit na `main` (obra nova é mudan
 byte a byte à gerada antes no navegador.
 
 O script corrige a escala (o scanner exporta em mm e o glTF usa metros) e comprime a malha, que vem
-sem vértices compartilhados: ~22 MB → ~1,5 MB por obra. O decodificador Draco é carregado pelo próprio
+sem vértices compartilhados: ~22 MB → ~1,5 MB nas obras do ExScan (textura JPEG); nas do Raptor, a
+textura PNG é ~80% do arquivo e elas ficam entre 2,8 e 3,8 MB. O decodificador Draco é carregado pelo próprio
 model-viewer.
 
 **A aparência é decidida no Blender, não no script.** As três primeiras obras (0607, 0631, 0803) vieram do
