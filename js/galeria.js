@@ -8,19 +8,23 @@
 import { carregarObras, faixaDeTamanho, normalizar } from "./data.js";
 import { criarCartao } from "./cartoes.js";
 
-/** Filtros possíveis: chave no endereço, rótulo e como ler o valor da obra. */
+/**
+ * Filtros possíveis: chave no endereço, rótulo, a opção que mostra tudo ("Todos" ou "Todas",
+ * concordando com o rótulo) e como ler o valor da obra.
+ */
 const FACETAS = [
-  { chave: "procedencia", rotulo: "Procedência", valor: (o) => o.procedencia },
+  { chave: "procedencia", rotulo: "Procedência", todos: "Todas", valor: (o) => o.procedencia },
   {
     chave: "tamanho",
     rotulo: "Tamanho",
+    todos: "Todos",
     valor: faixaDeTamanho,
     ordem: ["Até 25 cm", "De 25 a 50 cm", "Acima de 50 cm"],
   },
-  { chave: "material", rotulo: "Material e técnica", valor: (o) => o.materialTecnica },
-  { chave: "local", rotulo: "Local de produção", valor: (o) => o.localProducao },
-  { chave: "aquisicao", rotulo: "Ano de aquisição", valor: (o) => o.anoAquisicao },
-  { chave: "colecao", rotulo: "Coleção", valor: (o) => o.colecao },
+  { chave: "material", rotulo: "Material e técnica", todos: "Todos", valor: (o) => o.materialTecnica },
+  { chave: "local", rotulo: "Local de produção", todos: "Todos", valor: (o) => o.localProducao },
+  { chave: "aquisicao", rotulo: "Ano de aquisição", todos: "Todos", valor: (o) => o.anoAquisicao },
+  { chave: "colecao", rotulo: "Coleção", todos: "Todas", valor: (o) => o.colecao },
 ];
 
 const ORDENS = {
@@ -62,7 +66,7 @@ for (const faceta of FACETAS) {
   nome.textContent = faceta.rotulo;
   const select = document.createElement("select");
   select.name = faceta.chave;
-  select.add(new Option("Todas", ""));
+  select.add(new Option(faceta.todos, ""));
   for (const v of valores) select.add(new Option(`${v} (${contas.get(v)})`, v));
   select.value = valores.includes(parametros.get(faceta.chave)) ? parametros.get(faceta.chave) : "";
   rotulo.append(nome, select);
