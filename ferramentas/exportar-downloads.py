@@ -6,8 +6,9 @@ Abre o .blend de uma obra e gera os arquivos de download em duas qualidades:
     Se a malha já tem N faces ou menos (ex.: obras do ExScan, só com o modelo do site), sai uma só
     qualidade, "unica".
 Cada qualidade sai em GLB (metros, com textura), OBJ (milímetros, com .mtl e textura) e STL (milímetros,
-sem cor), cada formato num .zip com um LEIA-ME.txt (licença e como citar). A peça sai na posição do
-.blend (a mesma do site), apoiada no chão e centrada. No fim grava manifesto.json com faces e tamanhos.
+sem cor), cada formato num .zip com um LEIA-ME.txt (licença e como citar). A peça sai virada como o
+modelo do site (se o .blend estiver girado diferente, o script corrige), apoiada no chão e centrada.
+No fim grava manifesto.json com faces e tamanhos.
 
 Não salva o .blend (tudo o que muda fica só na memória) e não mexe em material nem na textura da
 versão alta. A textura só é reduzida na versão leve, quando passa do limite.
@@ -181,6 +182,38 @@ def exportar(nivel, malhas, dados, saida, dimensoes):
     return resultado
 
 
+def giro_ate_o_site(malhas, modelo_site):
+    """
+    Rotação que leva a peça do .blend à mesma orientação do modelo do site (models/<id>/modelo.glb).
+    Compara a rotação do objeto no .blend com a do nó no .glb, que guardam a mesma malha do scanner
+    (só deslocada e em outra escala). Assim o download sai virado como no site mesmo que o .blend
+    tenha sido girado depois. Devolve None se não houver modelo do site ou se a diferença for mínima.
+    """
+    if not modelo_site or not os.path.exists(modelo_site):
+        return None
+    rotacao_blend = malhas[0].matrix_world.to_3x3().normalized()
+    antes = set(bpy.data.objects)
+    try:
+        bpy.ops.import_scene.gltf(filepath=modelo_site)
+    except Exception as erro:  # sem Draco, por exemplo
+        avisar(f"não consegui abrir o modelo do site para comparar a rotação ({erro})")
+        return None
+    novos = [o for o in bpy.data.objects if o not in antes]
+    malhas_site = [o for o in novos if o.type == "MESH"]
+    rotacao_site = malhas_site[0].matrix_world.to_3x3().normalized() if malhas_site else None
+    for o in novos:
+        bpy.data.objects.remove(o, do_unlink=True)
+    if rotacao_site is None:
+        return None
+    giro = rotacao_site @ rotacao_blend.inverted()
+    graus = np.degrees(giro.to_quaternion().angle)
+    if graus < 0.2:
+        avisar("rotação igual à do modelo do site")
+        return None
+    avisar(f"girada {graus:.1f}° para ficar como o modelo do site")
+    return giro
+
+
 def principal():
     saida, arquivo_dados = sys.argv[sys.argv.index("--") + 1:]
     with open(arquivo_dados, encoding="utf-8") as f:
@@ -193,6 +226,8 @@ def principal():
         raise SystemExit("Nenhuma malha visível no .blend.")
     avisar(f"malhas: {', '.join(o.name for o in malhas)}")
 
+    giro = giro_ate_o_site(malhas, dados.get("modeloSite"))
+
     # Aplica modificadores e transformações (só na memória) para medir e exportar a forma final.
     selecionar(malhas)
     bpy.ops.object.make_single_user(object=True, obdata=True)
@@ -202,6 +237,10 @@ def principal():
             bpy.ops.object.modifier_apply(modifier=mod.name)
     selecionar(malhas)
     bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+    if giro is not None:
+        for o in malhas:
+            o.data.transform(giro.to_4x4())
+            o.data.update()
 
     # O scanner exporta em milímetros; o .blend fica nessa escala (centenas de unidades).
     minimo, maximo = caixa(malhas)

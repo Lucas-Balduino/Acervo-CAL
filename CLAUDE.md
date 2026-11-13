@@ -228,8 +228,10 @@ como ideia para uma cópia de preservação depois.
   emendas (conferido na 0808 com 50 mil faces). A textura da alta sai idêntica à do `.blend`.
 - **Mesma rotação do site:** nos `.blend` do site (0504, 0808, Sapo), a malha é o `.obj` do Creality importado
   sem troca de eixos (Z para cima) e só deslocada; a posição final vem da rotação e da posição do objeto. A malha
-  completa sai do mesmo projeto, nas mesmas coordenadas: basta copiar a rotação do objeto do site (passo a passo
-  no README). O script compara as medidas com as do `obras.json` e avisa se passarem de 0,5 cm de diferença.
+  completa sai do mesmo projeto, nas mesmas coordenadas. O script importa o `.glb` do site no Blender, compara
+  a rotação do objeto com a do nó e gira a malha do download para ficar igual (`giro_ate_o_site`; nos `.blend`
+  do ExScan a diferença era de 90° a 177°, em 13/11/2026). Depois compara as medidas com as do `obras.json` e
+  avisa se passarem de 0,5 cm de diferença (aí a malha não é a mesma do site).
 - **Uma só qualidade:** malha com até `--faces-leve` faces sai como `unica` (arquivos `<id>-unica-*.zip`) e a
   janela esconde a escolha Leve/Alta. É o caso das obras do ExScan (0607, 0631, 0803): o escaneamento completo
   não foi guardado, então os downloads usam o `.blend` do site (~200 mil faces), que está no laptop do laboratório.
@@ -242,6 +244,12 @@ como ideia para uma cópia de preservação depois.
   sai na mesma resolução das do site (2048 px; 4096 na 0808). As três estão nos rascunhos `modelos-cal-0504`,
   `modelos-cnrc-0307` e `modelos-cal-0808`. Na 0504 a textura nova tem cor diferente da do site (corpo mais
   rosado e claro); o Lucas escolheu usar a nova nos downloads, e o site continua com a dele.
+- **Obras do ExScan (13/11/2026):** `D:/ObrasCAL/CAL.<n>/CAL.<n>.blend` (0607, 0631, 0803), os `.blend` do site
+  trazidos do laptop. O Lucas tirou o metálico e a transparência (Transmission) só nesses arquivos: no site elas
+  continuam como estão, e nos downloads saem um pouco mais claras. Qualidade única: 199 a 245 mil faces, zips de
+  7 a 11 MB, nos rascunhos `modelos-cal-0607`, `modelos-cal-0631` e `modelos-cal-0803`. A textura da 0607 estava
+  em `Original/`; foi copiada para o lado do `.blend`. A 0803 tem textura de só 1024 px. As obras de
+  fotogrametria (Luara) ainda estão em tratamento de malha e textura.
 
 ## Integração com o Tainacan
 

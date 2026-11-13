@@ -99,12 +99,13 @@ CC BY-NC 4.0.
 2. No Blender, abra o `.blend` do site e importe o `-alta.obj` com as mesmas opções de antes (eixo para
    cima: Z). Selecione a malha nova e depois a do site (por último); no campo Rotação da malha do site,
    botão direito → "Copy All to Selected". Apague a malha do site e salve como `CAL.<número>-alta.blend`.
-   A posição não importa (o script centraliza e apoia no chão); a rotação, sim.
+   A posição não importa (o script centraliza e apoia no chão). A rotação o script acerta sozinho,
+   comparando com o modelo do site, desde que a malha venha do mesmo `.obj` do Creality.
    Obras sem o escaneamento completo (as do ExScan) usam o próprio `.blend` do site e saem numa só qualidade.
 3. `node ferramentas/downloads.mjs cal-<número> <caminho>/CAL.<número>-alta.blend --enviar`
    gera os 6 arquivos (cerca de 5 minutos para 7 milhões de faces), envia para um release em rascunho
    e grava os tamanhos em `data/obras.json`. Sem `--enviar`, só gera os arquivos, para conferir.
-   O script avisa se as medidas não baterem com as do site (rotação diferente).
+   O script avisa se as medidas não baterem com as do site (malha diferente da do site).
 4. Publique o release **antes** de levar a mudança do `obras.json` para a `main`:
    `gh release edit modelos-cal-<número> --draft=false`.
 

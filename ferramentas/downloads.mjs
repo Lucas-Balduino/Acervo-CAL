@@ -60,7 +60,12 @@ const citacao = `Casa da Cultura da América Latina (CAL/UnB). ${obra.titulo} ($
 const saida = join(dirname(resolve(blend)), "downloads");
 mkdirSync(saida, { recursive: true });
 const arquivoDados = join(saida, "dados.json");
-writeFileSync(arquivoDados, JSON.stringify({ id, registro: obra.registro, titulo: obra.titulo, facesLeve, texturaLeve, citacao, site }));
+// O modelo do site vai junto para o Blender virar a peça igual a ele (ver giro_ate_o_site).
+const modeloSite = join(RAIZ, obra.modelo);
+writeFileSync(
+  arquivoDados,
+  JSON.stringify({ id, registro: obra.registro, titulo: obra.titulo, facesLeve, texturaLeve, citacao, site, modeloSite })
+);
 
 const blender = acharBlender();
 console.log(`Blender: ${blender}\nExportando ${basename(blend)} → ${saida}`);
@@ -89,7 +94,7 @@ if (site3d) {
   const texto = (m) => `${cm(m.largura)} × ${cm(m.altura)} × ${cm(m.profundidade)} cm`;
   if (diferenca > 0.5) {
     console.warn(`ATENÇÃO: medidas ${texto(medidas)}, mas o modelo do site mede ${texto(site3d)}.`);
-    console.warn("A peça deve estar girada diferente do .blend do site (copie a rotação do objeto do site; ver README).\n");
+    console.warn("A malha do .blend parece não ser a mesma do site (o giro é corrigido sozinho); confira antes de enviar.\n");
   } else {
     console.log(`Medidas iguais às do site (${texto(medidas)}): mesma posição.\n`);
   }

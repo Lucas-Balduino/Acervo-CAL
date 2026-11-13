@@ -21,7 +21,17 @@
     "modelo": "models/cal-0803/modelo.glb",
     "poster": "models/cal-0803/poster.webp",
     "frente": 30,
-    "urlAcervo": "https://www.acervocal.unb.br/acervo/escultura-de-casal/"
+    "urlAcervo": "https://www.acervocal.unb.br/acervo/escultura-de-casal/",
+    "downloads": {
+      "endereco": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/download/modelos-cal-0803/",
+      "pagina": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/tag/modelos-cal-0803",
+      "unica": {
+        "faces": 244744,
+        "glb": 11366949,
+        "obj": 9536866,
+        "stl": 8257998
+      }
+    }
   },
   {
     "id": "cal-0631",
@@ -45,7 +55,17 @@
     "modelo": "models/cal-0631/modelo.glb",
     "poster": "models/cal-0631/poster.webp",
     "frente": 0,
-    "urlAcervo": "https://www.acervocal.unb.br/acervo/escultura-de-maos-unidas/"
+    "urlAcervo": "https://www.acervocal.unb.br/acervo/escultura-de-maos-unidas/",
+    "downloads": {
+      "endereco": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/download/modelos-cal-0631/",
+      "pagina": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/tag/modelos-cal-0631",
+      "unica": {
+        "faces": 199676,
+        "glb": 9914293,
+        "obj": 8518985,
+        "stl": 7008734
+      }
+    }
   },
   {
     "id": "cal-0607",
@@ -70,7 +90,17 @@
     "poster": "models/cal-0607/poster.webp",
     "frente": 90,
     "destaque": true,
-    "urlAcervo": "https://www.acervocal.unb.br/acervo/moringa-com-dois-bicos/"
+    "urlAcervo": "https://www.acervocal.unb.br/acervo/moringa-com-dois-bicos/",
+    "downloads": {
+      "endereco": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/download/modelos-cal-0607/",
+      "pagina": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/tag/modelos-cal-0607",
+      "unica": {
+        "faces": 198692,
+        "glb": 9805221,
+        "obj": 8420822,
+        "stl": 7294144
+      }
+    }
   },
   {
     "id": "cal-0504",
