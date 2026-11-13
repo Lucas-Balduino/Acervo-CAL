@@ -21,7 +21,17 @@
     "modelo": "models/cal-0803/modelo.glb",
     "poster": "models/cal-0803/poster.webp",
     "frente": 30,
-    "urlAcervo": "https://www.acervocal.unb.br/acervo/escultura-de-casal/"
+    "urlAcervo": "https://www.acervocal.unb.br/acervo/escultura-de-casal/",
+    "downloads": {
+      "endereco": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/download/modelos-cal-0803/",
+      "pagina": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/tag/modelos-cal-0803",
+      "unica": {
+        "faces": 244744,
+        "glb": 11055120,
+        "obj": 9225028,
+        "stl": 8257998
+      }
+    }
   },
   {
     "id": "cal-0631",
@@ -45,7 +55,17 @@
     "modelo": "models/cal-0631/modelo.glb",
     "poster": "models/cal-0631/poster.webp",
     "frente": 0,
-    "urlAcervo": "https://www.acervocal.unb.br/acervo/escultura-de-maos-unidas/"
+    "urlAcervo": "https://www.acervocal.unb.br/acervo/escultura-de-maos-unidas/",
+    "downloads": {
+      "endereco": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/download/modelos-cal-0631/",
+      "pagina": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/tag/modelos-cal-0631",
+      "unica": {
+        "faces": 199676,
+        "glb": 9370541,
+        "obj": 7975329,
+        "stl": 7008734
+      }
+    }
   },
   {
     "id": "cal-0607",
@@ -70,7 +90,17 @@
     "poster": "models/cal-0607/poster.webp",
     "frente": 90,
     "destaque": true,
-    "urlAcervo": "https://www.acervocal.unb.br/acervo/moringa-com-dois-bicos/"
+    "urlAcervo": "https://www.acervocal.unb.br/acervo/moringa-com-dois-bicos/",
+    "downloads": {
+      "endereco": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/download/modelos-cal-0607/",
+      "pagina": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/tag/modelos-cal-0607",
+      "unica": {
+        "faces": 198692,
+        "glb": 9793653,
+        "obj": 8409207,
+        "stl": 7294144
+      }
+    }
   },
   {
     "id": "cal-0504",
@@ -94,7 +124,23 @@
     "modelo": "models/cal-0504/modelo.glb",
     "poster": "models/cal-0504/poster.webp",
     "frente": 90,
-    "urlAcervo": "https://www.acervocal.unb.br/acervo/escultura-14/"
+    "urlAcervo": "https://www.acervocal.unb.br/acervo/escultura-14/",
+    "downloads": {
+      "endereco": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/download/modelos-cal-0504/",
+      "pagina": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/tag/modelos-cal-0504",
+      "alta": {
+        "faces": 2229562,
+        "glb": 45349717,
+        "obj": 56121015,
+        "stl": 49653586
+      },
+      "leve": {
+        "faces": 500000,
+        "glb": 12258503,
+        "obj": 14727324,
+        "stl": 11369446
+      }
+    }
   },
   {
     "id": "cnrc-0307",
@@ -118,7 +164,23 @@
     "modelo": "models/cnrc-0307/modelo.glb",
     "poster": "models/cnrc-0307/poster.webp",
     "frente": 45,
-    "semFicha": true
+    "semFicha": true,
+    "downloads": {
+      "endereco": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/download/modelos-cnrc-0307/",
+      "pagina": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/tag/modelos-cnrc-0307",
+      "alta": {
+        "faces": 2055616,
+        "glb": 42269052,
+        "obj": 53205469,
+        "stl": 46064065
+      },
+      "leve": {
+        "faces": 500000,
+        "glb": 12473536,
+        "obj": 15232944,
+        "stl": 11538491
+      }
+    }
   },
   {
     "id": "cal-0808",
@@ -142,6 +204,22 @@
     "modelo": "models/cal-0808/modelo.glb",
     "poster": "models/cal-0808/poster.webp",
     "frente": 90,
-    "urlAcervo": "https://www.acervocal.unb.br/acervo/escultura-de-vila/"
+    "urlAcervo": "https://www.acervocal.unb.br/acervo/escultura-de-vila/",
+    "downloads": {
+      "endereco": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/download/modelos-cal-0808/",
+      "pagina": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/tag/modelos-cal-0808",
+      "alta": {
+        "faces": 7050674,
+        "glb": 150075789,
+        "obj": 190113175,
+        "stl": 163154092
+      },
+      "leve": {
+        "faces": 500000,
+        "glb": 17096814,
+        "obj": 20207312,
+        "stl": 11818794
+      }
+    }
   }
 ]

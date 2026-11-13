@@ -1,6 +1,6 @@
 /*
-  viewer.css — página da obra: palco com o model-viewer (cubo, controles, progresso)
-  e a ficha ao lado (no celular, abaixo).
+  viewer.css — página da obra: palco com o model-viewer (cubo, controles, progresso),
+  a ficha ao lado (no celular, abaixo) e a janela "Baixar modelo 3D" (no celular, uma folha embaixo).
 */
 
 .obra {
@@ -196,6 +196,11 @@
   margin: 0;
 }
 
+.ficha-acoes {
+  display: grid;
+  gap: 10px;
+}
+
 /* Obra não encontrada: sem os dados, o botão logo abaixo precisa do mesmo respiro. */
 .ficha-dados[hidden] + * {
   margin-top: 24px;
@@ -205,6 +210,257 @@
   margin: 12px 0 0;
   font-size: 12px;
   color: var(--cor-texto-suave);
+}
+
+/* --- Janela "Baixar modelo 3D" --- */
+
+body:has(.janela-download[open]) {
+  overflow: hidden;
+}
+
+.janela-download {
+  width: min(580px, calc(100vw - 32px));
+  max-height: calc(100dvh - 48px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 0;
+  border: 0;
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.28);
+}
+
+.janela-download[open] {
+  animation: janela-entra 0.22s ease-out;
+}
+
+.janela-download::backdrop {
+  background: rgba(20, 24, 28, 0.55);
+}
+
+@keyframes janela-entra {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+.janela-download-corpo {
+  position: relative;
+  padding: 28px 28px 24px;
+}
+
+.janela-fechar {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+}
+
+.janela-download h2 {
+  margin: 0 0 22px;
+  font-size: 24px;
+}
+
+.janela-download .sobretitulo {
+  margin: 0 48px 6px 0;
+}
+
+.download-unica {
+  margin: -6px 0 22px;
+  font-size: 14px;
+  color: var(--cor-texto-suave);
+}
+
+.download-grupo {
+  min-width: 0;
+  margin: 0 0 22px;
+  padding: 0;
+  border: 0;
+}
+
+.download-grupo legend {
+  padding: 0;
+  margin-bottom: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--cor-texto-suave);
+}
+
+.download-qualidades {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.download-qualidade {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px 14px;
+  border: 1px solid var(--cor-borda);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.download-qualidade:hover {
+  border-color: var(--cor-destaque);
+}
+
+.download-qualidade:has(input:checked) {
+  border-color: var(--cor-destaque);
+  background: var(--cor-destaque-claro);
+  box-shadow: inset 0 0 0 1px var(--cor-destaque);
+}
+
+.download-qualidade:has(input:focus-visible) {
+  outline: 2px solid var(--cor-destaque);
+  outline-offset: 2px;
+}
+
+.download-qualidade-nome {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.download-qualidade-nome input {
+  margin: 0;
+  accent-color: var(--cor-destaque);
+}
+
+.download-qualidade-nome input:focus-visible {
+  outline: none;
+}
+
+.download-qualidade-faces {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--cor-destaque-escuro);
+}
+
+.download-qualidade-texto {
+  margin-top: 4px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--cor-texto-suave);
+}
+
+.download-formatos {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--cor-borda);
+}
+
+.download-formatos li {
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.download-item {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 8px;
+  color: inherit;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.download-item:hover {
+  background: var(--cor-destaque-claro);
+  color: inherit;
+}
+
+.download-formato {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  border: 1px solid var(--cor-destaque);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--cor-destaque-escuro);
+  transition: background 0.15s, color 0.15s;
+}
+
+.download-item:hover .download-formato {
+  background: var(--cor-destaque);
+  color: #fff;
+}
+
+.download-info strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.download-info span {
+  display: block;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--cor-texto-suave);
+}
+
+.download-tamanho {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--cor-destaque-escuro);
+}
+
+.download-nota {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--cor-texto-suave);
+}
+
+.download-licenca {
+  padding: 16px;
+  background: var(--cor-areia-clara);
+  font-size: 13px;
+}
+
+.download-licenca p {
+  margin: 0;
+}
+
+.download-citacao-rotulo {
+  margin-top: 12px !important;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--cor-texto-suave);
+}
+
+.download-citacao {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 4px 0 12px;
+}
+
+.download-citacao p {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--cor-texto-suave);
+}
+
+.download-citacao .botao-palco {
+  height: 32px;
+  font-size: 13px;
+  background: transparent;
+  border-color: rgba(0, 0, 0, 0.18);
 }
 
 .ficha-navegacao {
@@ -270,5 +526,45 @@
   .cubo-caixa {
     transform: scale(0.85);
     transform-origin: top right;
+  }
+}
+
+/* --- Celular: a janela de download vira uma folha presa embaixo --- */
+
+@media (max-width: 560px) {
+  .janela-download {
+    width: 100%;
+    max-width: 100%;
+    max-height: 92dvh;
+    margin: auto 0 0;
+  }
+
+  .janela-download[open] {
+    animation-name: folha-sobe;
+  }
+
+  @keyframes folha-sobe {
+    from {
+      transform: translateY(40px);
+    }
+  }
+
+  .janela-download-corpo {
+    padding: 22px var(--margem) calc(20px + env(safe-area-inset-bottom));
+  }
+
+  .janela-download h2 {
+    font-size: 21px;
+    margin-bottom: 18px;
+  }
+
+  .download-qualidade {
+    padding: 10px 12px 12px;
+  }
+
+  .download-item {
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    gap: 10px;
+    padding: 12px 4px;
   }
 }

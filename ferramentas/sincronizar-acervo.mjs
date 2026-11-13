@@ -89,7 +89,7 @@ for (const obra of obras) {
   if (medidas) nova.dimensoes = medidas;
 
   // Ordem fixa das chaves, para o arquivo ficar fácil de ler.
-  const ordem = ["id", "registro", "titulo", "autoria", "resumo", ...Object.keys(CAMPOS), "dimensoes", "modelo", "poster", "frente", "destaque", "semFicha", "urlAcervo"];
+  const ordem = ["id", "registro", "titulo", "autoria", "resumo", ...Object.keys(CAMPOS), "dimensoes", "modelo", "poster", "frente", "destaque", "semFicha", "urlAcervo", "downloads"];
   atualizadas.push(Object.fromEntries([...new Set([...ordem, ...Object.keys(nova)])].filter((k) => k in nova).map((k) => [k, nova[k] ?? ""])));
 }
 

@@ -28,6 +28,13 @@ da obra esconde o botão "Ficha completa no Acervo CAL").
 
 O script também mede o modelo 3D e grava `dimensoes` (largura, altura e profundidade em cm).
 
+## Downloads
+
+`downloads` é gravado por `node ferramentas/downloads.mjs <id> <arquivo-alta.blend> --enviar` (não edite à
+mão): endereço dos arquivos no GitHub Releases, página do release e, para cada qualidade (`alta` e `leve`),
+o número de faces e o tamanho em bytes de cada `.zip` (`glb`, `obj`, `stl`). Sem esse campo, a página da
+obra não mostra o botão "Baixar modelo 3D". Passo a passo no `README.md`.
+
 ## Textos das coleções (`colecoes.json`)
 
 No museu virtual, cada coleção tem uma sala, e na parede do fundo dela aparecem o nome da coleção e um

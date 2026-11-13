@@ -33,7 +33,8 @@ Vigência: 15/05/2026 a 31/12/2026.
 - Commits em português no formato `tipo: descrição` (ex.: `docs: Adicionar obra CAL 0607`, `feat: ...`, `fix: ...`).
 - `main` está no ar: mudanças entram por branch e PR. Pequenas correções de dados podem ir direto.
   Na prática só o Lucas (e eventualmente o professor) mexe no repositório.
-- `ferramentas/` é Node só para preparar modelos; o site não depende dele.
+- `ferramentas/` é Node só para preparar modelos; o site não depende dele. A única exceção em Python é
+  `exportar-downloads.py`, que roda dentro do Blender (chamado por `downloads.mjs`).
 
 ## Estrutura do site
 
@@ -203,6 +204,67 @@ Não alterar material ou textura sem pedir.
   número de patrimônio na coleção (planilha de curadoria do museólogo), não um número CAL — no acervo,
   CAL.0307 é a Braçadeira emplumada. Por isso `id` `cnrc-0307` e `registro` "CNRC 307" (decisão do Lucas,
   07/11/2026). Na planilha, cada coleção tem a própria numeração (a Moringa é 913186 lá).
+
+## Downloads em alta resolução
+
+Botão "Baixar modelo 3D" na página da obra (`js/downloads.js`, uma `<dialog>`): a pessoa escolhe a qualidade
+(leve ou alta resolução) e baixa GLB (metros, com cor), OBJ (mm, com `.mtl` e textura) ou STL (mm, sem cor,
+Z para cima). Cada arquivo é um `.zip` com um LEIA-ME (unidades, licença, como citar). Decisões do Lucas em
+07/11/2026: arquivos no **GitHub Releases** (grátis, até 2 GiB por arquivo, sem limite de total nem de
+downloads), um release por obra com a tag `modelos-<id>`, e licença **CC BY-NC 4.0**. O Zenodo (DOI) ficou
+como ideia para uma cópia de preservação depois.
+
+- `node ferramentas/downloads.mjs <id> <arquivo-alta.blend> [--faces-leve 500000] [--enviar]`: o Blender
+  sem janela aplica as transformações, apoia a peça no chão, centraliza e converte mm → m (só na memória; o
+  `.blend` não é salvo), exporta a alta como está, simplifica (Decimate) para a leve e exporta de novo. Com
+  `--enviar`, cria o release como **rascunho** (ou atualiza, com `--clobber`) e grava em `data/obras.json` o
+  campo `downloads` (`endereco` dos arquivos, `pagina` do release, `faces` e bytes de cada `.zip` por
+  qualidade). Obra sem `downloads` fica sem o botão.
+- O release precisa ser publicado (`gh release edit modelos-<id> --draft=false`) antes de o `obras.json`
+  com os downloads ir para a `main`; enquanto é rascunho, os links só funcionam para o dono do repositório.
+  Publicar o release torna os arquivos públicos: só com o "pode publicar" do Lucas.
+- **Quantas faces na alta:** a malha completa do Creality Scan, sem simplificar. O detalhe real vem do voxel
+  do escaneamento, não do número de faces: a 0808 foi fundida a ~0,22 mm (`scanDataConfig.dat` no projeto) e
+  cada captura completa tem 3,5 e 6,7 milhões de faces (`result/Fused.ply` em cada pasta de sessão) —
+  ~7 milhões para a peça inteira. Teto: **20 milhões** (fotogrametria ou voxel menor); nesse ponto o maior
+  arquivo, o OBJ descompactado, chega perto de 2 GB. Medido por milhão de faces: STL 50 MB (22 MB no zip),
+  OBJ ~100 MB (25 MB no zip), GLB ~30 MB, mais a textura. A 0808 com 6,7 milhões levou ~5 min: zips de
+  82 MB (GLB), 117 MB (OBJ) e 141 MB (STL).
+- **Leve:** 500 mil faces e textura de até 4096 px. A simplificação do Blender não borrou a textura nas
+  emendas (conferido na 0808 com 50 mil faces). A textura da alta sai idêntica à do `.blend`.
+- **Mesma rotação do site:** nos `.blend` do site (0504, 0808, Sapo), a malha é o `.obj` do Creality importado
+  sem troca de eixos (Z para cima) e só deslocada; a posição final vem da rotação e da posição do objeto. A malha
+  completa sai do mesmo projeto, nas mesmas coordenadas. O script importa o `.glb` do site no Blender, compara
+  a rotação do objeto com a do nó e gira a malha do download para ficar igual (`giro_ate_o_site`; nos `.blend`
+  do ExScan a diferença era de 90° a 177°, em 13/11/2026). Depois compara as medidas com as do `obras.json` e
+  avisa se passarem de 0,5 cm de diferença (aí a malha não é a mesma do site).
+- **Uma só qualidade:** malha com até `--faces-leve` faces sai como `unica` (arquivos `<id>-unica-*.zip`) e a
+  janela esconde a escolha Leve/Alta. É o caso das obras do ExScan (0607, 0631, 0803): o escaneamento completo
+  não foi guardado, então os downloads usam o `.blend` do site (~200 mil faces), que está no laptop do laboratório.
+- **Plano combinado (07/11/2026):** o Lucas exporta sem simplificar as 3 obras do Raptor (0504, 0808, Sapo;
+  estimativa pelas capturas: ~3–4, ~7 e ~2–3 milhões de faces) e eu avalio; com as 3 na branch, o professor
+  avalia. Aprovado, entram as do ExScan (qualidade única). O processo da fotogrametria (Luara) será definido
+  quando as obras chegarem.
+- **Malhas detalhadas (08/11/2026):** `D:/ObrasCAL/<pasta>/DetalhadoCAL.<n>.blend`, exportadas pelo Lucas sem
+  simplificar: 0504 com 2,2 milhões de faces, Sapo 2,1 milhões e 0808 7,1 milhões (zips de 40 a 190 MB). A textura
+  sai na mesma resolução das do site (2048 px; 4096 na 0808). As três estão nos rascunhos `modelos-cal-0504`,
+  `modelos-cnrc-0307` e `modelos-cal-0808`. Na 0504 a textura nova tem cor diferente da do site (corpo mais
+  rosado e claro); o Lucas escolheu usar a nova nos downloads, e o site continua com a dele. Em 13/11/2026 ele
+  pediu que os downloads tenham a mesma cor do site: ver "Mesma cor do site" abaixo.
+- **Mesma cor do site** (pedido do Lucas, 13/11/2026): `downloads.mjs` exporta um `comparar.glb` leve, e
+  `ferramentas/igualar-cor.mjs` renderiza ele e o `.glb` do site com three.js num Chrome sem janela (mesma luz,
+  6 ângulos, sem tone mapping) e casa a distribuição de cores da peça canal por canal (quantis). Se a diferença
+  passar de 4%, a textura passa por essa curva de cor (`aplicar_curva`, no Blender) e é medida de novo.
+  Medido: 0607 77% → 4%, 0803 109% → 5%, 0631 24% → 7% (o brilho do metálico do site não cabe na textura),
+  0504 14%, 0808 6%; o Sapo tinha 2% e ficou como estava. Nas do ExScan a diferença vem do material metálico do
+  site, que escurece e satura; os downloads têm material simples e a cor vai para a textura.
+  `--sem-igualar-cor` desliga.
+- **Obras do ExScan (13/11/2026):** `D:/ObrasCAL/CAL.<n>/CAL.<n>.blend` (0607, 0631, 0803), os `.blend` do site
+  trazidos do laptop. O Lucas tirou o metálico e a transparência (Transmission) só nesses arquivos: no site elas
+  continuam como estão, e nos downloads a cor do site vai para a textura. Qualidade única: 199 a 245 mil faces, zips de
+  7 a 11 MB, nos rascunhos `modelos-cal-0607`, `modelos-cal-0631` e `modelos-cal-0803`. A textura da 0607 estava
+  em `Original/`; foi copiada para o lado do `.blend`. A 0803 tem textura de só 1024 px. As obras de
+  fotogrametria (Luara) ainda estão em tratamento de malha e textura.
 
 ## Integração com o Tainacan
 

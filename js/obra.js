@@ -1,9 +1,10 @@
 /*
   obra.js — página de uma obra (obra.html?id=cal-0000): carrega o modelo,
-  preenche a ficha e liga os botões de câmera e de obra anterior/próxima.
+  preenche a ficha e liga os botões de câmera, de obra anterior/próxima e de download.
 */
 
 import { carregarObras, linkDaObra, textoAutoria, textoDimensoes } from "./data.js";
+import { ligarDownloads } from "./downloads.js";
 import { iniciarViewer } from "./viewer.js";
 
 const viewer = iniciarViewer({
@@ -53,6 +54,7 @@ if (!obra) {
   document.title = `${obra.titulo} · Gêmeos Digitais CAL`;
   viewer.carregarModelo(obra);
   preencherFicha(obra);
+  ligarDownloads(obra);
   ligarNavegacao(obras[indice - 1], obras[indice + 1]);
 }
 
@@ -109,7 +111,7 @@ function ligarNavegacao(anterior, proxima) {
 
   // Setas do teclado trocam de obra quando o foco não está num campo.
   document.addEventListener("keydown", (evento) => {
-    if (evento.target.closest("input, select, textarea, model-viewer")) return;
+    if (evento.target.closest("input, select, textarea, model-viewer, dialog")) return;
     if (evento.key === "ArrowLeft" && anterior) location.href = linkDaObra(anterior);
     if (evento.key === "ArrowRight" && proxima) location.href = linkDaObra(proxima);
   });
