@@ -61,7 +61,9 @@ sob o mouse; `js/museu.js` liga tudo e cuida da interface HTML por cima do canva
   mostra a marca UnB | CAL (símbolo `#marca-unb-cal` no `museu.html`, redesenhado em vetor, com o texto em
   Roboto) e uma barra fina; depois aparece o convite "Entrar no museu", com a sala desfocada por trás. Ao entrar,
   o cabeçalho do site sobe e some (`body.imersivo`), a câmera avança da porta (`navegacao.chegar()`) e ficam só
-  botões escuros translúcidos: "Como navegar" e um X que sai da visita (a entrada volta com "Voltar ao museu").
+  botões escuros translúcidos: "Como navegar" (as instruções abrem sozinhas na primeira entrada
+  e têm um X próprio; Esc também fecha) e um X no canto que, com uma obra aberta, fecha a obra e, andando, sai
+  da visita (a entrada volta com "Voltar ao museu"). Antes o X saía do museu mesmo com a obra aberta (08/11/2026).
   Comparamos as outras duas marcas da CAL (quadrado vermelho e "CAL" horizontal): o vermelho briga com a
   terracota e a horizontal pesa mais que o título; ficou a UnB | CAL.
 - **Contorno ao passar o mouse** numa obra (no celular, um piscar ao tocar), para mostrar que dá para clicar:
@@ -74,8 +76,10 @@ sob o mouse; `js/museu.js` liga tudo e cuida da interface HTML por cima do canva
   um mosaico e o Lucas achou esquisita), teto claro com trilhos e spots. Cores e medidas nas constantes `SALA`,
   `LUZ`, `CORES` e `TACO`.
 - **Uma sala por coleção** (decisão do Lucas, 07/11/2026), em sequência: entre elas, uma parede com passagem
-  larga no meio (2,8 m) e viga mais baixa (2,6 m), com o nome da sala seguinte na viga ("Coleção X", dos dois
-  lados). Ordem das salas: a da primeira obra em ordem de registro; a sala da obra em `destaque` vai por último,
+  larga no meio (2,8 m) e viga mais baixa (2,6 m), sem nada escrito na viga. Na parede do fundo de cada sala (a que se vê ao entrar), à esquerda da
+  passagem, ficam em letras claras "Sala 1 de 3", o nome da coleção e um texto curto sobre ela, vindo de
+  `data/colecoes.json` (resumo, com palavras nossas, da página Sobre do acervocal.unb.br). Antes o nome da sala
+  seguinte ficava na viga e parecia dizer em que sala o visitante estava (pedido do Lucas, 08/11/2026). Ordem das salas: a da primeira obra em ordem de registro; a sala da obra em `destaque` vai por último,
   com ela na parede do fundo, no eixo das passagens (vista desde a entrada). O percurso segue sala por sala.
   O contador embaixo mostra a sala onde o visitante está.
 - Obras ampliadas 1,5× (`SALA.escalaDasObras`; os `.glb` estão em metros reais). Cada sala cresce com o número
@@ -152,7 +156,8 @@ peça em pé (da rotação "crua", sem a do nó, para a final).
 - A nuvem de pontos é sorteada na malha (`MeshSurfaceSampler`) com a cor da textura; a segunda captura cobre a
   base e a parte de baixo das laterais.
 - O texto segue a metodologia do Lucas (seções 4 e 5), sem os trechos ainda marcados [CONFIRMAR] (modo NIR,
-  resoluções etc.). Os tamanhos "≈ 22 MB → ≈ 1,5 MB" são a média das obras.
+  resoluções etc.). A etapa 7 compara a moringa (≈ 22 MB ao sair do Blender → ≈ 1,6 MB no site, 13 vezes
+  menos) e diz, numa nota, a faixa atual das obras (1,4 a 3,8 MB); ao entrar obra maior ou menor, conferir a nota.
 - O scanner da etapa 2 é um desenho do Creality CR-Scan Raptor em tamanho real (215 × 74 × 50 mm, preto, em pé,
   duas câmeras com anéis de LEDs), feito com formas do three.js em `montarScanner` — sem modelo baixado.
 - `img/processo/` tem 5 fotos da equipe (enviadas pelo Lucas em 04/11/2026), da fase de testes com o scanner
@@ -179,7 +184,8 @@ miniatura, confere o site e o museu e faz o commit na `main` (obra nova é mudan
 byte a byte à gerada antes no navegador.
 
 O script corrige a escala (o scanner exporta em mm e o glTF usa metros) e comprime a malha, que vem
-sem vértices compartilhados: ~22 MB → ~1,5 MB por obra. O decodificador Draco é carregado pelo próprio
+sem vértices compartilhados: ~22 MB → ~1,5 MB nas obras do ExScan (textura JPEG); nas do Raptor, a
+textura PNG é ~80% do arquivo e elas ficam entre 2,8 e 3,8 MB. O decodificador Draco é carregado pelo próprio
 model-viewer.
 
 **A aparência é decidida no Blender, não no script.** As três primeiras obras (0607, 0631, 0803) vieram do

@@ -37,7 +37,19 @@ if (!obra) {
   document.getElementById("ficha-titulo").textContent = "Obra não encontrada";
   document.getElementById("ficha-autoria").textContent = "";
   viewer.mostrarAviso(id ? `Não há obra com o código “${id}”.` : "Nenhuma obra escolhida.");
-  document.getElementById("ficha-resumo").innerHTML = 'Veja a lista completa em <a href="obras.html">Obras</a>.';
+  document.getElementById("ficha-resumo").textContent =
+    "O endereço pode estar incompleto, ou a obra ainda não foi publicada. Escolha uma na lista de obras.";
+  // Sem obra, os controles do 3D e as partes da ficha não têm o que mostrar.
+  for (const seletor of [".cubo-caixa", "#botao-reset", "#dica", "#ficha-dados", ".ficha-nota"]) {
+    document.querySelector(seletor).hidden = true;
+  }
+  // O botão do Acervo CAL vira o caminho de volta para a lista.
+  const acervo = document.getElementById("ficha-acervo");
+  acervo.textContent = "Ver todas as obras";
+  acervo.href = "obras.html";
+  acervo.classList.add("botao-primario");
+  acervo.removeAttribute("target");
+  acervo.removeAttribute("rel");
 } else {
   document.title = `${obra.titulo} · Gêmeos Digitais CAL`;
   viewer.carregarModelo(obra);

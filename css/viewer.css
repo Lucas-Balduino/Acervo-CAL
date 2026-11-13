@@ -201,6 +201,11 @@
   gap: 10px;
 }
 
+/* Obra não encontrada: sem os dados, o botão logo abaixo precisa do mesmo respiro. */
+.ficha-dados[hidden] + * {
+  margin-top: 24px;
+}
+
 .ficha-nota {
   margin: 12px 0 0;
   font-size: 12px;

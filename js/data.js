@@ -1,6 +1,7 @@
 /*
-  data.js — lê data/obras.json e formata os dados de uma obra para exibição.
-  Não desenha interface. Se o arquivo faltar ou estiver inválido, devolve [].
+  data.js — lê data/obras.json (e os textos das coleções, data/colecoes.json) e formata
+  os dados de uma obra para exibição. Não desenha interface. Se um arquivo faltar ou
+  estiver inválido, devolve vazio ([] ou {}).
 */
 
 /** Meta do projeto PJ772-2026: quantas obras serão digitalizadas. */
@@ -43,6 +44,20 @@ export async function carregarObras() {
   } catch (erro) {
     console.error("Erro ao carregar o catálogo local.", erro);
     return [];
+  }
+}
+
+/**
+ * Textos das coleções (data/colecoes.json), por nome: { "Chocó": { texto, fonte } }.
+ * @returns {Promise<Record<string, {texto: string, fonte?: string}>>}  {} se o arquivo faltar
+ */
+export async function carregarColecoes() {
+  try {
+    const resposta = await fetch("data/colecoes.json");
+    return resposta.ok ? await resposta.json() : {};
+  } catch (erro) {
+    console.error("Erro ao carregar os textos das coleções.", erro);
+    return {};
   }
 }
 
