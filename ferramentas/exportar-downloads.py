@@ -10,8 +10,9 @@ sem cor), cada formato num .zip com um LEIA-ME.txt (licença e como citar). A pe
 modelo do site (se o .blend estiver girado diferente, o script corrige), apoiada no chão e centrada.
 No fim grava manifesto.json com faces e tamanhos.
 
-Não salva o .blend (tudo o que muda fica só na memória) e não mexe em material nem na textura da
-versão alta. A textura só é reduzida na versão leve, quando passa do limite.
+Não salva o .blend (tudo o que muda fica só na memória) e não mexe no material. A textura recebe a curva
+de cor que downloads.mjs mede (para a peça ter a mesma cor do site) e só é reduzida na versão leve, quando
+passa do limite. No modo "comparar", exporta só um comparar.glb leve, para essa medição.
 
 Uso (feito pelo downloads.mjs):
   blender -b --factory-startup obra.blend --python-exit-code 1 --python exportar-downloads.py -- <pasta> <dados.json>
@@ -29,6 +30,7 @@ from mathutils import Matrix
 
 LIMITE_GITHUB = 2 * 1024**3  # cada arquivo de um release do GitHub precisa ter menos de 2 GiB
 NOMES = {"alta": "Alta resolução", "leve": "Leve", "unica": "Única"}
+FACES_DA_COMPARACAO = 300_000  # modo "comparar": .glb leve só para medir a cor
 
 
 def avisar(texto):
@@ -102,6 +104,35 @@ def limitar_texturas(malhas, maximo, pasta):
         img.filepath_raw = os.path.join(pasta, os.path.splitext(bpy.path.basename(img.filepath))[0] + "-leve" + extensao)
         img.save()
         avisar(f"textura {img.name}: {w}×{h} → {img.size[0]}×{img.size[1]} px (versão leve)")
+
+
+def aplicar_curva(malhas, curva, pasta):
+    """
+    Passa cada canal da textura pela curva de cor (256 valores de 0 a 1, medida por igualar-cor.mjs), para a
+    peça baixada ter a mesma cor da exibida no site. Só na memória e numa cópia em `pasta`.
+    """
+    entrada = np.linspace(0.0, 1.0, 256)
+    for img in imagens_usadas(malhas):
+        canais = img.channels
+        px = np.empty(img.size[0] * img.size[1] * canais, dtype=np.float32)
+        img.pixels.foreach_get(px)
+        for c in range(min(3, canais)):
+            px[c::canais] = np.interp(px[c::canais], entrada, curva[c])
+        img.pixels.foreach_set(px)
+        extensao = ".jpg" if img.file_format == "JPEG" else ".png"
+        img.filepath_raw = os.path.join(pasta, os.path.splitext(bpy.path.basename(img.filepath))[0] + "-cor" + extensao)
+        img.save()
+        avisar(f"textura {img.name}: cor igualada à do site")
+
+
+def simplificar(malhas, alvo, total):
+    for o in malhas:
+        bpy.context.view_layer.objects.active = o
+        mod = o.modifiers.new("Simplificar", "DECIMATE")
+        mod.decimate_type = "COLLAPSE"
+        mod.ratio = alvo / total
+        mod.use_collapse_triangulate = True
+        bpy.ops.object.modifier_apply(modifier=mod.name)
 
 
 def tamanho_da_textura(malhas):
@@ -259,23 +290,34 @@ def principal():
     pasta_texturas = os.path.join(saida, "tmp-texturas")
     os.makedirs(pasta_texturas, exist_ok=True)
     preparar_imagens(malhas, pasta_texturas)
+    if dados.get("curvaDeCor"):
+        aplicar_curva(malhas, dados["curvaDeCor"], pasta_texturas)
+
+    total = triangulos(malhas)
+    if dados.get("modo") == "comparar":
+        # Só um .glb leve, para downloads.mjs comparar a cor com a do site.
+        if total > FACES_DA_COMPARACAO:
+            simplificar(malhas, FACES_DA_COMPARACAO, total)
+        limitar_texturas(malhas, 2048, pasta_texturas)
+        selecionar(malhas)
+        bpy.ops.export_scene.gltf(
+            filepath=os.path.join(saida, "comparar.glb"), export_format="GLB", use_selection=True,
+            export_apply=True, export_yup=True, export_draco_mesh_compression_enable=False,
+            export_image_format="AUTO", export_cameras=False, export_lights=False, export_animations=False,
+        )
+        shutil.rmtree(pasta_texturas, ignore_errors=True)
+        avisar("pronto")
+        return
 
     manifesto = {"id": dados["id"], "medidas": {"largura": l, "altura": a, "profundidade": p}}
     alvo = int(dados["facesLeve"])
-    total = triangulos(malhas)
     if alvo >= total:
         avisar(f"a malha tem {mil(total)} faces (até {mil(alvo)}): uma só qualidade, sem versão leve")
         manifesto["unica"] = exportar("unica", malhas, dados, saida, dimensoes)
     else:
         manifesto["alta"] = exportar("alta", malhas, dados, saida, dimensoes)
         avisar(f"simplificando {mil(total)} → {mil(alvo)} faces…")
-        for o in malhas:
-            bpy.context.view_layer.objects.active = o
-            mod = o.modifiers.new("Simplificar", "DECIMATE")
-            mod.decimate_type = "COLLAPSE"
-            mod.ratio = alvo / total
-            mod.use_collapse_triangulate = True
-            bpy.ops.object.modifier_apply(modifier=mod.name)
+        simplificar(malhas, alvo, total)
         limitar_texturas(malhas, int(dados["texturaLeve"]), pasta_texturas)
         manifesto["leve"] = exportar("leve", malhas, dados, saida, dimensoes)
 

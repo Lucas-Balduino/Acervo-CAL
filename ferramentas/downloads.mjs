@@ -3,13 +3,16 @@
   A partir do .blend de alta resolução, o Blender (sem janela, com exportar-downloads.py) gera duas
   qualidades — alta (a malha inteira) e leve (simplificada) — em GLB, OBJ e STL, cada uma num .zip.
   Malha que já é leve (até --faces-leve faces, como as do ExScan) sai numa só qualidade, "unica".
-  Avisa se as medidas não batem com as do site (sinal de que a peça foi girada diferente).
+  A peça sai virada e com a cor iguais às do modelo do site: o giro é medido no Blender e a cor por
+  igualar-cor.mjs (a textura passa por uma curva de cor; --sem-igualar-cor desliga). Avisa se as medidas
+  não batem com as do site (sinal de que a malha não é a mesma).
   Com --enviar, manda os .zip para o release "modelos-<id>" do GitHub (criado como rascunho, que só o
   dono do repositório vê) e grava em data/obras.json o endereço e o tamanho de cada arquivo.
   Não mexe no .blend nem no modelo do site (models/<id>/modelo.glb), e não publica o release.
 
   Uso:
-    node ferramentas/downloads.mjs <id> <arquivo-alta.blend> [--faces-leve 500000] [--textura-leve 4096] [--enviar]
+    node ferramentas/downloads.mjs <id> <arquivo-alta.blend> [--faces-leve 500000] [--textura-leve 4096]
+      [--sem-igualar-cor] [--enviar]
 
   Os .zip ficam em <pasta do .blend>/downloads/. O Blender é procurado em
   "C:/Program Files/Blender Foundation" (a versão mais nova); outro caminho pode ser dado com BLENDER=...
@@ -18,7 +21,7 @@
 */
 
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -30,6 +33,9 @@ const ANO = 2026; // ano de publicação dos modelos, usado no "como citar"
 // Malha com até --faces-leve faces (ex.: obras do ExScan, só com o modelo do site) sai numa só qualidade, "unica".
 const NIVEIS = { alta: "Alta resolução", leve: "Leve", unica: "Única" };
 const FORMATOS = { glb: "GLB (metros, com cor)", obj: "OBJ (milímetros, com cor)", stl: "STL (milímetros, sem cor)" };
+// Diferença de cor (média do |log| da razão de luz) a partir da qual a textura é corrigida: ~4%.
+const DIFERENCA_DE_COR = 0.04;
+const porcento = (d) => `${Math.round((Math.exp(d) - 1) * 100)}%`;
 
 // --- Argumentos ---
 const args = process.argv.slice(2);
@@ -39,6 +45,8 @@ const opcao = (nome, padrao) => {
 };
 const enviar = args.includes("--enviar");
 if (enviar) args.splice(args.indexOf("--enviar"), 1);
+const igualarCor = !args.includes("--sem-igualar-cor");
+if (!igualarCor) args.splice(args.indexOf("--sem-igualar-cor"), 1);
 const facesLeve = Number(opcao("--faces-leve", 500000));
 const texturaLeve = Number(opcao("--textura-leve", 4096));
 const [id, blend] = args;
@@ -62,25 +70,49 @@ mkdirSync(saida, { recursive: true });
 const arquivoDados = join(saida, "dados.json");
 // O modelo do site vai junto para o Blender virar a peça igual a ele (ver giro_ate_o_site).
 const modeloSite = join(RAIZ, obra.modelo);
-writeFileSync(
-  arquivoDados,
-  JSON.stringify({ id, registro: obra.registro, titulo: obra.titulo, facesLeve, texturaLeve, citacao, site, modeloSite })
-);
-
 const blender = acharBlender();
 console.log(`Blender: ${blender}\nExportando ${basename(blend)} → ${saida}`);
 const inicio = Date.now();
-const rodada = spawnSync(
-  blender,
-  ["-b", "--factory-startup", resolve(blend), "--python-exit-code", "1", "--python", SCRIPT_BLENDER, "--", saida, arquivoDados],
-  { encoding: "utf8", maxBuffer: 256 * 1024 * 1024 }
-);
-const log = `${rodada.stdout ?? ""}\n${rodada.stderr ?? ""}`;
-for (const linha of log.split(/\r?\n/)) if (linha.startsWith("[downloads]")) console.log("  " + linha.slice(12));
-if (rodada.status !== 0) {
-  console.error(log.split(/\r?\n/).slice(-30).join("\n"));
-  sair(rodada.error ? `Não consegui rodar o Blender (${rodada.error.message}). Indique o caminho com BLENDER=...` : "O Blender parou com erro (mensagens acima).");
+
+/** Roda exportar-downloads.py; `extra` vai junto no dados.json (modo, curvaDeCor). */
+function rodarBlender(extra = {}) {
+  writeFileSync(
+    arquivoDados,
+    JSON.stringify({ id, registro: obra.registro, titulo: obra.titulo, facesLeve, texturaLeve, citacao, site, modeloSite, ...extra })
+  );
+  const rodada = spawnSync(
+    blender,
+    ["-b", "--factory-startup", resolve(blend), "--python-exit-code", "1", "--python", SCRIPT_BLENDER, "--", saida, arquivoDados],
+    { encoding: "utf8", maxBuffer: 256 * 1024 * 1024 }
+  );
+  const log = `${rodada.stdout ?? ""}\n${rodada.stderr ?? ""}`;
+  if (!extra.modo) for (const linha of log.split(/\r?\n/)) if (linha.startsWith("[downloads]")) console.log("  " + linha.slice(12));
+  if (rodada.status !== 0) {
+    console.error(log.split(/\r?\n/).slice(-30).join("\n"));
+    sair(rodada.error ? `Não consegui rodar o Blender (${rodada.error.message}). Indique o caminho com BLENDER=...` : "O Blender parou com erro (mensagens acima).");
+  }
 }
+
+// Mesma cor do site: exporta um .glb leve, compara com o do site e, se a cor for diferente, passa a
+// textura por uma curva de cor (igualar-cor.mjs). Nas obras do ExScan o site usa material metálico, que
+// escurece a cor; os downloads saem com material simples, então a diferença vai para a textura.
+let curvaDeCor = null;
+if (igualarCor && existsSync(modeloSite)) {
+  const { compararCor } = await import("./igualar-cor.mjs");
+  const comparar = join(saida, "comparar.glb");
+  rodarBlender({ modo: "comparar" });
+  const { curva, diferenca } = await compararCor(modeloSite, comparar);
+  if (diferenca > DIFERENCA_DE_COR) {
+    curvaDeCor = curva;
+    rodarBlender({ modo: "comparar", curvaDeCor });
+    const depois = await compararCor(modeloSite, comparar);
+    console.log(`  cor: ${porcento(diferenca)} de diferença para o site → ${porcento(depois.diferenca)} com a textura corrigida`);
+  } else {
+    console.log(`  cor: ${porcento(diferenca)} de diferença para o site, textura mantida`);
+  }
+  rmSync(comparar, { force: true });
+}
+rodarBlender(curvaDeCor ? { curvaDeCor } : {});
 const manifesto = JSON.parse(readFileSync(join(saida, "manifesto.json"), "utf8"));
 const niveis = Object.keys(NIVEIS).filter((nivel) => manifesto[nivel]);
 console.log(`Pronto em ${Math.round((Date.now() - inicio) / 1000)} s.\n`);

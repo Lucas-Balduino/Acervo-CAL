@@ -243,10 +243,19 @@ como ideia para uma cópia de preservação depois.
   simplificar: 0504 com 2,2 milhões de faces, Sapo 2,1 milhões e 0808 7,1 milhões (zips de 40 a 190 MB). A textura
   sai na mesma resolução das do site (2048 px; 4096 na 0808). As três estão nos rascunhos `modelos-cal-0504`,
   `modelos-cnrc-0307` e `modelos-cal-0808`. Na 0504 a textura nova tem cor diferente da do site (corpo mais
-  rosado e claro); o Lucas escolheu usar a nova nos downloads, e o site continua com a dele.
+  rosado e claro); o Lucas escolheu usar a nova nos downloads, e o site continua com a dele. Em 13/11/2026 ele
+  pediu que os downloads tenham a mesma cor do site: ver "Mesma cor do site" abaixo.
+- **Mesma cor do site** (pedido do Lucas, 13/11/2026): `downloads.mjs` exporta um `comparar.glb` leve, e
+  `ferramentas/igualar-cor.mjs` renderiza ele e o `.glb` do site com three.js num Chrome sem janela (mesma luz,
+  6 ângulos, sem tone mapping) e casa a distribuição de cores da peça canal por canal (quantis). Se a diferença
+  passar de 4%, a textura passa por essa curva de cor (`aplicar_curva`, no Blender) e é medida de novo.
+  Medido: 0607 77% → 4%, 0803 109% → 5%, 0631 24% → 7% (o brilho do metálico do site não cabe na textura),
+  0504 14%, 0808 6%; o Sapo tinha 2% e ficou como estava. Nas do ExScan a diferença vem do material metálico do
+  site, que escurece e satura; os downloads têm material simples e a cor vai para a textura.
+  `--sem-igualar-cor` desliga.
 - **Obras do ExScan (13/11/2026):** `D:/ObrasCAL/CAL.<n>/CAL.<n>.blend` (0607, 0631, 0803), os `.blend` do site
   trazidos do laptop. O Lucas tirou o metálico e a transparência (Transmission) só nesses arquivos: no site elas
-  continuam como estão, e nos downloads saem um pouco mais claras. Qualidade única: 199 a 245 mil faces, zips de
+  continuam como estão, e nos downloads a cor do site vai para a textura. Qualidade única: 199 a 245 mil faces, zips de
   7 a 11 MB, nos rascunhos `modelos-cal-0607`, `modelos-cal-0631` e `modelos-cal-0803`. A textura da 0607 estava
   em `Original/`; foi copiada para o lado do `.blend`. A 0803 tem textura de só 1024 px. As obras de
   fotogrametria (Luara) ainda estão em tratamento de malha e textura.

@@ -105,7 +105,8 @@ CC BY-NC 4.0.
 3. `node ferramentas/downloads.mjs cal-<número> <caminho>/CAL.<número>-alta.blend --enviar`
    gera os 6 arquivos (cerca de 5 minutos para 7 milhões de faces), envia para um release em rascunho
    e grava os tamanhos em `data/obras.json`. Sem `--enviar`, só gera os arquivos, para conferir.
-   O script avisa se as medidas não baterem com as do site (malha diferente da do site).
+   O script avisa se as medidas não baterem com as do site (malha diferente da do site) e iguala a cor da
+   textura à do site (compara as duas num Chrome sem janela; `--sem-igualar-cor` desliga).
 4. Publique o release **antes** de levar a mudança do `obras.json` para a `main`:
    `gh release edit modelos-cal-<número> --draft=false`.
 

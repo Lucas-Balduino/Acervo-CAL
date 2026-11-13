@@ -27,8 +27,8 @@
       "pagina": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/tag/modelos-cal-0803",
       "unica": {
         "faces": 244744,
-        "glb": 11366949,
-        "obj": 9536866,
+        "glb": 11055120,
+        "obj": 9225028,
         "stl": 8257998
       }
     }
@@ -61,8 +61,8 @@
       "pagina": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/tag/modelos-cal-0631",
       "unica": {
         "faces": 199676,
-        "glb": 9914293,
-        "obj": 8518985,
+        "glb": 9370541,
+        "obj": 7975329,
         "stl": 7008734
       }
     }
@@ -96,8 +96,8 @@
       "pagina": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/tag/modelos-cal-0607",
       "unica": {
         "faces": 198692,
-        "glb": 9805221,
-        "obj": 8420822,
+        "glb": 9793653,
+        "obj": 8409207,
         "stl": 7294144
       }
     }
@@ -130,15 +130,15 @@
       "pagina": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/tag/modelos-cal-0504",
       "alta": {
         "faces": 2229562,
-        "glb": 45217693,
-        "obj": 55984814,
-        "stl": 49613580
+        "glb": 45349717,
+        "obj": 56121015,
+        "stl": 49653586
       },
       "leve": {
         "faces": 500000,
-        "glb": 12124569,
-        "obj": 14590157,
-        "stl": 11369527
+        "glb": 12258503,
+        "obj": 14727324,
+        "stl": 11369446
       }
     }
   },
@@ -210,15 +210,15 @@
       "pagina": "https://github.com/Lucas-Balduino/Acervo-CAL/releases/tag/modelos-cal-0808",
       "alta": {
         "faces": 7050674,
-        "glb": 149534750,
-        "obj": 189537338,
-        "stl": 162908609
+        "glb": 150075789,
+        "obj": 190113175,
+        "stl": 163154092
       },
       "leve": {
         "faces": 500000,
-        "glb": 16517618,
-        "obj": 19630129,
-        "stl": 11818069
+        "glb": 17096814,
+        "obj": 20207312,
+        "stl": 11818794
       }
     }
   }
