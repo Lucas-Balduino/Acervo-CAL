@@ -197,6 +197,15 @@ O script só remove transmission/IOR/specular de material 100% metálico (sem ef
 transparência custa uma segunda renderização). Verificado pixel a pixel contra os originais.
 Não alterar material ou textura sem pedir.
 
+**Fotogrametria** (Luara, app KIRI Engine; obras a partir da 0624 e 0630, 15/11/2026). O KIRI entrega
+`3DModel.obj` + `3DModel.jpg` (4096 px, ilhas de UV pequenas), ~500 mil faces, sem tamanho real e com a
+sombra das fotos gravada na textura (o lado longe da janela fica escuro). O Lucas orienta a peça no Blender e
+`ferramentas/ajustar-fotogrametria.py` faz o resto: altura real (a da planilha do museólogo, até alguém
+medir), furinhos, 200 mil faces e o lado escuro clareado (o Lucas pediu esse ajuste de textura). O clareamento
+é medido numa cor que cobre a peça toda (`--matiz`); `--alvo 60` deixa mais suave (o Pote ficava pálido nas
+costas com 80). Os `.blend` ajustados ficam em `D:\ObrasCAL\<obra>\Ajustado`. Detalhe borrado nas costas
+não tem conserto: a equipe vai fotografar com luz por igual e mais fotos de trás.
+
 - `id` e pasta: `cal-` + número de registro com 4 dígitos (CAL.0607 → `cal-0607`).
 - Título e link devem bater com a ficha no acervo. URL limpa: `https://www.acervocal.unb.br/acervo/<slug>/`.
 - Exceção: obra fora do Tainacan leva `"semFicha": true` e dados escritos à mão (a sincronização só mede o

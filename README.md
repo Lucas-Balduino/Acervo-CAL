@@ -88,6 +88,20 @@ No Claude Code, `/nova-obra CAL.0000 <caminho do .glb>` faz todos os passos abai
 
 Detalhes dos campos em `data/LEIA-ME.md`.
 
+### Obras da fotogrametria (KIRI Engine)
+
+O modelo do KIRI vem sem tamanho real e com a sombra das fotos na textura. Depois de importar o `.obj`
+no Blender e deixar a peça em pé, de frente, salve o `.blend` e rode (altura em cm):
+
+```bash
+blender -b CAL.0630.blend --python ferramentas/ajustar-fotogrametria.py -- <pasta de saída> 53 --alvo 60
+```
+
+Ele dá a altura real, fecha furinhos, reduz para 200 mil faces e clareia o lado que ficou na sombra.
+Opções: `--matiz 220` usa só um tom como referência (220 = azul; útil quando a peça tem uma cor
+principal), `--fundo` troca a base manchada pela cor da peça, `--alvo 60` clareia menos (padrão 80).
+Saem `modelo.glb` (siga do passo 2 acima), o `.blend` ajustado e a textura. Confira sempre as costas.
+
 ## Downloads em alta resolução
 
 Os arquivos para baixar (GLB, OBJ e STL, em qualidade alta e leve) são pesados demais para o
