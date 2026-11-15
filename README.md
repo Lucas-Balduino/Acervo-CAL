@@ -59,6 +59,7 @@ as miniaturas geradas por `ferramentas/posters.html`.
 | `js/museu-contorno.js` | Museu virtual: contorno da obra sob o mouse |
 | `js/sobre.js` | Página Sobre: rolagem, etapas e botões |
 | `js/sobre-cena.js` | Página Sobre: a moringa em cada etapa (three.js) |
+| `js/sobre-fotogrametria.js` | Página Sobre: o Cangaceiro e o caminho do vídeo da fotogrametria (three.js) |
 | `js/fotos.js` | Visor de fotos em tela inteira (bastidores da página Sobre) |
 | `data/obras.json` | Obras visíveis no site |
 | `data/LEIA-ME.md` | Como cadastrar uma obra |

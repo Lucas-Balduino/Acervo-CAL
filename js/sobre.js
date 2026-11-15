@@ -3,6 +3,8 @@
   (e quanto dela já passou) e avisa o 3D (sobre-cena.js). Também cuida da trilha de etapas
   (à esquerda no computador), dos pontos e da barra de progresso do celular, dos botões de camada
   (por cima do 3D, só na última etapa), do giro da peça ao rolar, da contagem de obras e liga o visor das fotos (fotos.js).
+  Na seção "Outro caminho" (fotogrametria), carrega o 3D do Cangaceiro (sobre-fotogrametria.js) quando ela se
+  aproxima da tela e liga os botões de textura.
   Sem WebGL (ou se o 3D falhar), a página continua legível: as etapas viram uma lista comum.
 */
 
@@ -31,7 +33,7 @@ const toque = window.matchMedia("(pointer: coarse)").matches;
 
 contarObras();
 mostrarMetodologia();
-ligarVisor([...document.querySelectorAll(".bastidores figure")], document.getElementById("visor"));
+ligarVisor([...document.querySelectorAll(".fotogrametria-foto, .bastidores figure")], document.getElementById("visor"));
 
 let cena = null;
 let etapaAtiva = -1;
@@ -42,6 +44,7 @@ if (temWebGL()) {
   ligarCamadas();
   acompanharRolagem();
   iniciar3D();
+  prepararFotogrametria();
 }
 
 async function iniciar3D() {
@@ -57,7 +60,7 @@ async function iniciar3D() {
       const r = palco.getBoundingClientRect();
       cena.ligar(!document.hidden && r.bottom > 0 && r.top < innerHeight);
     });
-    window.sobre = { cena, definirEtapa: cena.definirEtapa };
+    window.sobre = { ...window.sobre, cena, definirEtapa: cena.definirEtapa };
   } catch (erro) {
     console.error("Não foi possível montar o 3D da página", erro);
     historia.classList.remove("com-3d");
@@ -173,6 +176,47 @@ function ligarCamadas() {
       cena?.definirCamada(botao.dataset.camada);
     });
   });
+}
+
+/* ---------- Fotogrametria (seção "Outro caminho") ---------- */
+
+// O 3D do Cangaceiro só carrega quando a seção se aproxima (a página já carrega a moringa).
+function prepararFotogrametria() {
+  const secao = document.getElementById("fotogrametria");
+  const palcoFoto = document.getElementById("foto-palco");
+  const cargaFoto = document.getElementById("foto-carga");
+  const botoes = palcoFoto.querySelectorAll("[data-textura]");
+  secao.classList.add("com-3d");
+
+  const aproximar = new IntersectionObserver(async ([registro]) => {
+    if (!registro.isIntersecting) return;
+    aproximar.disconnect();
+    try {
+      const { criarFotogrametria } = await import("./sobre-fotogrametria.js");
+      const foto = await criarFotogrametria(palcoFoto, { leve: toque, movimentoReduzido });
+      cargaFoto.hidden = true;
+      palcoFoto.classList.add("pronto");
+      const visivel = () => {
+        const r = palcoFoto.getBoundingClientRect();
+        return !document.hidden && r.bottom > 0 && r.top < innerHeight;
+      };
+      new IntersectionObserver(() => foto.ligar(visivel())).observe(palcoFoto);
+      document.addEventListener("visibilitychange", () => foto.ligar(visivel()));
+      foto.ligar(visivel());
+      botoes.forEach((botao) => {
+        botao.addEventListener("click", () => {
+          botoes.forEach((b) => b.setAttribute("aria-pressed", String(b === botao)));
+          foto.definirTextura(botao.dataset.textura);
+          foto.mostrarCostas();
+        });
+      });
+      window.sobre = { ...window.sobre, foto };
+    } catch (erro) {
+      console.error("Não foi possível montar o 3D da fotogrametria", erro);
+      secao.classList.remove("com-3d");
+    }
+  }, { rootMargin: "600px 0px" });
+  aproximar.observe(palcoFoto);
 }
 
 /* ---------- Outros ---------- */
