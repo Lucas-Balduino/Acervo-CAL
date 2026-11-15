@@ -221,5 +221,51 @@
         "stl": 11818794
       }
     }
+  },
+  {
+    "id": "cal-0624",
+    "registro": "CAL.0624",
+    "titulo": "Cangaceiro (Lampião) do mestre artesão Manoel Eudócio",
+    "autoria": "Manoel Eudócio",
+    "resumo": "Cangaceiro em cerâmica pintada, de Pernambuco. Pertence à coleção inicial da CAL.",
+    "procedencia": "",
+    "colecao": "Inicial",
+    "formaAquisicao": "",
+    "anoAquisicao": "",
+    "materialTecnica": "Cerâmica",
+    "localProducao": "Pernambuco, Brasil",
+    "dataProducao": "",
+    "dimensoesFicha": "",
+    "dimensoes": {
+      "largura": 29.5,
+      "altura": 80,
+      "profundidade": 29.6
+    },
+    "modelo": "models/cal-0624/modelo.glb",
+    "poster": "models/cal-0624/poster.webp",
+    "frente": 90
+  },
+  {
+    "id": "cal-0630",
+    "registro": "CAL.0630",
+    "titulo": "Pote com seis representações de cabeças",
+    "autoria": "",
+    "resumo": "Pote de cerâmica do Vale do Jequitinhonha (MG). Pertence à coleção inicial da CAL.",
+    "procedencia": "",
+    "colecao": "Inicial",
+    "formaAquisicao": "",
+    "anoAquisicao": "",
+    "materialTecnica": "Cerâmica",
+    "localProducao": "Vale do Jequitinhonha, Minas Gerais, Brasil",
+    "dataProducao": "",
+    "dimensoesFicha": "",
+    "dimensoes": {
+      "largura": 24.5,
+      "altura": 53,
+      "profundidade": 37.2
+    },
+    "modelo": "models/cal-0630/modelo.glb",
+    "poster": "models/cal-0630/poster.webp",
+    "frente": 90
   }
 ]
