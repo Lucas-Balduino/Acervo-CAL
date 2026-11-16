@@ -1,6 +1,7 @@
 /*
   sobre.css — página "Sobre o processo": abertura, a história em etapas (texto que rola ao lado
-  de um palco 3D fixo; no celular o palco fica em cima), fotos da equipe, "por que" e a ficha do projeto.
+  de um palco 3D fixo; no celular o palco fica em cima), o outro caminho (fotogrametria, com o
+  Cangaceiro em 3D), fotos da equipe, "por que" e a ficha do projeto.
   O palco só aparece com a classe .com-3d (posta por sobre.js); sem ela, as etapas viram uma lista.
 */
 
@@ -557,6 +558,186 @@
 
 .etapa .acoes {
   margin-top: 24px;
+}
+
+/* --- Outro caminho: fotogrametria (texto à esquerda, Cangaceiro em 3D preso à direita) --- */
+
+.fotogrametria-grade {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  grid-template-areas:
+    "cabeca palco"
+    "passos palco"
+    "foto palco";
+  grid-template-rows: auto auto 1fr;
+  gap: 28px 56px;
+  align-items: start;
+}
+
+.fotogrametria-cabeca {
+  grid-area: cabeca;
+}
+
+.fotogrametria-cabeca h2 {
+  margin: 0 0 12px;
+  font-size: clamp(24px, 3vw, 30px);
+}
+
+.fotogrametria-chamada {
+  margin: 0;
+  color: var(--cor-texto-suave);
+}
+
+/* Sem 3D, a seção fica só com o texto e a foto. */
+.fotogrametria-palco {
+  display: none;
+  grid-area: palco;
+}
+
+.com-3d .fotogrametria-palco {
+  position: sticky;
+  top: calc(var(--altura-cabecalho) + 24px);
+  display: block;
+  height: min(78vh, 680px);
+  min-height: 420px;
+  overflow: hidden;
+  background: var(--cor-areia-clara);
+}
+
+.fotogrametria-palco canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: grab;
+  touch-action: pan-y; /* arrastar na horizontal gira; na vertical, a página rola */
+  transition: opacity 0.6s ease;
+}
+
+.fotogrametria-palco.pronto canvas {
+  opacity: 1;
+}
+
+.fotogrametria-palco canvas:active {
+  cursor: grabbing;
+}
+
+.foto-texturas {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  margin: 0;
+}
+
+.foto-legenda {
+  position: absolute;
+  right: 16px;
+  bottom: 14px;
+  left: 16px;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--cor-texto-suave);
+  pointer-events: none;
+}
+
+.fotogrametria-passos {
+  grid-area: passos;
+  display: grid;
+  gap: 22px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: passo;
+}
+
+.fotogrametria-passos li {
+  position: relative;
+  display: grid;
+  gap: 4px;
+  padding-left: 40px;
+  counter-increment: passo;
+}
+
+.fotogrametria-passos li::before {
+  content: counter(passo, decimal-leading-zero);
+  position: absolute;
+  top: 3px;
+  left: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cor-destaque);
+}
+
+.fotogrametria-passos strong {
+  font-size: 17px;
+}
+
+.fotogrametria-passos span {
+  color: var(--cor-texto-suave);
+}
+
+.fotogrametria-foto {
+  grid-area: foto;
+  max-width: 280px;
+  margin: 0 0 0 40px;
+}
+
+.fotogrametria-foto img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  background: var(--cor-estudio);
+}
+
+.fotogrametria-foto figcaption {
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--cor-texto-suave);
+}
+
+/* Celular e tablet: título, 3D, passos e foto, um embaixo do outro */
+@media (max-width: 899px) {
+  .fotogrametria-grade {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "cabeca" "palco" "passos" "foto";
+    grid-template-rows: none;
+    gap: 24px;
+  }
+
+  .com-3d .fotogrametria-palco {
+    position: relative;
+    top: auto;
+    height: 62vh;
+    min-height: 360px;
+    max-height: 560px;
+    margin: 0 calc(var(--margem) * -1);
+  }
+
+  .foto-texturas {
+    top: 12px;
+    left: 12px;
+  }
+
+  .foto-texturas button {
+    min-height: 36px;
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  .foto-legenda {
+    right: 12px;
+    bottom: 10px;
+    left: 12px;
+    font-size: 12px;
+  }
+
+  .fotogrametria-foto {
+    max-width: 240px;
+    margin-left: 40px;
+  }
 }
 
 /* --- Bastidores (fotos da equipe) --- */

@@ -167,6 +167,13 @@ peça em pé (da rotação "crua", sem a do nó, para a final).
   `docs/metodologia-gemeos-digitais-cal.pdf`. Ao adicionar o PDF, tirar o `hidden`; o botão mostra o tamanho sozinho.
   Não publicar a versão com trechos [CONFIRMAR].
 - Sem WebGL, `sobre.js` não põe a classe `.com-3d` e as etapas viram uma lista comum.
+- **Outro caminho: fotogrametria** (pedido do Lucas, 15/11/2026): seção própria depois das 8 etapas, antes dos
+  Bastidores. A fotogrametria foi usada quando o ExScan H1 não funcionava direito e no período sem scanner até
+  chegar o Raptor; a captura é um vídeo de celular dando voltas na peça (app KIRI Engine). O 3D é o Cangaceiro
+  (CAL.0624) em `js/sobre-fotogrametria.js`, carregado só quando a seção se aproxima: uma espiral de quadros do
+  vídeo em volta da peça, com um celular que percorre o caminho. Os botões "Como saiu do app" / "Com a luz
+  ajustada" trocam a textura (a original do KIRI, `img/processo/cangaceiro-textura-app.jpg`, no mesmo UV) e
+  viram a peça de costas, onde fica a diferença. A foto do Cangaceiro na CAL (`cangaceiro-na-cal.webp`) é da equipe.
 
 ## Fluxo de um modelo 3D
 

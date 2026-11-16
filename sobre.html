@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sobre o processo · Gêmeos Digitais CAL</title>
-  <meta name="description" content="Como uma obra do acervo da CAL vira um Gêmeo Digital: escaneamento, nuvem de pontos, malha, textura, tratamento e publicação, passo a passo em 3D.">
+  <meta name="description" content="Como uma obra do acervo da CAL vira um Gêmeo Digital: escaneamento, nuvem de pontos, malha, textura, tratamento e publicação, passo a passo em 3D. E o outro caminho: a fotogrametria, com um vídeo de celular.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3 28 9.5v13L16 29 4 22.5v-13z' fill='%231d5c86'/%3E%3Cpath d='M16 16 28 9.5M16 16 4 9.5M16 16v13' stroke='%23fff' stroke-width='1.6' fill='none'/%3E%3C/svg%3E">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -214,6 +214,69 @@
       </div>
     </section>
 
+    <section class="secao fotogrametria" id="fotogrametria" aria-labelledby="fotogrametria-titulo">
+      <div class="recipiente fotogrametria-grade">
+        <div class="fotogrametria-cabeca">
+          <p class="sobretitulo">Outro caminho</p>
+          <h2 id="fotogrametria-titulo">Quando não havia scanner: um vídeo de celular</h2>
+          <p class="fotogrametria-chamada">
+            Algumas obras, como o <strong>Cangaceiro</strong> (CAL.0624), foram registradas por
+            <strong>fotogrametria</strong>: no lugar do scanner, um vídeo feito com o celular. A equipe usou
+            esse caminho quando o scanner anterior não funcionava bem e no período em que ficou sem scanner,
+            até a chegada do Creality Raptor.
+          </p>
+        </div>
+
+        <div class="fotogrametria-palco" id="foto-palco">
+          <p class="palco-carga" id="foto-carga" role="status">Carregando o Cangaceiro…</p>
+          <div class="camadas foto-texturas" role="group" aria-label="Cores do modelo">
+            <button type="button" data-textura="app" aria-pressed="true">Como saiu do app</button>
+            <button type="button" data-textura="ajustada" aria-pressed="false">Com a luz ajustada</button>
+          </div>
+          <p class="foto-legenda">
+            Cada retângulo azul é um quadro do vídeo, em volta da peça. Os botões viram a peça de costas,
+            onde está a diferença; arraste para girar.
+          </p>
+        </div>
+
+        <ol class="fotogrametria-passos">
+          <li>
+            <strong>Voltas filmando</strong>
+            <span>Com a peça parada, a equipe dá voltas em torno dela filmando com o celular, de alturas diferentes.</span>
+          </li>
+          <li>
+            <strong>O aplicativo compara os quadros</strong>
+            <span>
+              O aplicativo KIRI Engine procura os mesmos detalhes em vários quadros do vídeo e, pela diferença
+              entre eles, calcula onde está cada ponto da superfície. Dali em diante o caminho é parecido com o
+              do scanner: malha, textura e tratamento no Blender.
+            </span>
+          </li>
+          <li>
+            <strong>A sombra fica gravada</strong>
+            <span>
+              As cores vêm direto do vídeo, com a luz do lugar. O lado que ficou na sombra durante a filmagem sai
+              escuro, como se a sombra estivesse pintada na peça. Um programa feito neste projeto mede essa sombra
+              e clareia esse lado.
+            </span>
+          </li>
+          <li>
+            <strong>O tamanho vem da ficha</strong>
+            <span>
+              Um vídeo não diz se a peça tem 10 cm ou 1 m. A altura do modelo é ajustada pela medida
+              registrada na planilha do acervo: o Cangaceiro tem 80 cm.
+            </span>
+          </li>
+        </ol>
+
+        <figure class="fotogrametria-foto">
+          <img src="img/processo/cangaceiro-na-cal.webp" width="600" height="800" loading="lazy"
+            alt="O Cangaceiro, escultura de cerâmica pintada de azul com chapéu de couro laranja, sobre um cubo branco, com um tecido amarelo ao fundo.">
+          <figcaption>O Cangaceiro na CAL, em outubro de 2026, sobre um cubo branco e com um tecido ao fundo.</figcaption>
+        </figure>
+      </div>
+    </section>
+
     <section class="secao bastidores">
       <div class="recipiente">
         <p class="sobretitulo">Bastidores</p>
@@ -311,7 +374,7 @@
           <dt>Período</dt>
           <dd>Maio a dezembro de 2026</dd>
           <dt>Ferramentas</dt>
-          <dd>Creality CR-Scan Raptor, Creality Scan, Blender, three.js e model-viewer</dd>
+          <dd>Creality CR-Scan Raptor, Creality Scan, KIRI Engine (fotogrametria), Blender, three.js e model-viewer</dd>
         </dl>
       </div>
     </section>
