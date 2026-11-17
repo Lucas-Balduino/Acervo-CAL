@@ -79,7 +79,8 @@ const sala = await montarSala(renderer, obras, {
   leve: toque,
   colecoes,
   aoProgresso(carregadas, total) {
-    estadoCarga.textContent = carregadas < total ? `Carregando as obras · ${carregadas} de ${total}` : "Salas prontas";
+    // Só as obras vistas da chegada; as outras continuam chegando depois de entrar.
+    estadoCarga.textContent = carregadas < total ? `Carregando as primeiras obras · ${carregadas} de ${total}` : "Pronto";
     barraCarga.style.width = `${(carregadas / total) * 100}%`;
   },
 });
@@ -193,6 +194,7 @@ let saidaDaFicha = 0;
 function examinar(indice) {
   const peca = percurso[indice];
   if (!peca) return;
+  sala.priorizar(indice); // se ainda não chegou, passa à frente na fila de carga
   clearTimeout(saidaDaFicha);
   ficha.classList.remove("saindo");
   examinando = indice;

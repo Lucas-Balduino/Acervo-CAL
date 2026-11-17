@@ -153,6 +153,13 @@ sob o mouse; `js/museu.js` liga tudo e cuida da interface HTML por cima do canva
   `contorno` para testes no console; `navegacao.posicionar(x, z, giro, pitch)` põe o visitante num ponto.
 - Desempenho (relato do Lucas, 05/11/2026): roda bem no PC; num iPhone XR a fluidez cai um pouco, sem
   atrapalhar a experiência.
+- **Carga em fila** (16/11/2026): "Entrar" libera quando chegam as obras vistas da chegada (as da primeira
+  sala e o destaque); as outras vêm depois, 3 por vez (`CARGAS_SIMULTANEAS`), na ordem do percurso, e só
+  começam quando as da chegada terminam (a banda é dividida). Examinar uma obra que não chegou passa ela à
+  frente (`sala.priorizar`); o enquadramento usa as medidas do `obras.json` até o modelo chegar.
+  `sala.carregamento` resolve com todas. Medido numa rede de 10 Mbit/s com 8 obras: a entrada liberava em
+  19,4 s (19,8 MB); agora em 6,1 s (4,4 MB), e todas chegam nos mesmos ~19 s. Isso não reduz a memória:
+  com 20 obras todas ficam na cena (ver T-01/T-02 na análise: versão leve para o museu ou descarregar por sala).
 
 ## Página "Sobre o processo"
 
