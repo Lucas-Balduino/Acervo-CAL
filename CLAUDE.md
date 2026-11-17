@@ -39,9 +39,22 @@ Vigência: 15/05/2026 a 31/12/2026.
 ## Estrutura do site
 
 Várias páginas estáticas que repetem o mesmo cabeçalho e rodapé (sem build, então sem includes):
-`index.html` (início), `obras.html` (grade com filtros), `obra.html?id=<id>` (visualizador + ficha),
+`index.html` (início), `obras.html` (grade com filtros), `obra.html` (visualizador + ficha),
 `museu.html` (sala 3D) e `sobre.html` (o processo em etapas). Cada página carrega só o CSS e o
 módulo JS dela; `js/data.js` e `js/cartoes.js` são compartilhados. Ao mudar o menu, mudar nas 5 páginas.
+
+- **Uma página por obra** (`obra/<id>.html`, 16/11/2026): cópias de `obra.html` geradas por
+  `ferramentas/paginas-das-obras.mjs` (roda sozinho no fim da sincronização), com título, descrição e
+  etiquetas de prévia (Open Graph) da obra; WhatsApp e redes sociais não rodam JavaScript, e antes todo link
+  aparecia como "Obra · Gêmeos Digitais CAL", sem imagem. Usam `<base href="../">` (os caminhos relativos
+  continuam valendo; links `#` precisam do caminho da página) e `obra.js` lê a obra de `data-obra`.
+  **Não editar `obra/` à mão:** mudou `obra.html`, rodar o script de novo. `obra.html?id=<id>` continua
+  funcionando (links antigos), mas o site aponta para `obra/<id>.html` (`linkDaObra`).
+- Imagem de prévia: `models/<id>/previa.jpg`, 1200 × 630, a vista da miniatura no cinza da página da obra
+  (`node ferramentas/navegador.mjs previa <id>`, ou `todas`). Início, Obras e Sobre usam a da moringa; o Museu,
+  `img/previa-museu.jpg` (a chegada, sem a interface; refazer à mão se a sala mudar muito). As etiquetas de
+  prévia pedem endereço completo: `ENDERECO_DO_SITE` no script e as etiquetas das 4 páginas fixas. Ao mudar
+  o site de servidor, trocar os dois e rodar o script.
 
 - Ordem padrão das obras: número de registro (galeria e anterior/próxima da página da obra).
 - `frente` (graus) define a vista inicial, a miniatura e o botão "Frente" do cubo; as vistas do cubo são
@@ -188,11 +201,12 @@ Scanner Creality CR-Scan Raptor (antes EinScan H1) → malha de 200.000 faces no
 `.obj` + `.mtl` → Blender (centralizar, orientar, material) → export `.glb` →
 `node ferramentas/otimizar-glb.mjs models/<id>/modelo.glb` → item em `data/obras.json` (id, modelo,
 frente) → `node ferramentas/sincronizar-acervo.mjs` → miniatura em `ferramentas/posters.html`
-(com `node ferramentas/servidor.mjs` ligado, que é o único que aceita gravar `models/<id>/poster.webp`).
+(com `node ferramentas/servidor.mjs` ligado, que é o único que aceita gravar `models/<id>/poster.webp`)
+→ prévia (`navegador.mjs previa <id>`) → `node ferramentas/paginas-das-obras.mjs`.
 
 **Skill `/nova-obra`** (`.claude/skills/nova-obra/SKILL.md`) faz esse fluxo a partir do `.glb` exportado:
 confere a ficha, otimiza, cadastra, sincroniza, mostra 8 vistas para o Lucas escolher a `frente`, gera a
-miniatura, confere o site e o museu e faz o commit na `main` (obra nova é mudança de dados; o push só com o
+miniatura e a prévia, confere o site e o museu e faz o commit na `main` (obra nova é mudança de dados; o push só com o
 "pode publicar" dele). As etapas de navegador ficam em `ferramentas/navegador.mjs` (`vistas`, `poster`,
 `conferir`), que liga o próprio servidor na porta 3101 e usa Chrome headless — a miniatura sai igual
 byte a byte à gerada antes no navegador.

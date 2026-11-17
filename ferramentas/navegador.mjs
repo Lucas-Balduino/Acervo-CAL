@@ -4,17 +4,19 @@
   Uso (na raiz do repositório):
     node ferramentas/navegador.mjs vistas   cal-0000   imagem com 8 ângulos, para escolher a "frente"
     node ferramentas/navegador.mjs poster   cal-0000   gera models/cal-0000/poster.webp
+    node ferramentas/navegador.mjs previa   cal-0000   gera models/cal-0000/previa.jpg (1200 × 630, para links
+                                                       compartilhados; "todas" no lugar do id refaz todas)
     node ferramentas/navegador.mjs conferir cal-0000   abre a página da obra e o museu, mede e fotografa
 
   Liga o próprio servidor (ferramentas/servidor.mjs) numa porta separada e desliga no fim.
   As imagens de conferência vão para uma pasta temporária (o caminho aparece no fim); nada disso
   entra no repositório. Usa o Chrome instalado no computador (ou o caminho em CHROME=...).
-  Não edita data/obras.json nem os modelos: só lê e fotografa (exceto o poster).
+  Não edita data/obras.json nem os modelos: só lê e fotografa (exceto o poster e a prévia).
 */
 
 import puppeteer from "puppeteer-core";
 import { spawn } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
@@ -24,12 +26,13 @@ const SITE = `http://localhost:${PORTA}`;
 const SAIDA = join(tmpdir(), "acervo-cal");
 
 const [modo, id] = process.argv.slice(2);
-if (!["vistas", "poster", "conferir"].includes(modo) || !/^[a-z]+-\d{4}$/.test(id || "")) {
-  console.error("Uso: node ferramentas/navegador.mjs vistas|poster|conferir cal-0000");
+const todas = modo === "previa" && id === "todas";
+if (!["vistas", "poster", "previa", "conferir"].includes(modo) || !(todas || /^[a-z]+-\d{4}$/.test(id || ""))) {
+  console.error("Uso: node ferramentas/navegador.mjs vistas|poster|previa|conferir cal-0000");
   process.exit(1);
 }
 const obras = JSON.parse(readFileSync(join(RAIZ, "data/obras.json"), "utf8"));
-if (!obras.some((obra) => obra.id === id)) {
+if (!todas && !obras.some((obra) => obra.id === id)) {
   console.error(`${id} não está em data/obras.json.`);
   process.exit(1);
 }
@@ -99,11 +102,25 @@ try {
     if (erros.length) console.log("Erros:", erros);
   }
 
+  if (modo === "previa") {
+    // Mesma vista da miniatura, no fundo cinza da página da obra; o Chrome fotografa e grava aqui.
+    for (const obra of todas ? obras : obras.filter((o) => o.id === id)) {
+      const { pagina, erros } = await abrir(`/ferramentas/posters.html?id=${obra.id}&previa`, 1300, 760);
+      await esperarPronto(pagina);
+      const arquivo = join(RAIZ, "models", obra.id, "previa.jpg");
+      await (await pagina.$("model-viewer")).screenshot({ path: arquivo, type: "jpeg", quality: 85 });
+      console.log(`${obra.id}: models/${obra.id}/previa.jpg (${(statSync(arquivo).size / 1024).toFixed(0)} KB)`);
+      if (erros.length) console.log("Erros:", erros);
+      await pagina.close();
+    }
+    console.log("Rode node ferramentas/paginas-das-obras.mjs para as páginas usarem a prévia.");
+  }
+
   if (modo === "conferir") {
     const resultado = { obra: {}, celular: {}, museu: {} };
 
     // Página da obra no computador: carrega, mede e fotografa.
-    let { pagina, erros } = await abrir(`/obra.html?id=${id}`, 1366, 820);
+    let { pagina, erros } = await abrir(`/obra/${id}.html`, 1366, 820);
     await pagina.waitForFunction(() => document.getElementById("viewer")?.loaded, { timeout: 180000 });
     await espera(1500);
     resultado.obra = await pagina.evaluate(() => {
@@ -117,7 +134,7 @@ try {
     await pagina.close();
 
     // Página da obra no celular (390 px).
-    ({ pagina, erros } = await abrir(`/obra.html?id=${id}`, 390, 844));
+    ({ pagina, erros } = await abrir(`/obra/${id}.html`, 390, 844));
     await pagina.waitForFunction(() => document.getElementById("viewer")?.loaded, { timeout: 180000 });
     await espera(1500);
     resultado.celular.larguraDaPagina = await pagina.evaluate(() => document.documentElement.scrollWidth);

@@ -8,6 +8,7 @@
   Para cada obra, busca o número de registro (cal-0607 → CAL.0607) na API
   pública do acervocal.unb.br e copia título, autoria, procedência etc.
   Campos escritos à mão (resumo, frente, poster, modelo) não são tocados.
+  No fim, gera de novo as páginas das obras (paginas-das-obras.mjs).
   Se o acervo estiver fora do ar, mantém o que já está no arquivo.
   Obras com "semFicha": true (ainda não cadastradas no Tainacan) não são buscadas: os dados
   delas são escritos à mão, e só as medidas do modelo são atualizadas. Sem isso, o número de
@@ -19,6 +20,7 @@ import { ALL_EXTENSIONS } from "@gltf-transform/extensions";
 import { getBounds } from "@gltf-transform/functions";
 import draco3d from "draco3dgltf";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { gerarPaginas } from "./paginas-das-obras.mjs";
 
 const ARQUIVO = "data/obras.json";
 const API = "https://www.acervocal.unb.br/wp-json/tainacan/v2/items/";
@@ -95,3 +97,6 @@ for (const obra of obras) {
 
 writeFileSync(ARQUIVO, JSON.stringify(atualizadas, null, 2) + "\n");
 console.log(`${ARQUIVO}: ${atualizadas.length} obras.`);
+
+// Uma página por obra, com título e imagem para os links compartilhados.
+gerarPaginas();

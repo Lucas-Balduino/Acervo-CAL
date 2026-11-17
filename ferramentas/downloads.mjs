@@ -61,7 +61,7 @@ const obras = JSON.parse(readFileSync(ARQUIVO_OBRAS, "utf8"));
 const obra = obras.find((o) => o.id === id);
 if (!obra) sair(`Não há obra "${id}" em data/obras.json. Cadastre a obra antes (ver /nova-obra).`);
 
-const site = `${SITE}obra.html?id=${id}`;
+const site = `${SITE}obra/${id}.html`;
 const citacao = `Casa da Cultura da América Latina (CAL/UnB). ${obra.titulo} (${obra.registro}). Modelo 3D, projeto Gêmeos Digitais CAL, ${ANO}. Disponível em: ${site}`;
 
 // --- Exportar no Blender ---

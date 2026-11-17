@@ -49,7 +49,7 @@ export function ligarDownloads(obra) {
   if (!d?.endereco || !botao || !janela || typeof janela.showModal !== "function") return;
 
   const lista = document.getElementById("download-formatos");
-  const citacao = `Casa da Cultura da América Latina (CAL/UnB). ${obra.titulo} (${obra.registro}). Modelo 3D, projeto Gêmeos Digitais CAL, ${ANO_DOS_MODELOS}. Disponível em: ${new URL(linkDaObra(obra), location.href).href}`;
+  const citacao = `Casa da Cultura da América Latina (CAL/UnB). ${obra.titulo} (${obra.registro}). Modelo 3D, projeto Gêmeos Digitais CAL, ${ANO_DOS_MODELOS}. Disponível em: ${new URL(linkDaObra(obra), document.baseURI).href}`;
 
   document.getElementById("download-obra").textContent = `${obra.registro} · ${obra.titulo}`;
   document.getElementById("download-citacao").textContent = citacao;
