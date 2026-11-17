@@ -279,13 +279,21 @@ export async function montarSala(renderer, obras, { aoProgresso = () => {}, leve
   aoProgresso(0, primeiras);
   if (primeiras === 0) avisarChegada();
 
+  // Andando, cada obra é a versão leve (museu.glb: menos faces e textura de até 1024 px), que de
+  // longe não se distingue da completa; ao examinar, troca pela completa (modelo.glb), uma de cada vez.
+  // Com ?versao=original, o museu usa só as completas (para comparar).
+  const soCompletas = new URLSearchParams(location.search).get("versao") === "original";
+  const enderecoNaSala = (obra) => (!soCompletas && obra.museu) || obra.modelo;
+
   async function carregar(peca) {
+    const endereco = enderecoNaSala(peca.obra);
     try {
-      const gltf = await loader.loadAsync(peca.obra.modelo);
+      const gltf = await loader.loadAsync(endereco);
       colocarObra(cena, peca, gltf.scene, !leve);
       renderer.shadowMap.needsUpdate = true;
+      if (completa?.peca === peca) trocarPelaCompleta(completa);
     } catch (erro) {
-      console.error(`Não foi possível carregar ${peca.obra.modelo}`, erro);
+      console.error(`Não foi possível carregar ${endereco}`, erro);
     }
     if (daChegada(peca) && ++prontasDaChegada === primeiras) avisarChegada();
     if (daChegada(peca)) aoProgresso(prontasDaChegada, primeiras);
@@ -297,7 +305,8 @@ export async function montarSala(renderer, obras, { aoProgresso = () => {}, leve
       if (fila.length) await carregar(fila.shift());
     }
   }
-  const carregamento = Promise.all(Array.from({ length: CARGAS_SIMULTANEAS }, trabalhar)).then(() => draco.dispose());
+  // O loader fica ligado: as versões completas são pedidas ao examinar.
+  const carregamento = Promise.all(Array.from({ length: CARGAS_SIMULTANEAS }, trabalhar));
 
   /** Obra pedida (ao examinar) passa para a frente da fila, se ainda não começou a carregar. */
   function priorizar(indice) {
@@ -305,8 +314,68 @@ export async function montarSala(renderer, obras, { aoProgresso = () => {}, leve
     if (i > 0) fila.unshift(...fila.splice(i, 1));
   }
 
+  // Versão completa da obra examinada: só uma de cada vez na cena, para a memória não crescer.
+  let completa = null; // { peca, grupoLeve, grupo }
+
+  /** Ao examinar: põe a versão completa no lugar da leve (a leve volta quando outra obra é examinada). */
+  function mostrarCompleta(indice) {
+    const peca = pecas[indice];
+    priorizar(indice);
+    if (completa?.peca === peca) return;
+    voltarParaLeve();
+    if (soCompletas || !peca?.obra.museu) return;
+    completa = { peca, grupoLeve: null, grupo: null };
+    if (peca.grupo) trocarPelaCompleta(completa);
+    // Se a leve ainda não chegou, carregar() chama a troca quando ela chegar.
+  }
+
+  async function trocarPelaCompleta(pedido) {
+    pedido.grupoLeve = pedido.peca.grupo;
+    let gltf;
+    try {
+      gltf = await loader.loadAsync(pedido.peca.obra.modelo);
+    } catch (erro) {
+      console.error(`Não foi possível carregar ${pedido.peca.obra.modelo}`, erro);
+      return;
+    }
+    if (completa !== pedido) return descartar(gltf.scene); // outra obra foi examinada enquanto baixava
+    const { altura, tamanho, centro } = pedido.peca;
+    cena.remove(pedido.grupoLeve);
+    colocarObra(cena, pedido.peca, gltf.scene, !leve);
+    pedido.grupo = pedido.peca.grupo;
+    pedido.medidasLeve = { altura, tamanho: tamanho.clone(), centro: centro.clone() };
+    renderer.shadowMap.needsUpdate = true;
+  }
+
+  function voltarParaLeve() {
+    if (!completa) return;
+    const { peca, grupoLeve, grupo, medidasLeve } = completa;
+    completa = null;
+    if (!grupo) return; // a completa ainda não tinha chegado
+    cena.remove(grupo);
+    descartar(grupo);
+    cena.add(grupoLeve);
+    peca.grupo = grupoLeve;
+    peca.altura = medidasLeve.altura;
+    peca.tamanho.copy(medidasLeve.tamanho);
+    peca.centro.copy(medidasLeve.centro);
+    renderer.shadowMap.needsUpdate = true;
+  }
+
   await chegadaPronta;
-  return { cena, pecas, limites, comprimento, salas: plano.salas, paredes, carregamento, priorizar };
+  return { cena, pecas, limites, comprimento, salas: plano.salas, paredes, carregamento, priorizar, mostrarCompleta };
+}
+
+/** Libera da memória de vídeo a malha, os materiais e as texturas de um modelo que saiu da cena. */
+function descartar(objeto) {
+  objeto.traverse((filho) => {
+    if (!filho.isMesh) return;
+    filho.geometry.dispose();
+    for (const material of [filho.material].flat()) {
+      for (const valor of Object.values(material)) if (valor?.isTexture) valor.dispose();
+      material.dispose();
+    }
+  });
 }
 
 // Quantas obras baixam ao mesmo tempo: o bastante para usar a rede, sem atrasar as primeiras.

@@ -8,6 +8,7 @@
     "@gltf-transform/extensions": "4.5.1",
     "@gltf-transform/functions": "4.5.1",
     "draco3dgltf": "1.5.9",
+    "meshoptimizer": "0.22.0",
     "puppeteer-core": "23.11.1"
   }
 }

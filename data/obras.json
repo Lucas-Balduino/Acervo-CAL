@@ -19,6 +19,7 @@
       "profundidade": 6.5
     },
     "modelo": "models/cal-0803/modelo.glb",
+    "museu": "models/cal-0803/museu.glb",
     "poster": "models/cal-0803/poster.webp",
     "frente": 30,
     "urlAcervo": "https://www.acervocal.unb.br/acervo/escultura-de-casal/",
@@ -53,6 +54,7 @@
       "profundidade": 12.9
     },
     "modelo": "models/cal-0631/modelo.glb",
+    "museu": "models/cal-0631/museu.glb",
     "poster": "models/cal-0631/poster.webp",
     "frente": 0,
     "urlAcervo": "https://www.acervocal.unb.br/acervo/escultura-de-maos-unidas/",
@@ -87,6 +89,7 @@
       "profundidade": 19.3
     },
     "modelo": "models/cal-0607/modelo.glb",
+    "museu": "models/cal-0607/museu.glb",
     "poster": "models/cal-0607/poster.webp",
     "frente": 90,
     "destaque": true,
@@ -122,6 +125,7 @@
       "profundidade": 3.8
     },
     "modelo": "models/cal-0504/modelo.glb",
+    "museu": "models/cal-0504/museu.glb",
     "poster": "models/cal-0504/poster.webp",
     "frente": 90,
     "urlAcervo": "https://www.acervocal.unb.br/acervo/escultura-14/",
@@ -162,6 +166,7 @@
       "profundidade": 12.2
     },
     "modelo": "models/cnrc-0307/modelo.glb",
+    "museu": "models/cnrc-0307/museu.glb",
     "poster": "models/cnrc-0307/poster.webp",
     "frente": 45,
     "semFicha": true,
@@ -202,6 +207,7 @@
       "profundidade": 33
     },
     "modelo": "models/cal-0808/modelo.glb",
+    "museu": "models/cal-0808/museu.glb",
     "poster": "models/cal-0808/poster.webp",
     "frente": 90,
     "urlAcervo": "https://www.acervocal.unb.br/acervo/escultura-de-vila/",
@@ -242,6 +248,7 @@
       "profundidade": 29.6
     },
     "modelo": "models/cal-0624/modelo.glb",
+    "museu": "models/cal-0624/museu.glb",
     "poster": "models/cal-0624/poster.webp",
     "frente": 90
   },
@@ -265,6 +272,7 @@
       "profundidade": 37.2
     },
     "modelo": "models/cal-0630/modelo.glb",
+    "museu": "models/cal-0630/museu.glb",
     "poster": "models/cal-0630/poster.webp",
     "frente": 90
   }

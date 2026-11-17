@@ -111,6 +111,16 @@ node ferramentas/paginas-das-obras.mjs
 A prévia (`models/<id>/previa.jpg`, ~20–50 KB) usa a mesma vista da miniatura: rode depois de escolher a
 frente. O segundo comando grava `obra/<id>.html`, com o título e a prévia; sem `previa.jpg` ele avisa.
 
+Por fim, a versão leve que o museu usa enquanto a pessoa anda (ao examinar, ele troca pela completa):
+
+```bash
+node ferramentas/versao-museu.mjs <id>
+```
+
+Grava `models/<id>/museu.glb` (até 50 mil faces, textura de até 1024 px) e o campo `museu` no `obras.json`.
+Obras do Raptor ficam com ~0,3 MB; as do ExScan e da fotogrametria quase não perdem faces (normal) e ficam
+com ~1 MB. Não altera material nem cor.
+
 ## 6. Conferir no site e no museu
 
 ```bash

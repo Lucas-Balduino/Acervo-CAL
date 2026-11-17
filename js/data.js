@@ -23,6 +23,7 @@ export const META_DE_OBRAS = 20;
  * @property {string} [dataProducao]
  * @property {{largura:number, altura:number, profundidade:number}} [dimensoes]  em cm, do modelo 3D
  * @property {string} modelo
+ * @property {string} [museu]  versão leve para o museu (menos faces, textura menor); ver otimizar-glb.mjs
  * @property {string} [poster]
  * @property {number} [frente]      ângulo (graus) da vista inicial
  * @property {boolean} [destaque]   aparece na página inicial
