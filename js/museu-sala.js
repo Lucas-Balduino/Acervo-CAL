@@ -21,7 +21,9 @@
 
   Sistema de coordenadas: metros. A entrada fica em z = 0 e o museu avança
   para z negativo. A obra em destaque fica na parede do fundo da última sala;
-  as outras se alternam nas paredes laterais, em fileiras.
+  as outras se alternam nas paredes laterais, em fileiras. Numa sala de uma obra
+  só, ela fica na parede do fundo, à direita da passagem (na primeira sala, na
+  parede esquerda).
 */
 
 import * as THREE from "three";
@@ -42,6 +44,15 @@ export const SALA = {
   fundo: 3.6, // da última fileira até a parede do fundo
   afastamentoDoDestaque: 1.3, // da obra em destaque até a parede do fundo
   comprimentoMinimo: 4.0,
+  // Sala de uma obra só: a obra fica na parede do fundo, à direita da passagem (o texto da sala fica
+  // à esquerda). Na primeira sala, fica na parede esquerda, mais para dentro que uma fileira comum:
+  // assim cabe na tela desde a chegada e "Próxima obra" vai dela até a sala seguinte pela passagem
+  // (do fundo à direita, a câmera atravessava a parede entre as salas).
+  xObraNoFundo: 2.0,
+  giroNoFundo: 0.2, // quanto ela se vira para o meio da sala
+  comprimentoComUmaObra: 6.4,
+  obraSozinhaNaEntrada: 4.4, // primeira sala: da entrada até a obra, na parede esquerda
+  distanciaDaTravessa: 1.7, // obras na parede do fundo: o spot fica num trilho atravessado, à frente delas
   giroLateral: 0.45, // quanto as obras laterais se viram para quem entra (0 = de frente para o corredor)
   larguraTaco: 0.07, // m
   espessuraDivisoria: 0.2, // paredes entre as salas
@@ -115,10 +126,17 @@ export function planejarSala(obras) {
     const primeira = s === 0;
     const ultima = s === colecoes.length - 1;
     const laterais = grupos.get(colecao).filter((obra) => obra !== destaque);
+    const comDestaque = ultima && destaque;
+    // Uma obra sozinha vai para a parede do fundo (na sala do destaque, o fundo já está ocupado).
+    const sozinha = laterais.length === 1 && !comDestaque ? laterais.pop() : null;
     const fileiras = Math.ceil(laterais.length / 2);
     const inicio = primeira ? SALA.inicioDasFileiras : SALA.margemDaPassagem;
     const fim = ultima ? SALA.fundo : SALA.margemDaPassagem;
-    const ocupado = fileiras ? inicio + (fileiras - 1) * SALA.espacoEntreFileiras + fim : fim + 0.6;
+    const ocupado = sozinha
+      ? SALA.comprimentoComUmaObra
+      : fileiras
+        ? inicio + (fileiras - 1) * SALA.espacoEntreFileiras + fim
+        : fim + 0.6;
     const sala = {
       indice: s,
       colecao,
@@ -127,6 +145,24 @@ export function planejarSala(obras) {
       zMin: z - Math.max(SALA.comprimentoMinimo, ocupado),
     };
     salas.push(sala);
+
+    if (sozinha && primeira) {
+      // Não entra na alternância esquerda/direita: as salas seguintes ficam como se ela não existisse.
+      lugares.push({
+        obra: sozinha,
+        sala,
+        posicao: new THREE.Vector3(-xLateral, 0, z - SALA.obraSozinhaNaEntrada),
+        direcao: new THREE.Vector3(1, 0, SALA.giroLateral).normalize(),
+      });
+    } else if (sozinha) {
+      lugares.push({
+        obra: sozinha,
+        sala,
+        posicao: new THREE.Vector3(SALA.xObraNoFundo, 0, sala.zMin + SALA.afastamentoDoDestaque),
+        direcao: new THREE.Vector3(-SALA.giroNoFundo, 0, 1).normalize(),
+        fundo: true,
+      });
+    }
 
     laterais.forEach((obra, i) => {
       const esquerda = (lado + i) % 2 === 0;
@@ -144,12 +180,13 @@ export function planejarSala(obras) {
     });
     lado += laterais.length;
 
-    if (ultima && destaque) {
+    if (comDestaque) {
       lugares.push({
         obra: destaque,
         sala,
         posicao: new THREE.Vector3(0, 0, sala.zMin + SALA.afastamentoDoDestaque),
         direcao: new THREE.Vector3(0, 0, 1),
+        fundo: true,
       });
     }
 
@@ -542,11 +579,12 @@ function montarSpots(cena, pecas, plano) {
       cena.add(trilho);
     }
   }
-  // Trilho atravessado na última sala, à frente da obra em destaque (o facho dela chega à parede do fundo).
-  const zTravessa = -plano.comprimento + 3.0;
-  const travessa = new THREE.Mesh(new THREE.BoxGeometry(xTrilho * 2, 0.03, 0.035), materialTrilho);
-  travessa.position.set(0, yTrilho, zTravessa);
-  cena.add(travessa);
+  // Trilho atravessado à frente de cada obra na parede do fundo (o facho dela chega à parede).
+  for (const peca of pecas.filter((p) => p.fundo)) {
+    const travessa = new THREE.Mesh(new THREE.BoxGeometry(xTrilho * 2, 0.03, 0.035), materialTrilho);
+    travessa.position.set(0, yTrilho, peca.posicao.z + SALA.distanciaDaTravessa);
+    cena.add(travessa);
+  }
 
   const corpo = new THREE.CylinderGeometry(0.045, 0.055, 0.16, 20);
   corpo.rotateX(Math.PI / 2); // o cilindro passa a apontar para +Z (lookAt)
@@ -561,9 +599,12 @@ function montarSpots(cena, pecas, plano) {
   const materialFacho = criarMaterialDoFacho();
 
   for (const peca of pecas) {
-    const destaque = peca.direcao.z > 0.99;
-    const base = destaque
-      ? new THREE.Vector3(0, yTrilho, zTravessa)
+    const base = peca.fundo
+      ? new THREE.Vector3(
+          THREE.MathUtils.clamp(peca.posicao.x, -xTrilho, xTrilho),
+          yTrilho,
+          peca.posicao.z + SALA.distanciaDaTravessa
+        )
       : new THREE.Vector3(-Math.sign(peca.posicao.x) * xTrilho, yTrilho, peca.posicao.z + 0.5);
     const alvo = new THREE.Vector3(peca.posicao.x, peca.topo + Math.max(0.12, peca.altura / 2), peca.posicao.z); // meio da obra
 
@@ -777,7 +818,7 @@ function materialPedestal() {
 }
 
 function montarPedestal(cena, lugar, indice, sombras) {
-  const { obra, sala, posicao, direcao } = lugar;
+  const { obra, sala, posicao, direcao, fundo = false } = lugar;
   const e = SALA.escalaDasObras;
   const real = obra.dimensoes || { largura: 30, profundidade: 30, altura: 30 };
   const d = { largura: real.largura * e, profundidade: real.profundidade * e, altura: real.altura * e };
@@ -825,6 +866,7 @@ function montarPedestal(cena, lugar, indice, sombras) {
     sala, // { nome, zMin, zMax, ... } da sala onde a obra está
     posicao,
     direcao,
+    fundo, // na parede do fundo (o destaque, ou a obra de uma sala de uma obra só)
     pedestal,
     giro, // rotation.y do pedestal
     lado, // m
