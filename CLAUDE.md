@@ -85,6 +85,13 @@ sob o mouse; `js/museu.js` liga tudo e cuida da interface HTML por cima do canva
 - Obras ampliadas 1,5× (`SALA.escalaDasObras`; os `.glb` estão em metros reais). Cada sala cresce com o número
   de obras dela: as obras se alternam nas laterais (a alternância continua de uma sala para a outra), viradas
   um pouco para a entrada (`SALA.giroLateral`). A rotação de cada obra usa o mesmo `frente` do model-viewer.
+  Sala de uma obra só (hoje Chocó e CNRC): a obra vai para a parede do fundo, à direita da passagem
+  (`SALA.xObraNoFundo`), simétrica ao texto da sala, e a sala tem 6,4 m (`comprimentoComUmaObra`), para ela
+  caber inteira na tela desde a chegada. Numa lateral, ela ficava na borda da tela com o pedestal cortado (16/11/2026).
+  Exceção: na primeira sala ela fica na parede esquerda, a 4,4 m da entrada (`obraSozinhaNaEntrada`; fora da
+  alternância das laterais). Do fundo à direita, "Próxima obra" levava a câmera em linha reta através da parede
+  entre as salas (pedido do Lucas, 16/11/2026). Ao mudar o arranjo, conferir que as transições passam pelas aberturas.
+  Obras na parede do fundo (essas e o destaque) têm `fundo: true` e o spot num trilho atravessado à frente delas.
 - **Luz quente e marcante, sem pesar** (pedido do Lucas, 07/11/2026: mais perto da exposição real, sem
   hiper-realismo): pouca luz geral (hemisfério + uma direcional, cuja sombra é desenhada uma vez só) e um spot
   por obra, no trilho do outro lado do corredor, iluminando a obra de frente a ~35°; o facho segue até a parede
