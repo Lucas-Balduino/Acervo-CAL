@@ -158,8 +158,17 @@ sob o mouse; `js/museu.js` liga tudo e cuida da interface HTML por cima do canva
   começam quando as da chegada terminam (a banda é dividida). Examinar uma obra que não chegou passa ela à
   frente (`sala.priorizar`); o enquadramento usa as medidas do `obras.json` até o modelo chegar.
   `sala.carregamento` resolve com todas. Medido numa rede de 10 Mbit/s com 8 obras: a entrada liberava em
-  19,4 s (19,8 MB); agora em 6,1 s (4,4 MB), e todas chegam nos mesmos ~19 s. Isso não reduz a memória:
-  com 20 obras todas ficam na cena (ver T-01/T-02 na análise: versão leve para o museu ou descarregar por sala).
+  19,4 s (19,8 MB); agora em 6,1 s (4,4 MB), e todas chegam nos mesmos ~19 s.
+- **Versão leve no museu** (aprovada pelo Lucas em 16/11/2026, avaliando no próprio museu): andando, cada obra é
+  `models/<id>/museu.glb` (campo `museu` no `obras.json`), com até 50 mil faces e textura de até 1024 px em JPEG,
+  gerada por `node ferramentas/versao-museu.mjs <id>|todas`. Ao examinar, `sala.mostrarCompleta` troca pela
+  `modelo.glb`, uma de cada vez (a anterior volta para a leve e sai da memória). Com as 8 obras: download de
+  19,8 → 6,0 MB e memória de vídeo estimada de ~320 → ~65 MB (~800 → ~160 MB com 20 obras); quase tudo vem das
+  texturas (as de 4096 px da fotogrametria ocupam ~95 MB cada). Nas obras do ExScan e da fotogrametria a malha
+  quase não simplifica (as emendas das muitas ilhas de UV travam o simplificador); só a textura diminui.
+  Comparadas no museu a 1,5 m, a diferença média ficou abaixo de 1 em 255. `museu.html?versao=original` usa só as
+  completas, para comparar. Obra sem `museu` usa a completa. A textura é reduzida no Chrome sem janela (o sharp
+  não funciona nesta máquina); com o Pillow a cor deu igual.
 
 ## Página "Sobre o processo"
 
@@ -209,7 +218,8 @@ Scanner Creality CR-Scan Raptor (antes EinScan H1) → malha de 200.000 faces no
 `node ferramentas/otimizar-glb.mjs models/<id>/modelo.glb` → item em `data/obras.json` (id, modelo,
 frente) → `node ferramentas/sincronizar-acervo.mjs` → miniatura em `ferramentas/posters.html`
 (com `node ferramentas/servidor.mjs` ligado, que é o único que aceita gravar `models/<id>/poster.webp`)
-→ prévia (`navegador.mjs previa <id>`) → `node ferramentas/paginas-das-obras.mjs`.
+→ prévia (`navegador.mjs previa <id>`) → `node ferramentas/paginas-das-obras.mjs` → versão leve do museu
+(`node ferramentas/versao-museu.mjs <id>`).
 
 **Skill `/nova-obra`** (`.claude/skills/nova-obra/SKILL.md`) faz esse fluxo a partir do `.glb` exportado:
 confere a ficha, otimiza, cadastra, sincroniza, mostra 8 vistas para o Lucas escolher a `frente`, gera a

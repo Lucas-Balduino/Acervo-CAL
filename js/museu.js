@@ -194,7 +194,7 @@ let saidaDaFicha = 0;
 function examinar(indice) {
   const peca = percurso[indice];
   if (!peca) return;
-  sala.priorizar(indice); // se ainda não chegou, passa à frente na fila de carga
+  sala.mostrarCompleta(indice); // passa à frente na fila e troca a versão leve pela completa
   clearTimeout(saidaDaFicha);
   ficha.classList.remove("saindo");
   examinando = indice;
