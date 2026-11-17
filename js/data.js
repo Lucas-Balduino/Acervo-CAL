@@ -62,7 +62,8 @@ export async function carregarColecoes() {
 }
 
 export function linkDaObra(obra) {
-  return `obra.html?id=${encodeURIComponent(obra.id)}`;
+  // Página própria da obra (gerada por ferramentas/paginas-das-obras.mjs), com a prévia para links compartilhados.
+  return `obra/${encodeURIComponent(obra.id)}.html`;
 }
 
 export function textoAutoria(obra) {

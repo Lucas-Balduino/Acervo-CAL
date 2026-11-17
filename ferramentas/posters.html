@@ -11,6 +11,8 @@
     Use ?id=cal-0000 para gerar só uma obra.
     Com ?id=cal-0000&vistas, não salva nada: mostra a obra de 8 ângulos (0°, 45°…)
     para escolher a "frente" que vai em data/obras.json.
+    Com ?id=cal-0000&previa, não salva nada: mostra a obra em 1200 × 630, a imagem dos links
+    compartilhados (quem grava é node ferramentas/navegador.mjs previa cal-0000).
   -->
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
   <style>
@@ -22,6 +24,8 @@
     .vistas model-viewer { width: 240px; height: 300px; }
     .vistas figcaption { padding: 4px 8px 8px; font-size: 22px; font-weight: 700; text-align: center; }
     .vistas .atual { outline: 3px solid #1f5f99; }
+    .previa model-viewer { width: 1200px; height: 630px; background: #ececec; } /* --cor-estudio */
+    .previa model-viewer::part(default-progress-bar) { display: none; }
   </style>
 </head>
 <body>
@@ -42,6 +46,7 @@
     registro.textContent = `${obras.length} obra(s)`;
 
     if (parametros.has("vistas")) await mostrarVistas(obras[0]);
+    else if (parametros.has("previa")) await mostrarPrevia(obras[0]);
     else await gerarMiniaturas();
     log("Pronto.");
 
@@ -62,6 +67,17 @@
         const resposta = await fetch(`/salvar-poster?id=${obra.id}`, { method: "POST", body: imagem });
         log(`${obra.id}: ${resposta.ok ? "salva" : "erro — " + (await resposta.text())} (${(imagem.size / 1024).toFixed(0)} KB)`);
       }
+    }
+
+    // Imagem dos links compartilhados: a mesma vista da miniatura, num quadro largo.
+    async function mostrarPrevia(obra) {
+      if (!obra) return log("Obra não encontrada em data/obras.json.");
+      document.body.className = "previa";
+      molde.cameraOrbit = `${obra.frente || 0}deg 78deg 105%`;
+      const carregou = new Promise((ok) => molde.addEventListener("load", ok, { once: true }));
+      molde.src = "../" + obra.modelo;
+      await carregou;
+      await new Promise((ok) => setTimeout(ok, 1000));
     }
 
     // 8 vistas em volta da obra, com o mesmo enquadramento da miniatura. A "frente" atual fica marcada.

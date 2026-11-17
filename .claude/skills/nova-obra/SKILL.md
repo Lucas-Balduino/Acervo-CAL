@@ -101,6 +101,16 @@ node ferramentas/navegador.mjs poster <id>
 
 Deve terminar com `<id>: salva (~15–60 KB)`. Mostre a miniatura ao usuário junto do resultado final.
 
+Depois a imagem dos links compartilhados (WhatsApp, redes sociais) e a página da obra:
+
+```bash
+node ferramentas/navegador.mjs previa <id>
+node ferramentas/paginas-das-obras.mjs
+```
+
+A prévia (`models/<id>/previa.jpg`, ~20–50 KB) usa a mesma vista da miniatura: rode depois de escolher a
+frente. O segundo comando grava `obra/<id>.html`, com o título e a prévia; sem `previa.jpg` ele avisa.
+
 ## 6. Conferir no site e no museu
 
 ```bash
@@ -137,7 +147,7 @@ passo (a obra fica sem o botão de download até lá).
 Adicionar obra é mudança de dados: vai direto na `main` (como as obras anteriores).
 
 ```bash
-git add models/<id> data/obras.json
+git add models/<id> data/obras.json obra/<id>.html
 git commit -m "docs: Adicionar obra CAL 0612"
 ```
 
@@ -147,5 +157,5 @@ pedida pelo sistema.
 Fazer `git push` publica no site em ~1 minuto. Mostre ao usuário o título, a miniatura, as medidas, o
 resumo escrito e a frente escolhida, e pergunte se pode publicar. Depois do push, confira que o
 GitHub Pages terminou (`gh api repos/Lucas-Balduino/Acervo-CAL/pages/builds/latest`) e dê o link
-`https://lucas-balduino.github.io/Acervo-CAL/obra.html?id=<id>`. Mencione quantas obras faltam para a
+`https://lucas-balduino.github.io/Acervo-CAL/obra/<id>.html`. Mencione quantas obras faltam para a
 meta de 20.

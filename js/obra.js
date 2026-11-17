@@ -1,5 +1,6 @@
 /*
-  obra.js — página de uma obra (obra.html?id=cal-0000): carrega o modelo,
+  obra.js — página de uma obra (obra/cal-0000.html, gerada a partir de obra.html; obra.html?id=cal-0000
+  também funciona): carrega o modelo,
   preenche a ficha e liga os botões de câmera, de obra anterior/próxima e de download.
 */
 
@@ -28,7 +29,7 @@ document.querySelectorAll("[data-vista]").forEach((face) => {
 const obras = (await carregarObras()).sort((a, b) =>
   (a.registro || a.id).localeCompare(b.registro || b.id, "pt-BR", { numeric: true })
 );
-const id = new URLSearchParams(location.search).get("id");
+const id = new URLSearchParams(location.search).get("id") || document.documentElement.dataset.obra;
 const indice = obras.findIndex((o) => o.id === id);
 const obra = obras[indice];
 
