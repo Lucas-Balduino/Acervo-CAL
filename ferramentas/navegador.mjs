@@ -147,6 +147,8 @@ try {
     // entrada e a obra nova na sala dela (examina e volta: o visitante fica de frente para a obra).
     ({ pagina, erros } = await abrir("/museu.html", 1366, 820));
     await pagina.waitForFunction(() => !document.getElementById("botao-entrar")?.disabled, { timeout: 300000 });
+    // A entrada libera com as obras da chegada; as fotos esperam todas.
+    await pagina.evaluate(() => window.museu.sala.carregamento);
     await espera(1500); // a tela de entrada troca o carregamento pelo convite
     await pagina.click("#botao-entrar");
     const parado = () => pagina.waitForFunction(() => !window.museu.navegacao.emTransicao, { timeout: 120000, polling: 200 });

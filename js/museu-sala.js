@@ -204,7 +204,10 @@ export function planejarSala(obras) {
  * @param {THREE.WebGLRenderer} renderer
  * @param {import("./data.js").Obra[]} obras  na ordem do percurso
  * @param {object} opcoes
- * @param {(carregadas: number, total: number) => void} [opcoes.aoProgresso]
+ * @param {(carregadas: number, total: number) => void} [opcoes.aoProgresso]  obras vistas da chegada
+ * @returns {Promise<object>}  resolve quando as obras vistas da chegada (primeira sala e destaque) estão
+ *   na cena; as outras continuam chegando (`carregamento` resolve com todas; `priorizar(indice)` passa
+ *   uma obra para a frente da fila)
  * @param {boolean} [opcoes.leve]  celular: sem sombras em tempo real
  * @param {Record<string, {texto: string}>} [opcoes.colecoes]  texto de cada coleção (data/colecoes.json)
  */
@@ -260,28 +263,54 @@ export async function montarSala(renderer, obras, { aoProgresso = () => {}, leve
   draco.setDecoderPath("https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/libs/draco/gltf/");
   loader.setDRACOLoader(draco);
 
-  let carregadas = 0;
-  aoProgresso(0, pecas.length);
-  await Promise.all(
-    pecas.map(async (peca) => {
-      try {
-        const gltf = await loader.loadAsync(peca.obra.modelo);
-        colocarObra(cena, peca, gltf.scene, !leve);
-      } catch (erro) {
-        console.error(`Não foi possível carregar ${peca.obra.modelo}`, erro);
-      }
-      carregadas += 1;
-      aoProgresso(carregadas, pecas.length);
-    })
-  );
-  draco.dispose();
-
-  // Nada se move na sala: a sombra é desenhada uma vez, depois que as obras chegam.
+  // Nada se move na sala: a sombra é desenhada de novo só quando chega uma obra.
   renderer.shadowMap.autoUpdate = false;
   renderer.shadowMap.needsUpdate = true;
 
-  return { cena, pecas, limites, comprimento, salas: plano.salas, paredes };
+  // Carga em fila, poucas obras por vez. Primeiro as que se veem da chegada (a primeira sala e o
+  // destaque, no fundo, pelas passagens): com elas a entrada é liberada. As outras chegam enquanto a
+  // pessoa entra, na ordem do percurso. Antes, a entrada esperava todas: 19,8 MB com 8 obras (16/11/2026).
+  const daChegada = (peca) => peca.sala.indice === 0 || Boolean(peca.obra.destaque);
+  const fila = [...pecas].sort((a, b) => daChegada(b) - daChegada(a) || a.indice - b.indice);
+  const primeiras = fila.filter(daChegada).length;
+  let prontasDaChegada = 0;
+  let avisarChegada;
+  const chegadaPronta = new Promise((ok) => (avisarChegada = ok));
+  aoProgresso(0, primeiras);
+  if (primeiras === 0) avisarChegada();
+
+  async function carregar(peca) {
+    try {
+      const gltf = await loader.loadAsync(peca.obra.modelo);
+      colocarObra(cena, peca, gltf.scene, !leve);
+      renderer.shadowMap.needsUpdate = true;
+    } catch (erro) {
+      console.error(`Não foi possível carregar ${peca.obra.modelo}`, erro);
+    }
+    if (daChegada(peca) && ++prontasDaChegada === primeiras) avisarChegada();
+    if (daChegada(peca)) aoProgresso(prontasDaChegada, primeiras);
+  }
+  async function trabalhar() {
+    while (fila.length) {
+      // A banda é dividida entre os downloads: as outras obras esperam as da chegada terminarem.
+      if (!daChegada(fila[0])) await chegadaPronta;
+      if (fila.length) await carregar(fila.shift());
+    }
+  }
+  const carregamento = Promise.all(Array.from({ length: CARGAS_SIMULTANEAS }, trabalhar)).then(() => draco.dispose());
+
+  /** Obra pedida (ao examinar) passa para a frente da fila, se ainda não começou a carregar. */
+  function priorizar(indice) {
+    const i = fila.findIndex((peca) => peca.indice === indice);
+    if (i > 0) fila.unshift(...fila.splice(i, 1));
+  }
+
+  await chegadaPronta;
+  return { cena, pecas, limites, comprimento, salas: plano.salas, paredes, carregamento, priorizar };
 }
+
+// Quantas obras baixam ao mesmo tempo: o bastante para usar a rede, sem atrasar as primeiras.
+const CARGAS_SIMULTANEAS = 3;
 
 /* ---------- Materiais e texturas ---------- */
 
