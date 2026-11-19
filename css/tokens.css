@@ -17,6 +17,13 @@
   --cor-estudio: #ececec;
   --cor-rodape: #2c2d2d;
 
+  /* Museu virtual: segue a identidade das exposições da CAL (paredes terracota, penumbra),
+     não a do site. */
+  --cor-terracota: #a9452c;
+  --cor-terracota-clara: #e8a688;
+  --cor-museu-escuro: #2a2421;
+  --cor-museu-vidro: rgba(30, 18, 12, 0.45);
+
   --fonte: "Roboto", system-ui, sans-serif;
 
   --altura-cabecalho: 64px;

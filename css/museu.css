@@ -1,7 +1,7 @@
 /*
   museu.css — página Museu virtual: palco 3D em tela cheia e a interface
   por cima dele (entrada com a marca e o carregamento, ajuda, botão de sair,
-  rótulo, painel da obra, percurso).
+  rótulo, ficha da obra, percurso).
 
   Durante a visita (body.imersivo) o cabeçalho do site sai de cena e os
   controles ficam em botões escuros translúcidos, para não tirar a atenção
@@ -37,7 +37,7 @@
   height: 100dvh;
   min-height: 420px;
   overflow: hidden;
-  background: #2a2421;
+  background: var(--cor-museu-escuro);
 }
 
 .museu-palco {
@@ -298,7 +298,7 @@
   justify-content: center;
   padding: calc(var(--altura-cabecalho) + 24px) var(--margem) 32px;
   overflow-y: auto;
-  background: #2a2421;
+  background: var(--cor-museu-escuro);
   color: #fff;
   transition: opacity 0.8s ease, background-color 1.4s ease;
 }
@@ -437,7 +437,7 @@
 .botao-entrar:hover,
 .botao-entrar:focus-visible {
   background: #fff;
-  color: #2a2421;
+  color: var(--cor-museu-escuro);
 }
 
 .botao-entrar:focus-visible {
@@ -456,10 +456,13 @@
   color: #fff;
 }
 
-/* --- Ficha da obra examinada (inspirada em exposições virtuais editoriais) --- */
+/* --- Ficha da obra examinada ---
+   Segue a linguagem do museu, não a do site: texto claro direto sobre a penumbra da sala, numa
+   sombra quente que se desfaz para a direita (no celular, uma folha de vidro escuro), título grande
+   e leve como nas exposições virtuais editoriais, botões de vidro iguais aos da visita. */
 
 .museu-ficha {
-  --largura-ficha-museu: min(440px, 40%);
+  --largura-ficha-museu: min(460px, 40%);
   position: absolute;
   top: 0;
   left: 0;
@@ -469,11 +472,25 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 48px clamp(24px, 4vw, 56px) 96px;
-  background: linear-gradient(90deg, rgba(251, 249, 245, 0.97) 70%, rgba(251, 249, 245, 0.85));
-  box-shadow: 12px 0 40px rgba(60, 20, 0, 0.12);
+  padding: 48px clamp(24px, 4vw, 60px) 96px;
+  color: #fff;
   /* Entra enquanto a câmera chega à obra (a viagem dura ~2 s). */
   animation: ficha-entra 1s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
+}
+
+/* A sombra fica num fundo à parte, que passa da borda e se apaga aos poucos (a máscara não pode
+   pegar o texto). O desfoque é leve: a sala continua visível por trás. */
+.museu-ficha::before {
+  content: "";
+  position: absolute;
+  inset: 0 -28% 0 0;
+  z-index: -1;
+  background: linear-gradient(90deg, rgba(22, 13, 8, 0.86) 0%, rgba(22, 13, 8, 0.72) 55%, rgba(22, 13, 8, 0) 100%);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  -webkit-mask-image: linear-gradient(90deg, #000 62%, transparent);
+  mask-image: linear-gradient(90deg, #000 62%, transparent);
+  pointer-events: none;
 }
 
 .museu-ficha.saindo {
@@ -493,34 +510,65 @@
   to { opacity: 1; transform: none; }
 }
 
+.museu-ficha-registro {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 18px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--cor-terracota-clara);
+}
+
+/* Fio terracota antes do número, como a cor das paredes. */
+.museu-ficha-registro::before {
+  content: "";
+  width: 28px;
+  height: 1px;
+  background: var(--cor-terracota-clara);
+}
+
 .museu-ficha h2 {
-  margin: 4px 0 20px;
-  font-size: clamp(30px, 3.4vw, 46px);
-  line-height: 1.08;
-  letter-spacing: -0.01em;
+  margin: 0 0 22px;
+  font-size: clamp(34px, 3.8vw, 58px);
+  font-weight: 300;
+  line-height: 1.04;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+  text-shadow: 0 1px 18px rgba(0, 0, 0, 0.35);
 }
 
 .museu-ficha-procedencia,
 .museu-ficha-medidas {
   margin: 0;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
-  letter-spacing: 0.03em;
+  line-height: 1.7;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--cor-texto-suave);
+  color: rgba(255, 255, 255, 0.62);
 }
 
 .museu-ficha-resumo {
-  margin: 20px 0 0;
-  max-width: 34em;
+  margin: 22px 0 0;
+  max-width: 30em;
   font-size: 16px;
-  line-height: 1.6;
+  font-weight: 300;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.museu-ficha-resumo:empty {
+  display: none;
 }
 
 .museu-ficha-dica {
-  margin: 24px 0 0;
-  font-size: 13px;
-  color: var(--cor-texto-suave);
+  margin: 26px 0 0;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .museu-ficha-acoes {
@@ -530,9 +578,28 @@
   margin-top: 28px;
 }
 
+.museu-ficha-acoes .botao-vidro {
+  height: 44px;
+  padding: 0 20px;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+/* O caminho principal: contorno claro, que se enche de branco ao passar o mouse (como "Entrar"). */
+.museu-ficha-link {
+  border-color: rgba(255, 255, 255, 0.75);
+}
+
+.museu-ficha-link:hover,
+.museu-ficha-link:focus-visible {
+  background: #fff;
+  border-color: #fff;
+  color: var(--cor-museu-escuro);
+}
+
 /* Com a ficha aberta, o percurso fica no centro da área livre, à direita. */
 .examinando .museu-percurso {
-  left: calc(min(440px, 40%) + (100% - min(440px, 40%)) / 2);
+  left: calc(min(460px, 40%) + (100% - min(460px, 40%)) / 2);
 }
 
 @media (max-width: 760px) {
@@ -544,10 +611,18 @@
     max-height: 48%;
     overflow-y: auto;
     justify-content: flex-start;
-    padding: 18px 16px 16px;
-    background: rgba(251, 249, 245, 0.97);
-    box-shadow: 0 -12px 32px rgba(60, 20, 0, 0.12);
+    margin: 0 12px;
+    padding: 16px 16px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 18px;
+    background: rgba(30, 18, 12, 0.72);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
     animation-name: ficha-sobe;
+  }
+
+  .museu-ficha::before {
+    display: none;
   }
 
   .museu-ficha.saindo {
@@ -563,19 +638,24 @@
     to { opacity: 1; transform: none; }
   }
 
+  .museu-ficha-registro {
+    margin-bottom: 8px;
+    font-size: 11px;
+  }
+
+  .museu-ficha-registro::before {
+    width: 18px;
+  }
+
   .museu-ficha h2 {
-    margin: 2px 0 8px;
-    font-size: 24px;
+    margin: 0 0 8px;
+    font-size: 26px;
   }
 
   .museu-ficha-procedencia,
   .museu-ficha-medidas {
-    display: inline;
-    font-size: 12px;
-  }
-
-  .museu-ficha-medidas::before {
-    content: " · ";
+    font-size: 11px;
+    line-height: 1.6;
   }
 
   .museu-ficha-resumo {
@@ -589,13 +669,14 @@
 
   .museu-ficha-acoes {
     margin-top: 12px;
+    gap: 8px;
   }
 
-  .museu-ficha-acoes .botao {
+  .museu-ficha-acoes .botao-vidro {
     flex: 1;
-    min-height: 40px;
-    padding: 8px 12px;
-    font-size: 14px;
+    height: 40px;
+    padding: 0 12px;
+    font-size: 13px;
   }
 
   .examinando .museu-percurso {

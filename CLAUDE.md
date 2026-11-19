@@ -124,7 +124,11 @@ sob o mouse; `js/museu.js` liga tudo e cuida da interface HTML por cima do canva
   arrastar gira, roda/pinça aproxima, duplo clique centraliza, giro automático lento até a primeira interação).
   Referência de interação citada pelo Lucas: https://www.magische-spiegelungen.de/ — ao examinar, a ficha fica
   à esquerda em tipografia grande e a obra à direita (`camera.setViewOffset` desloca a imagem); no celular a
-  ficha vira uma folha embaixo.
+  ficha vira uma folha embaixo. A ficha segue a UI do museu, não a do site (pedido do Lucas, 17/11/2026: o
+  painel creme quebrava a imersão): texto claro sobre uma sombra quente que se desfaz para a direita, título
+  grande em Roboto leve, registro em terracota, botões de vidro como os da visita; no celular, um cartão de
+  vidro escuro. O site segue a paleta do acervo; o museu, a das exposições (`--cor-terracota`,
+  `--cor-museu-escuro` em `css/tokens.css`).
 - O Lucas pediu três vezes obras maiores na tela. Decisão de 01/11/2026: **exibir as peças ampliadas 1,5× e
   não falar em "tamanho real"** no museu (as medidas reais continuam na ficha). Campo de visão 45° (60° em tela
   em pé), salas de 6,4 m de largura × pé-direito 3,4 m, 3 m entre fileiras, pedestais de 1,05 m, laterais a 1,5 m
