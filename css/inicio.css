@@ -166,7 +166,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(43, 24, 16, 0.94) 0%, rgba(43, 24, 16, 0.8) 32%, rgba(43, 24, 16, 0) 68%);
+  background: linear-gradient(90deg, rgba(42, 36, 33, 0.94) 0%, rgba(42, 36, 33, 0.8) 32%, rgba(42, 36, 33, 0) 68%);
   z-index: 1;
 }
 
