@@ -55,6 +55,14 @@ módulo JS dela; `js/data.js` e `js/cartoes.js` são compartilhados. Ao mudar o 
   `img/previa-museu.jpg` (a chegada, sem a interface; refazer à mão se a sala mudar muito). As etiquetas de
   prévia pedem endereço completo: `ENDERECO_DO_SITE` no script e as etiquetas das 4 páginas fixas. Ao mudar
   o site de servidor, trocar os dois e rodar o script.
+- **Convite do museu na página inicial** (16/11/2026): para o site e o museu não parecerem dois produtos, o
+  convite é uma foto do próprio museu (`img/museu-convite.webp`, 2400 × 1000, e `-1200`; a sala da coleção
+  Inicial com o Pote CAL.0630 inteiro à direita, `posicionar(0.4, -13.0, -0.191, -0.08)`, `?versao=original`,
+  sem a interface) com degradê escuro quente sob o texto. Obra cortada na borda da foto não: ou aparece
+  inteira ou não aparece (Lucas). Refazer a foto se a sala mudar muito.
+- **Identidade** (decisão do Lucas, 16/11/2026): o site segue a identidade do acervo da CAL (paleta
+  institucional); o museu tem liberdade para seguir a das exposições da CAL (terracota, penumbra). Os tons
+  `--cor-terracota` e `--cor-museu-escuro` (`css/tokens.css`) só entram onde o site fala do museu.
 
 - Ordem padrão das obras: número de registro (galeria e anterior/próxima da página da obra).
 - `frente` (graus) define a vista inicial, a miniatura e o botão "Frente" do cubo; as vistas do cubo são

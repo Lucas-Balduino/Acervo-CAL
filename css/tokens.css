@@ -16,6 +16,10 @@
   --cor-borda: #e2e2e2;
   --cor-estudio: #ececec;
   --cor-rodape: #2c2d2d;
+  /* Tons do museu virtual (as paredes terracota da CAL e a penumbra da sala), usados no site só
+     onde ele fala do museu. Ver CORES em js/museu-sala.js. */
+  --cor-terracota: #a9452c;
+  --cor-museu-escuro: #2b1810;
 
   /* Museu virtual: segue a identidade das exposições da CAL (paredes terracota, penumbra),
      não a do site. */
