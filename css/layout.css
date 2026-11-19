@@ -42,9 +42,11 @@ main {
   padding: 0 var(--margem);
 }
 
+/* Marca UnB | CAL (símbolo em cada página, #marca-unb-cal) e o nome do projeto ao lado, separados por um fio. */
 .marca {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 12px;
   text-decoration: none;
   color: var(--cor-texto);
 }
@@ -53,15 +55,47 @@ main {
   color: var(--cor-texto);
 }
 
-.marca-instituicao {
-  font-size: 11px;
-  letter-spacing: 0.02em;
-  color: var(--cor-texto-suave);
+.marca-simbolo {
+  display: block;
+  flex-shrink: 0;
+  width: auto;
+  height: 21px;
+  aspect-ratio: 640 / 108;
 }
 
 .marca-titulo {
+  padding-left: 12px;
+  border-left: 1px solid var(--cor-borda);
   font-size: 16px;
   font-weight: 700;
+  line-height: 21px;
+}
+
+/* Guarda o <symbol> da marca sem ocupar espaço. */
+.definicoes-svg {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/* No celular a marca fica menor, em cima do nome. */
+@media (max-width: 560px) {
+  .marca {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .marca-simbolo {
+    height: 15px;
+  }
+
+  .marca-titulo {
+    padding-left: 0;
+    border-left: 0;
+    line-height: 1.2;
+  }
 }
 
 .menu {
@@ -235,6 +269,14 @@ main {
 
 .rodape p {
   margin: 0;
+}
+
+.rodape-marca {
+  display: block;
+  width: 190px;
+  height: auto;
+  aspect-ratio: 640 / 108;
+  color: #fff;
 }
 
 .rodape a {

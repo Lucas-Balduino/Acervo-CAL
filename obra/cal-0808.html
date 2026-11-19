@@ -19,7 +19,7 @@
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Escultura de Vila (CAL.0808), modelo 3D">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3 28 9.5v13L16 29 4 22.5v-13z' fill='%231d5c86'/%3E%3Cpath d='M16 16 28 9.5M16 16 4 9.5M16 16v13' stroke='%23fff' stroke-width='1.6' fill='none'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%231d5c86'/%3E%3Cg fill='none' stroke='%23fff'%3E%3Crect x='4' y='10' width='24' height='12' stroke-width='2'/%3E%3Cpath d='M16 10v12' stroke-width='1.8'/%3E%3Cpath d='M4 11.5A15 15 0 0 0 28 11.5' stroke-width='1.8'/%3E%3C/g%3E%3C/svg%3E">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,12 +34,30 @@
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 </head>
 <body class="pagina-larga">
+  <!-- Marca UnB | CAL redesenhada em vetor (símbolo da UnB + "UnB" em Roboto Black e "CAL" em Roboto
+       Light, convertidos em curvas: não depende da fonte carregar). Usada no cabeçalho e no rodapé;
+       a cor vem do CSS (currentColor). -->
+  <svg class="definicoes-svg" aria-hidden="true" focusable="false">
+    <symbol id="marca-unb-cal" viewBox="-4 -4 640 108">
+      <g fill="none" stroke="currentColor">
+        <rect x="3" y="3" width="194" height="94" stroke-width="6"/>
+        <line x1="100" y1="3" x2="100" y2="97" stroke-width="5"/>
+        <path d="M3 12A122 122 0 0 0 197 12" stroke-width="5"/>
+      </g>
+      <g fill="currentColor">
+        <path d="M271 24.7H283.8V59.5Q283.8 65.7 281.2 70Q278.6 74.3 274 76.5Q269.3 78.7 262.9 78.7Q256.7 78.7 251.9 76.5Q247.2 74.3 244.5 70Q241.9 65.7 241.9 59.5V24.7H254.8V59.5Q254.8 62.8 255.7 64.9Q256.7 66.9 258.5 67.9Q260.3 68.8 262.9 68.8Q265.6 68.8 267.4 67.9Q269.2 66.9 270.1 64.9Q271 62.8 271 59.5ZM308.4 46.8V78H296.1V38.4H307.7ZM307 56.8 304.1 56.9Q304.1 52.4 305.2 48.8Q306.3 45.2 308.3 42.7Q310.3 40.2 313.1 38.9Q315.9 37.6 319.4 37.6Q322.1 37.6 324.4 38.4Q326.7 39.3 328.3 41Q330 42.8 330.9 45.8Q331.8 48.7 331.8 53.1V78H319.4V53Q319.4 50.6 318.7 49.4Q318.1 48.1 316.8 47.6Q315.6 47.2 313.8 47.2Q311.9 47.2 310.6 47.9Q309.2 48.6 308.5 49.9Q307.7 51.2 307.3 53Q307 54.7 307 56.8ZM366 55.3H352.3L352.2 46.9H363.3Q366.3 46.9 368.1 46.2Q369.9 45.6 370.7 44.2Q371.6 42.9 371.6 40.9Q371.6 38.7 370.7 37.3Q369.9 35.9 368.1 35.2Q366.2 34.6 363.4 34.6H357.1V78H344.2V24.7H363.4Q368.3 24.7 372.2 25.6Q376.1 26.5 378.8 28.3Q381.6 30.1 383 32.9Q384.4 35.7 384.4 39.4Q384.4 42.7 383 45.5Q381.6 48.4 378.4 50.1Q375.1 51.9 369.5 52ZM365.5 78H349.1L353.5 68.1H365.5Q368.1 68.1 369.7 67.3Q371.3 66.5 372 65.1Q372.7 63.7 372.7 62Q372.7 60 372.1 58.5Q371.4 57 369.9 56.2Q368.4 55.3 366 55.3H355.2L355.3 46.9H368.2L371.2 50.3Q376.5 50.1 379.7 51.8Q382.8 53.5 384.2 56.3Q385.5 59.1 385.5 62.2Q385.5 67.5 383.3 71Q381 74.5 376.5 76.2Q372.1 78 365.5 78Z"/>
+        <rect x="438.5" y="5" width="3" height="90"/>
+        <path d="M518 61.3H522.5Q521.9 66.8 519.5 70.6Q517.1 74.5 513 76.6Q508.8 78.7 502.9 78.7Q498.4 78.7 494.7 77Q491 75.3 488.3 72.1Q485.7 68.9 484.3 64.5Q482.8 60.1 482.8 54.7V48Q482.8 42.6 484.3 38.2Q485.7 33.8 488.4 30.6Q491 27.4 494.8 25.7Q498.5 23.9 503.2 23.9Q508.9 23.9 513 26Q517.1 28.1 519.5 32Q521.9 35.8 522.5 41.3H518Q517.5 37 515.7 34Q514 31 510.9 29.4Q507.8 27.8 503.2 27.8Q499.5 27.8 496.5 29.3Q493.6 30.7 491.5 33.3Q489.5 36 488.4 39.7Q487.3 43.4 487.3 47.9V54.7Q487.3 59 488.4 62.7Q489.4 66.4 491.4 69.1Q493.4 71.8 496.3 73.3Q499.2 74.9 502.9 74.9Q507.6 74.9 510.8 73.3Q513.9 71.8 515.7 68.8Q517.4 65.8 518 61.3ZM559 27.9 540.5 78H535.8L556 24.7H559.3ZM575.8 78 557.3 27.9 557 24.7H560.3L580.5 78ZM572.5 59.2V63.1H544.2V59.2ZM627.2 74.1V78H599.5V74.1ZM600.9 24.7V78H596.4V24.7Z"/>
+      </g>
+    </symbol>
+  </svg>
+
   <a class="pular-conteudo" href="obra/cal-0808.html#ficha">Pular para a ficha da obra</a>
 
   <header class="cabecalho">
     <a class="marca" href="./">
-      <span class="marca-instituicao">UnB · Casa da Cultura da América Latina</span>
-      <span class="marca-titulo">Gêmeos Digitais CAL</span>
+      <svg class="marca-simbolo" viewBox="-4 -4 640 108" role="img" aria-label="UnB | Casa da Cultura da América Latina"><use href="#marca-unb-cal"/></svg>
+      <span class="marca-titulo">Gêmeos Digitais</span>
     </a>
     <button type="button" class="botao-menu" aria-expanded="false" aria-controls="menu">Menu</button>
     <nav id="menu" class="menu" aria-label="Principal">
