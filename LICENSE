@@ -1,18 +1,3 @@
-Licenças deste repositório
-==========================
-
-- Código (HTML, CSS, JavaScript e as ferramentas em ferramentas/): licença MIT, abaixo.
-- Modelos 3D das obras (pasta models/ e os arquivos para baixar nos releases do GitHub):
-  Creative Commons Atribuição-NãoComercial 4.0 Internacional (CC BY-NC 4.0),
-  https://creativecommons.org/licenses/by-nc/4.0/deed.pt_BR
-- As obras, os dados das fichas (vindos do acervo da Casa da Cultura da América Latina),
-  as fotos e as marcas da UnB e da CAL não são cobertos pela licença MIT: os direitos
-  continuam com os seus titulares.
-
-Projeto de extensão PJ772-2026 — Gêmeos Digitais CAL (Laboratório Protip, IdA/UnB).
-
--------------------------------------------------------------------------------
-
 MIT License
 
 Copyright (c) 2026 Lucas Balduino e equipe do projeto Gêmeos Digitais CAL (UnB)
