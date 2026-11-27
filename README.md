@@ -133,3 +133,8 @@ outro caminho com `BLENDER=...`) e do `gh` com login feito.
 
 O GitHub Pages publica a branch `main`. Mudanças maiores entram por uma
 branch separada e só vão para a `main` depois de testadas localmente.
+
+## Licença
+
+O código é MIT; os modelos 3D das obras são CC BY-NC 4.0. As obras, os dados das fichas, as fotos e
+as marcas da UnB e da CAL não entram na licença do código. Detalhes em [`LICENSE`](LICENSE).
