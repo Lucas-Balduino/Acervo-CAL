@@ -43,6 +43,13 @@ Várias páginas estáticas que repetem o mesmo cabeçalho e rodapé (sem build,
 `museu.html` (sala 3D) e `sobre.html` (o processo em etapas). Cada página carrega só o CSS e o
 módulo JS dela; `js/data.js` e `js/cartoes.js` são compartilhados. Ao mudar o menu, mudar nas 5 páginas.
 
+- **Marca UnB | CAL** no cabeçalho (ao lado de "Gêmeos Digitais", sem o "CAL", que já está na marca — pedido
+  do Lucas; o nome completo continua no título da aba e nas prévias; no celular, menor e em cima) e no
+  rodapé das 5 páginas (19/11/2026): cada página tem o `<symbol id="marca-unb-cal">` logo depois do `<body>`
+  e usa `<use href="#marca-unb-cal">`. "UnB" (Roboto Black) e "CAL" (Roboto Light) estão convertidos em
+  curvas, para não depender de a fonte carregar nem trocar de letra na abertura; ao mudar a marca, mudar nas 5
+  páginas e rodar `paginas-das-obras.mjs`. O ícone da aba é o símbolo da UnB em branco sobre o azul do site.
+
 - **Uma página por obra** (`obra/<id>.html`, 16/11/2026): cópias de `obra.html` geradas por
   `ferramentas/paginas-das-obras.mjs` (roda sozinho no fim da sincronização), com título, descrição e
   etiquetas de prévia (Open Graph) da obra; WhatsApp e redes sociais não rodam JavaScript, e antes todo link
