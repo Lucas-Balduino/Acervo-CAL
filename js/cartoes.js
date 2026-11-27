@@ -1,5 +1,5 @@
 /*
-  cartoes.js — monta o cartão de uma obra (miniatura + título + registro).
+  cartoes.js — monta o cartão de uma obra (miniatura + título + registro e coleção).
   Usado na página inicial e na página Obras. Não filtra nem ordena.
 */
 
@@ -37,7 +37,8 @@ export function criarCartao(obra) {
 
   const registro = document.createElement("span");
   registro.className = "cartao-registro";
-  registro.textContent = obra.registro || "";
+  // Registro e coleção na mesma linha (a coleção é o que organiza as salas do museu).
+  registro.textContent = [obra.registro, obra.colecao && `Coleção ${obra.colecao}`].filter(Boolean).join(" · ");
 
   const titulo = document.createElement("h3");
   titulo.className = "cartao-titulo";

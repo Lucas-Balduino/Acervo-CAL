@@ -283,6 +283,17 @@ main {
   color: #fff;
 }
 
+/* Projeto, equipe e licenças: a primeira linha clara, as outras mais suaves. */
+.rodape-texto {
+  display: grid;
+  gap: 6px;
+  max-width: 640px;
+}
+
+.rodape-texto p + p {
+  color: #b5b5b5;
+}
+
 /* Página 404 (endereço que não existe). */
 .pagina-nao-encontrada {
   min-height: 50vh;

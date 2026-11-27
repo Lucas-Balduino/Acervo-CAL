@@ -11,6 +11,8 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* Links para #âncoras param abaixo do cabeçalho fixo. */
+  scroll-padding-top: var(--altura-cabecalho);
 }
 
 /* "hidden" sempre esconde, mesmo em elementos com display próprio (ex.: .botao é inline-flex). */
