@@ -136,5 +136,8 @@ branch separada e só vão para a `main` depois de testadas localmente.
 
 ## Licença
 
-O código é MIT; os modelos 3D das obras são CC BY-NC 4.0. As obras, os dados das fichas, as fotos e
-as marcas da UnB e da CAL não entram na licença do código. Detalhes em [`LICENSE`](LICENSE).
+- **Código** (HTML, CSS, JavaScript e `ferramentas/`): licença MIT, em [`LICENSE`](LICENSE).
+- **Modelos 3D das obras** (pasta `models/` e os arquivos para baixar nos releases):
+  [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/deed.pt_BR).
+- As obras, os dados das fichas (do acervo da CAL), as fotos e as marcas da UnB e da CAL não entram
+  na licença do código: os direitos continuam com os seus titulares.
