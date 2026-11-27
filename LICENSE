@@ -1,0 +1,36 @@
+Licenças deste repositório
+==========================
+
+- Código (HTML, CSS, JavaScript e as ferramentas em ferramentas/): licença MIT, abaixo.
+- Modelos 3D das obras (pasta models/ e os arquivos para baixar nos releases do GitHub):
+  Creative Commons Atribuição-NãoComercial 4.0 Internacional (CC BY-NC 4.0),
+  https://creativecommons.org/licenses/by-nc/4.0/deed.pt_BR
+- As obras, os dados das fichas (vindos do acervo da Casa da Cultura da América Latina),
+  as fotos e as marcas da UnB e da CAL não são cobertos pela licença MIT: os direitos
+  continuam com os seus titulares.
+
+Projeto de extensão PJ772-2026 — Gêmeos Digitais CAL (Laboratório Protip, IdA/UnB).
+
+-------------------------------------------------------------------------------
+
+MIT License
+
+Copyright (c) 2026 Lucas Balduino e equipe do projeto Gêmeos Digitais CAL (UnB)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
