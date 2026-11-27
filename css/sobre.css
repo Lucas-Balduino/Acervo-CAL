@@ -32,6 +32,24 @@
   color: var(--cor-destaque);
 }
 
+/* Atalhos para as seções depois das etapas (a página tem dezenas de telas). */
+.sobre-atalhos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 16px;
+  margin-top: 12px;
+  font-size: 14px;
+  color: var(--cor-texto-suave);
+}
+
+.sobre-atalhos a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 500;
+}
+
 /* --- História: etapas + palco --- */
 
 .historia {
@@ -208,16 +226,17 @@
 
 .palco-pontos {
   position: absolute;
-  left: 8px;
-  bottom: 8px;
+  left: 0;
+  bottom: 0;
   display: flex;
 }
 
 .palco-pontos button {
   display: grid;
   place-items: center;
-  width: 24px;
-  height: 24px;
+  /* Área de toque de 36 × 44 px; o ponto desenhado continua com 8 px. */
+  width: 36px;
+  height: 44px;
   padding: 0;
   border: 0;
   background: none;

@@ -1,10 +1,11 @@
 /*
   obra.js — página de uma obra (obra/cal-0000.html, gerada a partir de obra.html; obra.html?id=cal-0000
   também funciona): carrega o modelo,
-  preenche a ficha e liga os botões de câmera, de obra anterior/próxima e de download.
+  preenche a ficha (com o texto da coleção, de data/colecoes.json) e liga os botões de câmera,
+  de obra anterior/próxima e de download.
 */
 
-import { carregarObras, linkDaObra, textoAutoria, textoDimensoes } from "./data.js";
+import { carregarColecoes, carregarObras, linkDaObra, textoAutoria, textoDimensoes } from "./data.js";
 import { ligarDownloads } from "./downloads.js";
 import { iniciarViewer } from "./viewer.js";
 
@@ -55,6 +56,7 @@ if (!obra) {
   document.title = `${obra.titulo} · Gêmeos Digitais CAL`;
   viewer.carregarModelo(obra);
   preencherFicha(obra);
+  mostrarColecao(obra);
   ligarDownloads(obra);
   ligarNavegacao(obras[indice - 1], obras[indice + 1]);
 }
@@ -94,6 +96,17 @@ function preencherFicha(obra) {
   else acervo.hidden = true;
 }
 
+// O texto da coleção ajuda a dizer o que é a peça enquanto as fichas do acervo dizem pouco.
+async function mostrarColecao(obra) {
+  if (!obra.colecao) return;
+  const texto = (await carregarColecoes())[obra.colecao]?.texto;
+  if (!texto) return;
+  const bloco = document.getElementById("ficha-colecao");
+  bloco.querySelector("h2").textContent = `Sobre a coleção ${obra.colecao}`;
+  bloco.querySelector("p").textContent = texto;
+  bloco.hidden = false;
+}
+
 function ligarNavegacao(anterior, proxima) {
   const nav = document.getElementById("ficha-navegacao");
   for (const [obra, sentido, rotulo] of [
@@ -115,9 +128,11 @@ function ligarNavegacao(anterior, proxima) {
     nav.appendChild(link);
   }
 
-  // Setas do teclado trocam de obra quando o foco não está num campo.
+  // Setas do teclado trocam de obra só quando o foco não está em nada (nem no 3D, nem num botão ou
+  // link: quem navega pelo teclado usa as setas neles). Alt + seta é o "voltar" do navegador.
   document.addEventListener("keydown", (evento) => {
-    if (evento.target.closest("input, select, textarea, model-viewer, dialog")) return;
+    if (evento.altKey || evento.ctrlKey || evento.metaKey || evento.shiftKey || evento.defaultPrevented) return;
+    if (evento.target.closest("input, select, textarea, button, a, [tabindex], model-viewer, dialog")) return;
     if (evento.key === "ArrowLeft" && anterior) location.href = linkDaObra(anterior);
     if (evento.key === "ArrowRight" && proxima) location.href = linkDaObra(proxima);
   });

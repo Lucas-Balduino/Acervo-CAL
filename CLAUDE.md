@@ -78,7 +78,14 @@ e no `404.html`.
   institucional); o museu tem liberdade para seguir a das exposições da CAL (terracota, penumbra). Os tons
   `--cor-terracota` e `--cor-museu-escuro` (`css/tokens.css`) só entram onde o site fala do museu.
 
-- Ordem padrão das obras: número de registro (galeria e anterior/próxima da página da obra).
+- Ordem padrão das obras: número de registro (galeria e anterior/próxima da página da obra). As setas do
+  teclado trocam de obra só com o foco fora de botões, links e do 3D (27/11/2026).
+- **Coleção em vez de ficha vazia** (27/11/2026, enquanto as fichas do acervo dizem pouco): os cartões mostram
+  "CAL.0504 · Coleção Chocó" e a página da obra termina com "Sobre a coleção ...", o mesmo texto da parede
+  da sala no museu (`data/colecoes.json`).
+- Rodapé (27/11/2026): projeto e laboratório, orientador e equipe, licenças (modelos CC BY-NC 4.0, código MIT)
+  e o link do GitHub. Ao mudar, mudar em `index`, `obras`, `sobre` e `404` (a página da obra e o museu não
+  têm rodapé). `scroll-padding-top` no `html` faz âncoras pararem abaixo do cabeçalho fixo.
 - `frente` (graus) define a vista inicial, a miniatura e o botão "Frente" do cubo; as vistas do cubo são
   relativas a ela.
 - Distância da câmera: 115% no computador e 130% em telas estreitas; precisa de
@@ -209,8 +216,9 @@ Rolagem guiada: um palco 3D fica preso à direita (no celular, em cima) e cada e
 (`--rolagem` em `css/sobre.css`: 480vh nas etapas animadas, 300vh nas outras), com o cartão de texto preso
 (sticky) enquanto ela rola — o Lucas pediu duas vezes a animação mais longa e o texto parado na tela.
 Para a rolagem não parecer parada: a trilha de etapas à esquerda (clicável) se preenche conforme a rolagem
-(no celular, pontos e uma barra fina no palco) e rolar empurra o giro da peça (`empurrarGiro`). Os botões
-Pontos/Malha/Textura ficam por cima do 3D, só na última etapa.
+(no celular, pontos e uma barra fina no palco; cada ponto tem área de toque de 36 × 44 px) e rolar empurra o
+giro da peça (`empurrarGiro`). Os botões Pontos/Malha/Textura ficam por cima do 3D, só na última etapa.
+Na abertura, atalhos "Ou vá direto para" pulam a rolagem longa: Fotogrametria, Bastidores e O projeto.
 `js/sobre.js` descobre a etapa ativa e o progresso dela (0 quando o cartão prende, 1 quando vai soltar); `js/sobre-cena.js`
 recebe isso e mostra a moringa (CAL.0607) naquela etapa. Partes da animação seguem a rolagem: o scanner dá a
 volta, a segunda captura (peça virada) se encaixa, a câmera aproxima da malha, a textura se desdobra no plano

@@ -212,6 +212,26 @@
   color: var(--cor-texto-suave);
 }
 
+/* Texto da coleção, embaixo da ficha. */
+.ficha-colecao {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--cor-borda);
+}
+
+.ficha-colecao h2 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.ficha-colecao p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--cor-texto-suave);
+}
+
 /* --- Janela "Baixar modelo 3D" --- */
 
 body:has(.janela-download[open]) {
