@@ -69,7 +69,13 @@ createServer((req, res) => {
   }
   if (existsSync(caminho) && statSync(caminho).isDirectory()) caminho = join(caminho, "index.html");
   if (!existsSync(caminho)) {
-    res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" }).end("Não encontrado");
+    // Como o GitHub Pages: endereço que não existe mostra o 404.html do site (com o código 404).
+    const pagina404 = join(RAIZ, "404.html");
+    if (existsSync(pagina404)) {
+      res.writeHead(404, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" }).end(readFileSync(pagina404));
+    } else {
+      res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" }).end("Não encontrado");
+    }
     return;
   }
   res.writeHead(200, {

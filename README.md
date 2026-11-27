@@ -31,6 +31,7 @@ as miniaturas geradas por `ferramentas/posters.html`.
 | `obra.html?id=cal-0607` | Uma obra: visualizador 3D, cubo de vistas, ficha e obra anterior/próxima |
 | `museu.html` | Museu virtual: sala 3D inspirada nas salas da CAL, obras para examinar de perto, percurso de obra em obra |
 | `sobre.html` | Sobre o processo: as etapas, do escaneamento ao site, com a moringa em 3D mudando conforme a rolagem |
+| `404.html` | Página de endereço que não existe, com links para a galeria e o início |
 
 ## Mapa da pasta
 

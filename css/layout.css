@@ -282,3 +282,20 @@ main {
 .rodape a {
   color: #fff;
 }
+
+/* Página 404 (endereço que não existe). */
+.pagina-nao-encontrada {
+  min-height: 50vh;
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+
+.pagina-nao-encontrada h1 {
+  margin: 0 0 16px;
+  font-size: clamp(30px, 4vw, 44px);
+}
+
+.pagina-nao-encontrada > p:not(.sobretitulo) {
+  max-width: 560px;
+  color: var(--cor-texto-suave);
+}

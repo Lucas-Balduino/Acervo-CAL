@@ -1,5 +1,5 @@
 /*
-  inicio.css — página inicial: destaque com obra em 3D, progresso e apresentação do projeto.
+  inicio.css — página inicial: destaque com obra em 3D, progresso, obras mais recentes e apresentação do projeto.
 */
 
 .hero {
@@ -228,5 +228,29 @@
   .convite-museu .recipiente {
     padding-top: 28px;
     padding-bottom: 40px;
+  }
+}
+
+/* --- Obras mais recentes: sempre linhas cheias (4, 3 ou 2 por linha), sem cartão sozinho --- */
+
+#grade-inicio {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (max-width: 1000px) {
+  #grade-inicio {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 701px) and (max-width: 1000px) {
+  #grade-inicio > :nth-child(n + 4) {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
+  #grade-inicio {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
