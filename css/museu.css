@@ -746,3 +746,14 @@
     padding: 0 8px;
   }
 }
+
+/* Aviso sem JavaScript (no museu, dentro da tela de entrada, em vez do carregamento). */
+.museu-entrada .aviso-sem-js {
+  max-width: 420px;
+  margin: 32px auto 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.5;
+}

@@ -96,7 +96,11 @@ const navegacao = criarNavegacao(camera, renderer.domElement, sala, {
     examinar(indice);
     if (toque) contorno.piscar(percurso[indice].grupo); // no celular não há "passar o mouse"
   },
-  aoAndar: () => {},
+  // As instruções abertas na chegada saem quando o visitante anda pela primeira vez
+  // (ou examina uma obra), e não mais com tempo marcado: quem está lendo não perde o texto.
+  aoAndar: () => {
+    if (ajudaDaChegada) mostrarAjuda(false);
+  },
   aoPassar(indice, x, y) {
     mostrarRotulo(indice, x, y);
     contorno.mostrar(indice >= 0 ? percurso[indice].grupo : null);
@@ -144,7 +148,7 @@ function entrar() {
     jaEntrou = true;
     navegacao.chegar(); // a câmera avança devagar sala adentro
     mostrarAjuda(true);
-    fechamentoDaAjuda = setTimeout(() => mostrarAjuda(false), 7000);
+    ajudaDaChegada = true;
   }
 }
 
@@ -167,10 +171,10 @@ document.getElementById("botao-fechar-ajuda").addEventListener("click", () => {
   botaoAjuda.focus({ preventScroll: true });
 });
 
-let fechamentoDaAjuda = 0;
+let ajudaDaChegada = false; // aberta sozinha na primeira entrada (aberta pelo botão, só fecha no X, no Esc ou no botão)
 
 function mostrarAjuda(visivel) {
-  clearTimeout(fechamentoDaAjuda); // aberta pelo botão, a ajuda não some sozinha
+  ajudaDaChegada = false;
   ajuda.hidden = !visivel;
   botaoAjuda.setAttribute("aria-expanded", String(visivel));
 }

@@ -167,3 +167,15 @@ a:hover {
   text-transform: uppercase;
   color: var(--cor-destaque);
 }
+
+/* Aviso para quem está com o JavaScript desligado (dentro de <noscript>, nas 5 páginas). */
+.aviso-sem-js {
+  position: relative;
+  z-index: 10;
+  margin: 0;
+  padding: 16px 24px;
+  background: var(--cor-areia-clara);
+  border-bottom: 1px solid var(--cor-areia);
+  color: var(--cor-texto);
+  text-align: center;
+}

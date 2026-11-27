@@ -41,7 +41,14 @@ Vigência: 15/05/2026 a 31/12/2026.
 Várias páginas estáticas que repetem o mesmo cabeçalho e rodapé (sem build, então sem includes):
 `index.html` (início), `obras.html` (grade com filtros), `obra.html` (visualizador + ficha),
 `museu.html` (sala 3D) e `sobre.html` (o processo em etapas). Cada página carrega só o CSS e o
-módulo JS dela; `js/data.js` e `js/cartoes.js` são compartilhados. Ao mudar o menu, mudar nas 5 páginas.
+módulo JS dela; `js/data.js` e `js/cartoes.js` são compartilhados. Ao mudar o menu, mudar nas 5 páginas
+e no `404.html`.
+
+- **Página 404** (`404.html`, 27/11/2026): o GitHub Pages a mostra em qualquer endereço que não existe, inclusive
+  dentro de pastas (`obra/cal-9999.html`); um script no `<head>` aponta a `<base>` para a raiz do site (a pasta
+  antes de `obra/`, `models/`... ou a do endereço pedido), para os caminhos relativos valerem. O
+  `servidor.mjs` faz o mesmo no localhost. Repete o cabeçalho e o rodapé das outras páginas.
+- Sem JavaScript, cada página mostra um aviso (`<noscript>` com `.aviso-sem-js`); no museu, dentro da tela de entrada.
 
 - **Marca UnB | CAL** no cabeçalho (ao lado de "Gêmeos Digitais", sem o "CAL", que já está na marca — pedido
   do Lucas; o nome completo continua no título da aba e nas prévias; no celular, menor e em cima) e no
@@ -90,7 +97,8 @@ sob o mouse; `js/museu.js` liga tudo e cuida da interface HTML por cima do canva
   Roboto) e uma barra fina; depois aparece o convite "Entrar no museu", com a sala desfocada por trás. Ao entrar,
   o cabeçalho do site sobe e some (`body.imersivo`), a câmera avança da porta (`navegacao.chegar()`) e ficam só
   botões escuros translúcidos: "Como navegar" (as instruções abrem sozinhas na primeira entrada
-  e têm um X próprio; Esc também fecha) e um X no canto que, com uma obra aberta, fecha a obra e, andando, sai
+  e saem quando o visitante anda ou examina uma obra — antes sumiam em 7 s, às vezes antes de a pessoa
+  terminar de ler (27/11/2026); têm um X próprio; Esc também fecha) e um X no canto que, com uma obra aberta, fecha a obra e, andando, sai
   da visita (a entrada volta com "Voltar ao museu"). Antes o X saía do museu mesmo com a obra aberta (08/11/2026).
   Comparamos as outras duas marcas da CAL (quadrado vermelho e "CAL" horizontal): o vermelho briga com a
   terracota e a horizontal pesa mais que o título; ficou a UnB | CAL.

@@ -32,8 +32,10 @@ export function iniciarViewer({ viewer, barra, aviso, cubo, dica }) {
     }
   });
 
-  viewer.addEventListener("error", () => {
-    mostrarAviso("Não foi possível carregar este modelo. Confira o caminho em data/obras.json e o arquivo em models/.");
+  viewer.addEventListener("error", (evento) => {
+    // O detalhe técnico vai para o console; o visitante lê só o que pode fazer.
+    console.error("Falha ao carregar o modelo", viewer.src, evento.detail);
+    mostrarAviso("Não foi possível carregar o modelo 3D. Tente recarregar a página.");
   });
 
   viewer.addEventListener("load", () => {

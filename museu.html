@@ -38,6 +38,7 @@
       }
     }
   </script>
+  <noscript><style>.museu-carga { display: none; }</style></noscript>
 </head>
 <body class="pagina-larga pagina-museu">
   <!-- Marca UnB | CAL redesenhada em vetor (símbolo da UnB + "UnB" em Roboto Black e "CAL" em Roboto
@@ -134,6 +135,8 @@
     <div id="museu-entrada" class="museu-entrada">
       <div class="museu-entrada-caixa">
         <svg class="museu-entrada-marca" viewBox="-4 -4 640 108" role="img" aria-label="UnB | Casa da Cultura da América Latina"><use href="#marca-unb-cal"/></svg>
+        <!-- Sem JavaScript: o aviso fica na tela de entrada, no lugar do carregamento. -->
+        <noscript><p class="aviso-sem-js">Este site precisa de JavaScript para mostrar as obras em 3D. Ative o JavaScript no navegador e recarregue a página.</p></noscript>
         <div class="museu-carga">
           <div>
             <div class="museu-carga-barra"><span id="museu-barra"></span></div>
