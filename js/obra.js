@@ -84,6 +84,11 @@ function preencherFicha(obra) {
     dados.append(dt, dd);
   }
 
+  // O museu abre direto examinando esta obra (museu.html#<id>).
+  const museu = document.getElementById("ficha-museu");
+  museu.href = `museu.html#${encodeURIComponent(obra.id)}`;
+  museu.hidden = false;
+
   const acervo = document.getElementById("ficha-acervo");
   if (obra.urlAcervo) acervo.href = obra.urlAcervo;
   else acervo.hidden = true;

@@ -438,6 +438,13 @@
   outline-offset: 3px;
 }
 
+/* Com o endereço de uma obra: "Direto para: <título>", acima do botão. */
+.museu-destino {
+  margin: -16px auto 24px;
+  font-size: 14px;
+  color: var(--cor-terracota-clara);
+}
+
 .museu-entrada .link-alternativo {
   display: block;
   margin-top: 18px;
