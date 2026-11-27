@@ -5,6 +5,8 @@
   (marca e carregamento, depois o convite), modo de visita sem o cabeçalho do
   site (com o X que fecha a obra ou sai), ajuda, nome da obra sob o mouse, ficha da obra
   examinada, o percurso anterior/próxima e o nome da sala onde o visitante está.
+  O endereço acompanha a obra examinada (museu.html#cal-0607): aberto assim, o museu entra
+  direto nessa obra.
 */
 
 import * as THREE from "three";
@@ -118,13 +120,57 @@ renderer.setAnimationLoop(() => {
   contorno.desenhar(sala.cena, camera, dt);
 });
 
+/* ----- Endereço por obra (museu.html#cal-0607) ----- */
+
+let jaEntrou = false;
+let destino = -1; // obra pedida no endereço, examinada ao entrar
+const avisoDoDestino = document.getElementById("museu-destino");
+
+/** Índice no percurso da obra cujo id está no endereço (#cal-0607), ou -1. */
+function obraNoEndereco() {
+  const id = decodeURIComponent(location.hash.slice(1));
+  return id ? percurso.findIndex((p) => p.obra.id === id) : -1;
+}
+
+/** Fora da visita: prepara a entrada para a obra do endereço (ou para a entrada comum). */
+function prepararDestino() {
+  destino = obraNoEndereco();
+  avisoDoDestino.hidden = destino < 0;
+  if (destino < 0) {
+    botaoEntrar.textContent = jaEntrou ? "Voltar ao museu" : "Entrar no museu";
+    return;
+  }
+  avisoDoDestino.textContent = `Direto para: ${percurso[destino].obra.titulo}`;
+  botaoEntrar.textContent = "Ver a obra no museu";
+  sala.mostrarCompleta(destino); // começa a baixar a versão completa enquanto a pessoa lê o convite
+  ficarNaSalaDa(destino); // por trás do convite já aparece a sala da obra
+}
+
+// Põe o visitante logo depois da entrada da sala da obra, olhando para o fundo. Assim o caminho até
+// a obra fica dentro da sala (da porta do museu, a câmera atravessaria as paredes entre as salas).
+function ficarNaSalaDa(indice) {
+  navegacao.posicionar(0, percurso[indice].sala.zMax - 1.2, 0, -0.08);
+}
+
+// O endereço segue a obra examinada (sem criar entradas no histórico), para dar para mandar o link
+// e para voltar a ela depois de abrir a ficha completa.
+function marcarEndereco(obra) {
+  history.replaceState(null, "", obra ? `#${encodeURIComponent(obra.id)}` : location.pathname + location.search);
+}
+
+window.addEventListener("hashchange", () => {
+  if (!document.body.classList.contains("imersivo")) return prepararDestino();
+  const indice = obraNoEndereco();
+  if (indice >= 0 && indice !== examinando) examinar(indice);
+});
+
+prepararDestino();
+
 // Obras prontas: a marca sobe e aparece o convite para entrar, com a sala de leve por trás.
 entrada.classList.add("pronta");
 botaoEntrar.disabled = false;
 
 /* ----- Entrar e sair da visita ----- */
-
-let jaEntrou = false;
 
 botaoEntrar.addEventListener("click", entrar);
 // O X do canto fecha primeiro a obra examinada; só fora do exame ele sai do museu.
@@ -144,7 +190,17 @@ function entrar() {
     if (document.body.classList.contains("imersivo")) entrada.hidden = true;
   }, 800);
   renderer.domElement.focus({ preventScroll: true });
-  if (!jaEntrou) {
+  const pedida = destino;
+  destino = -1;
+  avisoDoDestino.hidden = true;
+  if (pedida >= 0) {
+    // Entrada pelo endereço de uma obra: sem a chegada e sem as instruções, direto para o exame.
+    jaEntrou = true;
+    if (pedida !== examinando) {
+      ficarNaSalaDa(pedida);
+      examinar(pedida);
+    }
+  } else if (!jaEntrou) {
     jaEntrou = true;
     navegacao.chegar(); // a câmera avança devagar sala adentro
     mostrarAjuda(true);
@@ -215,6 +271,7 @@ function examinar(indice) {
   ficha.querySelector(".museu-ficha-resumo").textContent = obra.resumo || "";
   ficha.querySelector(".museu-ficha-link").href = linkDaObra(obra);
   ficha.hidden = false;
+  marcarEndereco(obra);
   document.body.classList.add("examinando");
   contador.textContent = `${indice + 1} de ${percurso.length}`;
   salaNoContador = null;
@@ -234,6 +291,7 @@ function voltarAoMuseu() {
   if (examinando < 0) return;
   examinando = -1;
   nomearBotaoSair();
+  marcarEndereco(null);
   navegacao.voltarAAndar();
   // A ficha sai devagar, junto com a câmera.
   ficha.classList.add("saindo");

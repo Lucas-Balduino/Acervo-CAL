@@ -176,6 +176,12 @@ sob o mouse; `js/museu.js` liga tudo e cuida da interface HTML por cima do canva
   acima do pedestal (corrigido em 04/11/2026).
 - No celular (`pointer: coarse`) não há sombra da luz geral (shadow map); os spots, as sombras deles e os cantos
   escurecidos são os mesmos do computador.
+- **Endereço por obra** (27/11/2026): `museu.html#<id>` abre o museu direto examinando aquela obra. O convite
+  diz "Direto para: <título>", o botão vira "Ver a obra no museu", a versão completa da obra começa a baixar
+  e o visitante já fica na entrada da sala dela (`ficarNaSalaDa`; da porta do museu, a câmera atravessaria as
+  paredes entre as salas). Sem a chegada e sem as instruções. Durante a visita, o endereço segue a obra
+  examinada (`history.replaceState`, sem encher o histórico) e volta a `museu.html` ao andar; assim, quem abre
+  "Ver ficha completa" e volta cai na mesma obra. A página da obra tem o botão "Ver no museu virtual".
 - `window.museu` expõe `examinar`, `voltarAoMuseu`, `entrar`, `sair`, `percurso`, `camera`, `navegacao`, `sala` e
   `contorno` para testes no console; `navegacao.posicionar(x, z, giro, pitch)` põe o visitante num ponto.
 - Desempenho (relato do Lucas, 05/11/2026): roda bem no PC; num iPhone XR a fluidez cai um pouco, sem
